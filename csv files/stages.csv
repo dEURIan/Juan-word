@@ -1,0 +1,5 @@
+stageId,name,location,difficulty,regularRounds,bossId
+1,The Beginning,Forest Trail,Easy,15,B001
+2,The Trial,Riverside Community,Average,10,B002
+3,The Darkness,Mountain Path (Mt. Apo inspired),Difficult,10,B003
+4,The Final Trial,Abandoned Settlement,Very Difficult,12,B004

@@ -1,0 +1,6 @@
+playerId,creatureId,discovered,timesDefeated
+P001,E001,true,3
+P001,B001,false,0
+P001,B002,false,0
+P001,B003,false,0
+P001,B004,false,0

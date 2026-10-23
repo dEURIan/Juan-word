@@ -1,0 +1,14 @@
+enemyId,name,stage,type,maxHealth,attack,ability
+E001,Duwende,1,regular,30,5,none
+E002,Sigbin,1,regular,40,6,none
+E003,Tiyanak,1,regular,50,7,none
+B001,Tikbalang,1,boss,150,12,reduces damage from weak words
+E004,Wakwak,2,regular,70,9,none
+E005,Santelmo,2,regular,85,11,burns player each turn
+B002,Kapre,2,boss,250,16,smoke blocks one letter tile
+E006,Mangkukulam,3,regular,110,14,curses a random letter
+E007,Berbalang,3,regular,130,16,heals when word is short
+B003,Manananggal,3,boss,400,22,strikes harder every 3 turns
+E008,Aswang Foot Soldier,4,regular,170,20,resists words under 4 letters
+E009,Engkanto,4,regular,200,23,dodges every other turn
+B004,Aswang,4,boss,650,30,drains health and shuffles tiles

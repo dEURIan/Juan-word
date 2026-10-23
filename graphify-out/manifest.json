@@ -1,20 +1,86 @@
 {
   ".agents/hooks.json": {
-    "mtime": 1792721763.626319,
-    "seen": 1792721765.149784,
+    "mtime": 1792723956.7614975,
+    "seen": 1792724313.482631,
     "ast_hash": "059927090d845778b18f11de75f9af16",
     "semantic_hash": "059927090d845778b18f11de75f9af16"
   },
   ".agents/scripts/load-memory.sh": {
-    "mtime": 1792721763.6291087,
-    "seen": 1792721765.149788,
+    "mtime": 1792723956.763056,
+    "seen": 1792724313.482635,
     "ast_hash": "fe0f876b0221c3546e5e216878b94003",
     "semantic_hash": "fe0f876b0221c3546e5e216878b94003"
   },
   "src/juanword/JuanWord.java": {
-    "mtime": 1792722143.254986,
-    "seen": 1792722363.000983,
-    "ast_hash": "0da5ee9906bd1d19a9db1c0f7e9a154a",
-    "semantic_hash": "0da5ee9906bd1d19a9db1c0f7e9a154a"
+    "mtime": 1792745049.6020093,
+    "seen": 1792745062.5445042,
+    "ast_hash": "c7585ac979ec9baef03336aaab378144",
+    "semantic_hash": "c7585ac979ec9baef03336aaab378144"
+  },
+  "for skeleton additional classes/BattlePanel.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.276117,
+    "ast_hash": "ec5f84999c636670ddbdd44fa00495e2",
+    "semantic_hash": "ec5f84999c636670ddbdd44fa00495e2"
+  },
+  "for skeleton additional classes/BestiaryPanel.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.276118,
+    "ast_hash": "cfcbaffe9e728cee43a979abf3451d09",
+    "semantic_hash": "cfcbaffe9e728cee43a979abf3451d09"
+  },
+  "for skeleton additional classes/DataManager.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.276119,
+    "ast_hash": "3c475d4955b4d5540f7eb1537bafb7c3",
+    "semantic_hash": "3c475d4955b4d5540f7eb1537bafb7c3"
+  },
+  "for skeleton additional classes/JuanWordApp.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.276119,
+    "ast_hash": "e1991cf5689f1d203edfc95d2da74454",
+    "semantic_hash": "e1991cf5689f1d203edfc95d2da74454"
+  },
+  "for skeleton additional classes/MainMenuPanel.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.27612,
+    "ast_hash": "fd27f90541641759125c12f1427aad44",
+    "semantic_hash": "fd27f90541641759125c12f1427aad44"
+  },
+  "for skeleton additional classes/Player.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.27612,
+    "ast_hash": "f216e1d9846bc4cc35abfd285122f525",
+    "semantic_hash": "f216e1d9846bc4cc35abfd285122f525"
+  },
+  "for skeleton additional classes/ResultPanel.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.2761211,
+    "ast_hash": "809f928e1c5180118d0ed164ce604c46",
+    "semantic_hash": "809f928e1c5180118d0ed164ce604c46"
+  },
+  "for skeleton additional classes/SettingsPanel.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.276122,
+    "ast_hash": "a58f3ffe4ff63fb01b83b320fdc4d891",
+    "semantic_hash": "a58f3ffe4ff63fb01b83b320fdc4d891"
+  },
+  "for skeleton additional classes/WorldMapPanel.java": {
+    "mtime": 1792686462.0,
+    "seen": 1792741445.276122,
+    "ast_hash": "c8d0196f416e4e0fe543154937fd8a0c",
+    "semantic_hash": "c8d0196f416e4e0fe543154937fd8a0c"
+  },
+  "src/juanword/DataManager.java": {
+    "mtime": 1792742895.3625765,
+    "seen": 1792743263.0499709,
+    "ast_hash": "7b0c52794ec713d22ff55f24640f1e5d",
+    "semantic_hash": "7b0c52794ec713d22ff55f24640f1e5d"
+  },
+  "src/juanword/Player.java": {
+    "mtime": 1792744983.8525455,
+    "seen": 1792745062.5445051,
+    "ast_hash": "0e223f230a342c3e26316242a1dfc3a7",
+    "semantic_hash": "0e223f230a342c3e26316242a1dfc3a7"
   }
 }
