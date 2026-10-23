@@ -1,6 +1,58 @@
 {
   "communities": {
     "0": [
+      "datamanager",
+      "graphics",
+      "jlabel",
+      "juanword",
+      "override",
+      "src_juanword_battlepanel_battlepanel",
+      "src_juanword_battlepanel_battlepanel_applydamagetojuan",
+      "src_juanword_battlepanel_battlepanel_backspacetile",
+      "src_juanword_battlepanel_battlepanel_battlepanel",
+      "src_juanword_battlepanel_battlepanel_buildui",
+      "src_juanword_battlepanel_battlepanel_calculatebasepoints",
+      "src_juanword_battlepanel_battlepanel_clearwordselection",
+      "src_juanword_battlepanel_battlepanel_createarenapanel",
+      "src_juanword_battlepanel_battlepanel_createbottompanel",
+      "src_juanword_battlepanel_battlepanel_dealnewgrid",
+      "src_juanword_battlepanel_battlepanel_enemyturn",
+      "src_juanword_battlepanel_battlepanel_exitbattle",
+      "src_juanword_battlepanel_battlepanel_getrandomletter",
+      "src_juanword_battlepanel_battlepanel_getselectedword",
+      "src_juanword_battlepanel_battlepanel_handledefeat",
+      "src_juanword_battlepanel_battlepanel_handlevictory",
+      "src_juanword_battlepanel_battlepanel_loadletterdata",
+      "src_juanword_battlepanel_battlepanel_ontileclicked",
+      "src_juanword_battlepanel_battlepanel_ontimertick",
+      "src_juanword_battlepanel_battlepanel_performattack",
+      "src_juanword_battlepanel_battlepanel_savehealth",
+      "src_juanword_battlepanel_battlepanel_setupbattle",
+      "src_juanword_battlepanel_battlepanel_shufflegrid",
+      "src_juanword_battlepanel_battlepanel_updatecombatbars",
+      "src_juanword_battlepanel_battlepanel_updateheaderinfo",
+      "src_juanword_battlepanel_battlepanel_updatejuaninfo",
+      "src_juanword_battlepanel_battlepanel_updatewordtray",
+      "src_juanword_battlepanel_difficultysetting_getlengthmultiplier",
+      "src_juanword_battlepanel_dizonboxpanel",
+      "src_juanword_battlepanel_dizonboxpanel_dizonboxpanel",
+      "src_juanword_battlepanel_dizonboxpanel_paintcomponent",
+      "src_juanword_battlepanel_dizonboxpanel_sethurt",
+      "src_juanword_battlepanel_dizonboxpanel_triggerhit",
+      "src_juanword_battlepanel_heroattackbutton",
+      "src_juanword_battlepanel_heroattackbutton_heroattackbutton",
+      "src_juanword_battlepanel_heroattackbutton_paintcomponent",
+      "src_juanword_battlepanel_lettertilebutton",
+      "src_juanword_battlepanel_lettertilebutton_getletter",
+      "src_juanword_battlepanel_lettertilebutton_isselectedtile",
+      "src_juanword_battlepanel_lettertilebutton_lettertilebutton",
+      "src_juanword_battlepanel_lettertilebutton_paintcomponent",
+      "src_juanword_battlepanel_lettertilebutton_setletterandpoints",
+      "src_juanword_battlepanel_lettertilebutton_setselectedtile",
+      "src_juanword_juanword_maptilebutton_paintcomponent",
+      "timer"
+    ],
+    "1": [
       "src_juanword_datamanager_bestiaryentry",
       "src_juanword_datamanager_bestiaryprogress",
       "src_juanword_datamanager_bestiaryprogress_bestiaryprogress",
@@ -45,7 +97,7 @@
       "src_juanword_datamanager_unlocks_tocsv",
       "src_juanword_datamanager_unlocks_unlocks"
     ],
-    "1": [
+    "2": [
       "for_skeleton_additional_classes_bestiarypanel_bestiarypanel",
       "for_skeleton_additional_classes_bestiarypanel_bestiarypanel_bestiarypanel",
       "for_skeleton_additional_classes_bestiarypanel_bestiarypanel_loadcreatures",
@@ -83,17 +135,15 @@
       "for_skeleton_additional_classes_worldmappanel_worldmappanel_worldmappanel",
       "jframe"
     ],
-    "2": [
+    "3": [
+      "battlepanel",
       "cardlayout",
       "cursor",
-      "datamanager",
-      "graphics",
       "image",
       "jbutton",
       "jdialog",
-      "jlabel",
       "jpanel",
-      "src_juanword_juanword_java_override",
+      "player",
       "src_juanword_juanword_juanword",
       "src_juanword_juanword_juanword_createmapselectscreen",
       "src_juanword_juanword_juanword_createplayercardpanel",
@@ -105,19 +155,21 @@
       "src_juanword_juanword_juanword_juanword",
       "src_juanword_juanword_juanword_loadgameimage",
       "src_juanword_juanword_juanword_main",
+      "src_juanword_juanword_juanword_returntomapselect",
+      "src_juanword_juanword_juanword_savegameonexit",
       "src_juanword_juanword_juanword_showdifficultydialog",
       "src_juanword_juanword_juanword_showplayerselectdialog",
       "src_juanword_juanword_juanword_showsettingsdialog",
+      "src_juanword_juanword_juanword_startbattle",
       "src_juanword_juanword_juanword_styleimagebutton",
       "src_juanword_juanword_juanword_styleplainmenubutton",
       "src_juanword_juanword_juanword_updatecontinuebutton",
       "src_juanword_juanword_juanword_updateplayercard",
       "src_juanword_juanword_maptilebutton",
       "src_juanword_juanword_maptilebutton_maptilebutton",
-      "src_juanword_juanword_maptilebutton_paintcomponent",
       "src_juanword_juanword_maptilebutton_updatecontent"
     ],
-    "3": [
+    "4": [
       "arraydeque",
       "arraylist",
       "awt",
@@ -142,13 +194,14 @@
       "path",
       "paths",
       "random",
+      "src_juanword_battlepanel",
       "src_juanword_datamanager",
       "src_juanword_juanword",
       "standardcharsets",
       "swing",
       "util"
     ],
-    "4": [
+    "5": [
       "for_skeleton_additional_classes_datamanager_datamanager",
       "for_skeleton_additional_classes_datamanager_datamanager_addhighscore",
       "for_skeleton_additional_classes_datamanager_datamanager_datamanager",
@@ -171,7 +224,7 @@
       "for_skeleton_additional_classes_player_player_tocsv",
       "for_skeleton_additional_classes_player_player_tostring"
     ],
-    "5": [
+    "6": [
       "for_skeleton_additional_classes_battlepanel_battlepanel",
       "for_skeleton_additional_classes_battlepanel_battlepanel_backspace",
       "for_skeleton_additional_classes_battlepanel_battlepanel_battlepanel",
@@ -193,7 +246,16 @@
       "jprogressbar",
       "jtextfield"
     ],
-    "6": [
+    "7": [
+      "color",
+      "src_juanword_battlepanel_difficultysetting",
+      "src_juanword_battlepanel_difficultysetting_difficultysetting",
+      "src_juanword_battlepanel_difficultysetting_fromstring",
+      "src_juanword_battlepanel_difficultysetting_lisod",
+      "src_juanword_battlepanel_difficultysetting_sakto",
+      "src_juanword_battlepanel_difficultysetting_sayon"
+    ],
+    "8": [
       "src_juanword_player",
       "src_juanword_player_java_override",
       "src_juanword_player_player",
@@ -202,46 +264,85 @@
       "src_juanword_player_player_tocsv",
       "src_juanword_player_player_tostring"
     ],
-    "7": [
+    "9": [
       "agents_scripts_load_memory",
       "agents_scripts_load_memory_sh__entry"
     ],
-    "8": [
-      "override"
-    ],
-    "9": [
-      "player"
-    ],
     "10": [
-      "src_juanword_juanword_java_cardlayout"
+      "src_juanword_battlepanel_java_datamanager"
     ],
     "11": [
-      "src_juanword_juanword_java_graphics"
+      "src_juanword_battlepanel_java_graphics"
     ],
     "12": [
-      "src_juanword_juanword_java_jpanel"
+      "src_juanword_battlepanel_java_jbutton"
     ],
     "13": [
+      "src_juanword_battlepanel_java_jlabel"
+    ],
+    "14": [
+      "src_juanword_battlepanel_java_override"
+    ],
+    "15": [
+      "src_juanword_battlepanel_java_player"
+    ],
+    "16": [
+      "src_juanword_juanword_java_cardlayout"
+    ],
+    "17": [
+      "src_juanword_juanword_java_datamanager"
+    ],
+    "18": [
+      "src_juanword_juanword_java_graphics"
+    ],
+    "19": [
+      "src_juanword_juanword_java_jbutton"
+    ],
+    "20": [
+      "src_juanword_juanword_java_jlabel"
+    ],
+    "21": [
+      "src_juanword_juanword_java_jpanel"
+    ],
+    "22": [
+      "src_juanword_juanword_java_override"
+    ],
+    "23": [
       "src_juanword_juanword_java_player"
     ]
   },
   "cohesion": {
-    "0": 0.10963455149501661,
-    "1": 0.10952380952380952,
-    "2": 0.1431451612903226,
-    "3": 0.11576354679802955,
-    "4": 0.18095238095238095,
-    "5": 0.17894736842105263,
-    "6": 0.3333333333333333,
-    "7": 1.0,
-    "8": 1.0,
+    "0": 0.09142857142857143,
+    "1": 0.10963455149501661,
+    "2": 0.10952380952380952,
+    "3": 0.1592741935483871,
+    "4": 0.12873563218390804,
+    "5": 0.18095238095238095,
+    "6": 0.17894736842105263,
+    "7": 0.3333333333333333,
+    "8": 0.3333333333333333,
     "9": 1.0,
     "10": 1.0,
     "11": 1.0,
     "12": 1.0,
-    "13": 1.0
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0
   },
   "gods": [
+    {
+      "id": "src_juanword_battlepanel_battlepanel",
+      "label": "BattlePanel",
+      "degree": 40
+    },
     {
       "id": "src_juanword_datamanager_datamanager",
       "label": "DataManager",
@@ -250,7 +351,7 @@
     {
       "id": "src_juanword_juanword_juanword",
       "label": "JuanWord",
-      "degree": 28
+      "degree": 32
     },
     {
       "id": "for_skeleton_additional_classes_juanwordapp_juanwordapp",
@@ -273,23 +374,18 @@
       "degree": 10
     },
     {
-      "id": "src_juanword_player_player",
-      "label": "Player",
+      "id": "src_juanword_battlepanel_lettertilebutton",
+      "label": "LetterTileButton",
+      "degree": 9
+    },
+    {
+      "id": "src_juanword_battlepanel_difficultysetting",
+      "label": "DifficultySetting",
       "degree": 8
     },
     {
       "id": "for_skeleton_additional_classes_mainmenupanel_mainmenupanel",
       "label": "MainMenuPanel",
-      "degree": 7
-    },
-    {
-      "id": "for_skeleton_additional_classes_resultpanel_resultpanel",
-      "label": "ResultPanel",
-      "degree": 7
-    },
-    {
-      "id": "for_skeleton_additional_classes_battlepanel_spritepanel",
-      "label": "SpritePanel",
       "degree": 7
     }
   ],
@@ -328,22 +424,22 @@
       "why": "bridges separate communities"
     },
     {
-      "source": "JuanWord",
-      "target": "Player",
-      "source_files": [
-        "src/juanword/JuanWord.java",
-        "src/juanword/Player.java"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities"
-    },
-    {
       "source": "JuanWordApp",
       "target": "MainMenuPanel",
       "source_files": [
         "for skeleton additional classes/JuanWordApp.java",
         "for skeleton additional classes/MainMenuPanel.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "cross-file semantic connection"
+    },
+    {
+      "source": "JuanWordApp",
+      "target": "ResultPanel",
+      "source_files": [
+        "for skeleton additional classes/JuanWordApp.java",
+        "for skeleton additional classes/ResultPanel.java"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",

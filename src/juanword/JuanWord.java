@@ -13,10 +13,10 @@ public class JuanWord extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel mainContainer;
-    private Image backgroundImage;
-    private Cursor customCursor;
+    Image backgroundImage;
+    Cursor customCursor;
     private final DataManager dataManager = new DataManager();
-    private Player currentPlayer;
+    Player currentPlayer;
 
     // Top-left Player Card components
     private JLabel playerNameLabel;
@@ -26,11 +26,24 @@ public class JuanWord extends JFrame {
     // Menu buttons
     private JButton continueButton;
 
+    // Battle Panel
+    private BattlePanel battlePanel;
+
     public JuanWord() {
         setTitle("Juan Word");
         setSize(960, 540); // 16:9 aspect ratio
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null); // Center window on screen
+
+        // Save game state when closing via window 'X' or JVM shutdown
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                saveGameOnExit();
+                System.exit(0);
+            }
+        });
+        Runtime.getRuntime().addShutdownHook(new Thread(this::saveGameOnExit));
 
         // Setup custom game cursor
         try {
@@ -54,12 +67,15 @@ public class JuanWord extends JFrame {
         // Periodic check to keep Continue button active state fresh
         new Timer(1500, e -> updateContinueButton()).start();
 
-        // CardLayout allows switching between screens (Start Screen, Map Select, etc.)
+        // CardLayout allows switching between screens (Start Screen, Map Select, Battle, etc.)
         cardLayout = new CardLayout();
         mainContainer = new JPanel(cardLayout);
 
+        battlePanel = new BattlePanel(this, dataManager);
+
         mainContainer.add(createStartScreen(), "START");
         mainContainer.add(createMapSelectScreen(), "MAP_SELECT");
+        mainContainer.add(battlePanel, "BATTLE");
 
         add(mainContainer);
     }
@@ -121,7 +137,10 @@ public class JuanWord extends JFrame {
         // Exit button (plain button for exiting the game)
         JButton exitButton = new JButton("EXIT");
         stylePlainMenuButton(exitButton);
-        exitButton.addActionListener(e -> System.exit(0));
+        exitButton.addActionListener(e -> {
+            saveGameOnExit();
+            System.exit(0);
+        });
 
         // Stack buttons vertically
         JPanel buttonPanel = new JPanel();
@@ -178,6 +197,13 @@ public class JuanWord extends JFrame {
             backButton.setCursor(customCursor);
         }
         backButton.addActionListener(e -> {
+            if (currentPlayer != null) {
+                Player fresh = dataManager.loadPlayer(currentPlayer.playerId);
+                if (fresh != null) {
+                    currentPlayer = fresh;
+                }
+            }
+            updatePlayerCard();
             updateContinueButton();
             cardLayout.show(mainContainer, "START");
         });
@@ -290,9 +316,7 @@ public class JuanWord extends JFrame {
                     updatePlayerCard();
                     updateContinueButton();
                 }
-                Player p = currentPlayer;
-                String pInfo = (p != null) ? "\nPlayer: " + p.playerName + " (Stage " + p.currentStage + ", Coins: " + p.coins + ")" : "";
-                JOptionPane.showMessageDialog(this, "Nagsugod na ang Juan Word!\n\nMap: " + mapName + " (Stage " + stageNum + ")\nDifficulty: " + diffName + pInfo);
+                startBattle(mapName, stageNum, diffName);
             });
 
             buttonsPanel.add(diffBtn);
@@ -430,8 +454,8 @@ public class JuanWord extends JFrame {
         };
         card.setOpaque(false);
         card.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 14));
-        card.setPreferredSize(new Dimension(210, 48));
-        card.setMaximumSize(new Dimension(220, 50));
+        card.setPreferredSize(new Dimension(230, 48));
+        card.setMaximumSize(new Dimension(240, 50));
         if (customCursor != null) {
             card.setCursor(customCursor);
         }
@@ -488,7 +512,7 @@ public class JuanWord extends JFrame {
         if (playerNameLabel == null || playerInfoLabel == null) return;
         if (currentPlayer != null) {
             playerNameLabel.setText(currentPlayer.playerName);
-            playerInfoLabel.setText("Stage " + currentPlayer.currentStage + " • " + currentPlayer.coins + " Coins ▾");
+            playerInfoLabel.setText("Stage " + currentPlayer.currentStage + " • HP " + currentPlayer.currentHealth + "/" + currentPlayer.maxHealth + " • " + currentPlayer.coins + "c ▾");
         } else {
             playerNameLabel.setText("Walay Player");
             playerInfoLabel.setText("Pilia o Paghimo ▾");
@@ -568,7 +592,44 @@ public class JuanWord extends JFrame {
             }
         }
         if (!hasActiveGame(currentPlayer)) return;
+        // Resume directly into active battle (San Pedro Cathedral)
+        startBattle("San Pedro Cathedral", currentPlayer.currentStage, "Sakto");
+    }
+
+    public void startBattle(String mapName, int stageNum, String diffName) {
+        if (currentPlayer != null) {
+            Player fresh = dataManager.loadPlayer(currentPlayer.playerId);
+            if (fresh != null) {
+                currentPlayer = fresh;
+            }
+        }
+        battlePanel.setupBattle(currentPlayer, mapName, stageNum, diffName);
+        cardLayout.show(mainContainer, "BATTLE");
+    }
+
+    public void returnToMapSelect() {
+        if (battlePanel != null) {
+            battlePanel.saveHealth();
+        }
+        if (currentPlayer != null) {
+            Player fresh = dataManager.loadPlayer(currentPlayer.playerId);
+            if (fresh != null) {
+                currentPlayer = fresh;
+            }
+        }
         cardLayout.show(mainContainer, "MAP_SELECT");
+        updatePlayerCard();
+        updateContinueButton();
+    }
+
+    public void saveGameOnExit() {
+        if (battlePanel != null) {
+            battlePanel.saveHealth();
+        }
+        if (currentPlayer != null) {
+            currentPlayer.lastSaved = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            dataManager.savePlayer(currentPlayer);
+        }
     }
 
     // Helper method to style plain text buttons consistently
@@ -792,7 +853,7 @@ public class JuanWord extends JFrame {
         }
 
         String lastTime = (p.lastSaved != null && !p.lastSaved.isEmpty()) ? p.lastSaved : "Bag-o";
-        JLabel statsLbl = new JLabel("Stage " + p.currentStage + " (Round " + p.currentRound + ") • Score: " + p.score + " • Coins: " + p.coins + " • " + lastTime);
+        JLabel statsLbl = new JLabel("Stage " + p.currentStage + " (Round " + p.currentRound + ") • HP: " + p.currentHealth + "/" + p.maxHealth + " • Coins: " + p.coins + " • " + lastTime);
         statsLbl.setFont(new Font("Arial", Font.PLAIN, 11));
         statsLbl.setForeground(new Color(90, 95, 110));
 
@@ -850,7 +911,7 @@ public class JuanWord extends JFrame {
     }
 
     // Helper method to load images safely from root or classpath
-    private Image loadGameImage(String filename) {
+    public Image loadGameImage(String filename) {
         try {
             File f = new File(filename);
             if (f.exists()) {
