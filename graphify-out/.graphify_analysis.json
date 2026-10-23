@@ -1,0 +1,41 @@
+{
+  "communities": {
+    "0": [
+      "jframe",
+      "src_juanword_juanword_juanword",
+      "src_juanword_juanword_juanword_juanword",
+      "src_juanword_juanword_juanword_main"
+    ],
+    "1": [
+      "awt",
+      "src_juanword_juanword",
+      "swing"
+    ],
+    "2": [
+      "agents_scripts_load_memory",
+      "agents_scripts_load_memory_sh__entry"
+    ]
+  },
+  "cohesion": {
+    "0": 0.6666666666666666,
+    "1": 0.6666666666666666,
+    "2": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_juanword_juanword_juanword",
+      "label": "JuanWord",
+      "degree": 4
+    },
+    {
+      "id": "agents_scripts_load_memory_sh__entry",
+      "label": "load-memory.sh script",
+      "degree": 1
+    }
+  ],
+  "surprises": [],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
