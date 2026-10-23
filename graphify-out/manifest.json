@@ -1,0 +1,20 @@
+{
+  ".agents/hooks.json": {
+    "mtime": 1792721763.626319,
+    "seen": 1792721765.149784,
+    "ast_hash": "059927090d845778b18f11de75f9af16",
+    "semantic_hash": "059927090d845778b18f11de75f9af16"
+  },
+  ".agents/scripts/load-memory.sh": {
+    "mtime": 1792721763.6291087,
+    "seen": 1792721765.149788,
+    "ast_hash": "fe0f876b0221c3546e5e216878b94003",
+    "semantic_hash": "fe0f876b0221c3546e5e216878b94003"
+  },
+  "src/juanword/JuanWord.java": {
+    "mtime": 1792722143.254986,
+    "seen": 1792722363.000983,
+    "ast_hash": "0da5ee9906bd1d19a9db1c0f7e9a154a",
+    "semantic_hash": "0da5ee9906bd1d19a9db1c0f7e9a154a"
+  }
+}

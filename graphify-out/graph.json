@@ -1,0 +1,266 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "id": "src_juanword_juanword_juanword",
+      "label": "JuanWord",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "juanword",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_juanword_juanword_juanword_juanword",
+      "label": ".JuanWord()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "setLayout",
+            "receiver_type": "JPanel",
+            "lang": "java",
+            "line": "L26"
+          },
+          {
+            "callee": "setBorderPainted",
+            "receiver_type": "JButton",
+            "lang": "java",
+            "line": "L30"
+          },
+          {
+            "callee": "setContentAreaFilled",
+            "receiver_type": "JButton",
+            "lang": "java",
+            "line": "L31"
+          },
+          {
+            "callee": "setFocusPainted",
+            "receiver_type": "JButton",
+            "lang": "java",
+            "line": "L32"
+          },
+          {
+            "callee": "setCursor",
+            "receiver_type": "JButton",
+            "lang": "java",
+            "line": "L33"
+          },
+          {
+            "callee": "addActionListener",
+            "receiver_type": "JButton",
+            "lang": "java",
+            "line": "L36"
+          },
+          {
+            "callee": "showMessageDialog",
+            "receiver_type": "JOptionPane",
+            "lang": "java",
+            "line": "L37"
+          },
+          {
+            "callee": "add",
+            "receiver_type": "JPanel",
+            "lang": "java",
+            "line": "L40"
+          }
+        ]
+      },
+      "norm_label": ".juanword()",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_juanword_juanword_juanword_main",
+      "label": ".main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "metadata": {
+        "unresolved_calls": [
+          {
+            "callee": "invokeLater",
+            "receiver_type": "SwingUtilities",
+            "lang": "java",
+            "line": "L45"
+          }
+        ]
+      },
+      "norm_label": ".main()",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L44"
+    },
+    {
+      "id": "jframe",
+      "label": "JFrame",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "jframe",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_juanword_juanword",
+      "label": "JuanWord.java",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "juanword.java",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_scripts_load_memory",
+      "label": "load-memory.sh",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "file"
+      },
+      "norm_label": "load-memory.sh",
+      "source_file": ".agents/scripts/load-memory.sh",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_scripts_load_memory_sh__entry",
+      "label": "load-memory.sh script",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "language": "bash",
+        "kind": "bash_entrypoint"
+      },
+      "norm_label": "load-memory.sh script",
+      "source_file": ".agents/scripts/load-memory.sh",
+      "source_location": "L1"
+    },
+    {
+      "id": "awt",
+      "label": "awt",
+      "community": 1,
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "awt",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "swing",
+      "label": "swing",
+      "community": 1,
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "swing",
+      "source_file": "",
+      "type": "external"
+    }
+  ],
+  "links": [
+    {
+      "source": "src_juanword_juanword_juanword_main",
+      "target": "src_juanword_juanword_juanword_juanword",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "src_juanword_juanword",
+      "target": "swing",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_juanword_juanword",
+      "target": "awt",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_scripts_load_memory",
+      "target": "agents_scripts_load_memory_sh__entry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/scripts/load-memory.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_juanword_juanword",
+      "target": "src_juanword_juanword_juanword",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_juanword_juanword_juanword",
+      "target": "jframe",
+      "relation": "inherits",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_juanword_juanword_juanword",
+      "target": "src_juanword_juanword_juanword_main",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "src_juanword_juanword_juanword",
+      "target": "src_juanword_juanword_juanword_juanword",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/juanword/JuanWord.java",
+      "source_location": "L8",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "63ce3ee48d851d940b58a0b4f04e3ea5fb9f9e2e"
+}
