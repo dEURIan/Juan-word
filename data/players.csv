@@ -1,3 +1,3 @@
-playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved
-P001,Juan,1,1,500,40,20,82,100,2026-10-23 18:00
-P002,Gudo,2,1,0,0,0,100,100,2026-10-23 18:01
+playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved,savedTiles,savedDifficulty,savedEnemyHealth,savedMap,unlockedSayonStage,unlockedSaktoStage,unlockedLisodStage
+P001,Juan,2,1,1180,100,55,100,100,2026-10-30 19:04,L:2:STANDARD;W:4:HEAL;I:1:STANDARD;N:2:STANDARD;I:1:STANDARD;L:4:GOLD;L:2:STANDARD;I:1:STANDARD;K:2:STANDARD;G:2:STANDARD;B:2:STANDARD;L:2:STANDARD;N:2:STANDARD;A:1:STANDARD;I:1:STANDARD;T:2:STANDARD,Sakto,95,San Pedro Cathedral,1,2,1
+P002,Gudo,2,1,280,80,60,95,100,2026-10-30 18:40,K:2:STANDARD;A:1:STANDARD;R:3:STANDARD;S:2:STANDARD;R:3:STANDARD;S:2:STANDARD;R:3:STANDARD;S:2:STANDARD;S:2:STANDARD;U:1:STANDARD;S:2:STANDARD;T:2:STANDARD;I:1:STANDARD;K:2:HEAL;P:6:GOLD;A:1:STANDARD,Lisod,74,San Pedro Cathedral,2,2,2

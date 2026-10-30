@@ -43,7 +43,7 @@ public class DataManager {
     public static final Path DICTIONARY = DATA_DIR.resolve("cebuano_dictionary_all_entries.csv");
 
     // Standard CSV headers
-    private static final String PLAYERS_HEADER = "playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved";
+    private static final String PLAYERS_HEADER = "playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved,savedTiles,savedDifficulty,savedEnemyHealth,savedMap,unlockedSayonStage,unlockedSaktoStage,unlockedLisodStage";
     private static final String UNLOCKS_HEADER = "playerId,stage1Unlocked,stage2Unlocked,stage3Unlocked,stage4Unlocked,tikbalangDefeated,kapreDefeated,manananggalDefeated,aswangDefeated";
     private static final String SETTINGS_HEADER = "playerId,musicOn,sfxOn,volume";
     private static final String HIGHSCORES_HEADER = "playerName,score,stageReached,date";
@@ -51,6 +51,24 @@ public class DataManager {
 
     // In-memory cache for valid dictionary words (O(1) lookup)
     private Set<String> dictionaryWords = null;
+
+    // SINGLETON PATTERN NI SYA SIR GUDO
+    private static volatile DataManager instance;
+
+    /**
+     * Retrieves the canonical Singleton instance of DataManager.
+     * Uses double-checked locking for thread safety and performance.
+     */
+    public static DataManager getInstance() {
+        if (instance == null) {
+            synchronized (DataManager.class) {
+                if (instance == null) {
+                    instance = new DataManager();
+                }
+            }
+        }
+        return instance;
+    }
 
     public DataManager() {
         ensureFile(PLAYERS, PLAYERS_HEADER);
