@@ -131,6 +131,7 @@ public class TestDesignPatterns {
 
         assert panel.getCurrentEnemy() instanceof AlviolaEnemy : "Panel should have loaded Alviola for stage 2";
         assert panel.getCurrentEnemy().getCurHp() == 40 : "Panel should have restored saved enemy HP 40";
+        DataManager.getInstance().deletePlayer("P999");
         System.out.println("  ✓ BattlePanel.setupBattle(BattleSession) successfully consumed Builder product.");
     }
 
@@ -162,14 +163,14 @@ public class TestDesignPatterns {
         // 4. Test onWordSubmitted effect with BattlePanel
         JuanWord app = new JuanWord();
         BattlePanel panel = new BattlePanel(app, DataManager.getInstance());
-        Player player = new Player("P001", "Juan");
+        Player player = new Player("P_TEST_DEC", "TestDec");
         player.currentHealth = 50; // Damaged Juan
         player.maxHealth = 100;
         panel.setupBattle(player, "San Pedro Cathedral", 1, "Sakto");
 
         heal.onWordSubmitted(player, panel);
-        // Juan's HP should increase from 50 to 58 (+8 HP)
-        System.out.println("  ✓ HealingTileDecorator.onWordSubmitted healed Juan to " + player.currentHealth + " HP");
+        // Player's HP should increase from 50 to 58 (+8 HP)
+        System.out.println("  ✓ HealingTileDecorator.onWordSubmitted healed Player to " + player.currentHealth + " HP");
 
         // 5. Test tile serialization and restoration with Decorator tags
         String testTiles = "A:2:GOLD;B:1:HEAL;C:1:STANDARD;D:2:STANDARD;"
@@ -191,6 +192,7 @@ public class TestDesignPatterns {
         gold.renderDecoratorBadge(g2, 0, 0, 50, 50);
         heal.renderDecoratorBadge(g2, 0, 0, 50, 50);
         g2.dispose();
+        DataManager.getInstance().deletePlayer("P_TEST_DEC");
         System.out.println("  ✓ Decorator badge rendering (Gold star, Healing heart) verified successfully.");
     }
 }

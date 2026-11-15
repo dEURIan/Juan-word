@@ -28,6 +28,9 @@ public class Player {
     public int unlockedSaktoStage = 1;
     public int unlockedLisodStage = 1;
 
+    // Ordered Map progression (1: Blue Building [Easy], 2: Davao Museum [Medium], 3: San Pedro [Hard], 4: Mt Apo [Extreme])
+    public int unlockedMapIndex = 1;
+
     public Player(String playerId, String playerName) {
         this.playerId = playerId;
         this.playerName = playerName;
@@ -36,6 +39,7 @@ public class Player {
         this.unlockedSayonStage = 1;
         this.unlockedSaktoStage = 1;
         this.unlockedLisodStage = 1;
+        this.unlockedMapIndex = 1;
     }
 
     /**
@@ -93,6 +97,38 @@ public class Player {
         return getMaxUnlockedStage(difficulty) >= 3;
     }
 
+    /** Returns true if the map at the given 1-based index is unlocked. */
+    public boolean isMapUnlocked(int mapIdx) {
+        return unlockedMapIndex >= mapIdx;
+    }
+
+    /** Returns true if the named map is unlocked (1: Blue Building, 2: Davao Museum, 3: San Pedro, 4: Mt Apo). */
+    public boolean isMapUnlocked(String mapName) {
+        if (mapName == null) return false;
+        String m = mapName.trim().toLowerCase();
+        if (m.contains("blue") || m.contains("building")) return unlockedMapIndex >= 1;
+        if (m.contains("museum") || m.contains("durian")) return unlockedMapIndex >= 2;
+        if (m.contains("san pedro") || m.contains("pedro")) return unlockedMapIndex >= 3;
+        if (m.contains("apo")) return unlockedMapIndex >= 4;
+        return false;
+    }
+
+    /** Unlocks up to the specified map index (never decreases). */
+    public void unlockNextMap(int mapIndex) {
+        this.unlockedMapIndex = Math.max(this.unlockedMapIndex, mapIndex);
+    }
+
+    /** Returns the predefined difficulty for a map: Blue Building = Sayon (Easy), Davao Museum = Sakto (Medium), San Pedro = Lisod (Hard), Mt Apo = Extreme. */
+    public static String getPredefinedDifficultyForMap(String mapName) {
+        if (mapName == null) return "Sayon";
+        String m = mapName.trim().toLowerCase();
+        if (m.contains("blue") || m.contains("building")) return "Sayon";
+        if (m.contains("museum") || m.contains("durian")) return "Sakto";
+        if (m.contains("san pedro") || m.contains("pedro")) return "Lisod";
+        if (m.contains("apo")) return "Extreme";
+        return "Sayon";
+    }
+
     /** Converts this player into a single CSV line. */
     public String toCsv() {
         return String.join(",",
@@ -107,12 +143,13 @@ public class Player {
                 String.valueOf(maxHealth),
                 lastSaved,
                 (savedTiles != null ? savedTiles : ""),
-                (savedDifficulty != null ? savedDifficulty : "Sakto"),
+                (savedDifficulty != null ? savedDifficulty : "Sayon"),
                 String.valueOf(savedEnemyHealth),
-                (savedMap != null ? savedMap : "San Pedro Cathedral"),
+                (savedMap != null ? savedMap : "Blue Building"),
                 String.valueOf(unlockedSayonStage),
                 String.valueOf(unlockedSaktoStage),
-                String.valueOf(unlockedLisodStage)
+                String.valueOf(unlockedLisodStage),
+                String.valueOf(unlockedMapIndex)
         );
     }
 
@@ -158,6 +195,11 @@ public class Player {
             } else {
                 p.unlockedLisodStage = Math.max(1, p.currentStage);
             }
+            if (f.length >= 18 && !f[17].trim().isEmpty()) {
+                try { p.unlockedMapIndex = Integer.parseInt(f[17].trim()); } catch (Exception ignored) {}
+            } else {
+                p.unlockedMapIndex = 1;
+            }
             return p;
         } catch (NumberFormatException e) {
             return null;
@@ -172,6 +214,7 @@ public class Player {
                 + ", HP " + currentHealth + "/" + maxHealth
                 + ", Saved: " + lastSaved
                 + ", Unlocks: [Sayon: " + unlockedSayonStage + ", Sakto: " + unlockedSaktoStage + ", Lisod: " + unlockedLisodStage + "]"
+                + ", UnlockedMap: " + unlockedMapIndex
                 + ", Tiles: " + (savedTiles.isEmpty() ? "None" : savedTiles);
     }
 }

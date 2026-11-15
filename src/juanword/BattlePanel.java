@@ -3,6 +3,7 @@ package juanword;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,8 @@ public class BattlePanel extends JPanel {
     public enum DifficultySetting {
         SAYON("Sayon", GamePalette.FOREST_GREEN, 50, 6, 1.0, 1.0, false, 0),
         SAKTO("Sakto", GamePalette.PUMPKIN_ORANGE, 70, 10, 1.5, 1.5, false, 12),
-        LISOD("Lisod", GamePalette.CRIMSON_RED, 110, 15, 2.5, 2.5, true, 25);
+        LISOD("Lisod", GamePalette.CRIMSON_RED, 110, 15, 2.5, 2.5, true, 25),
+        EXTREME("Extreme", new Color(160, 32, 240), 160, 22, 4.0, 4.0, true, 20);
 
         public final String label;
         public final Color badgeColor;
@@ -47,8 +49,9 @@ public class BattlePanel extends JPanel {
         }
 
         public static DifficultySetting fromString(String name) {
-            if ("Lisod".equalsIgnoreCase(name)) return LISOD;
-            if ("Sakto".equalsIgnoreCase(name)) return SAKTO;
+            if ("Extreme".equalsIgnoreCase(name) || "Kinalisoran".equalsIgnoreCase(name)) return EXTREME;
+            if ("Lisod".equalsIgnoreCase(name) || "Hard".equalsIgnoreCase(name)) return LISOD;
+            if ("Sakto".equalsIgnoreCase(name) || "Medium".equalsIgnoreCase(name)) return SAKTO;
             return SAYON;
         }
 
@@ -58,6 +61,11 @@ public class BattlePanel extends JPanel {
          */
         public double getLengthMultiplier(int length) {
             switch (this) {
+                case EXTREME:
+                    if (length <= 2) return 0.10;
+                    if (length == 3) return 0.25;
+                    if (length == 4) return 0.70;
+                    return 1.25;
                 case LISOD:
                     // Hard: Shorter words are heavily penalized!
                     if (length <= 2) return 0.20;
@@ -114,6 +122,10 @@ public class BattlePanel extends JPanel {
         return currentEnemy;
     }
 
+    public JuanAvatarPanel getJuanAvatarPanel() {
+        return juanAvatarPanel;
+    }
+
     // Compatibility aliases for tests & reflection
     private int dizonMaxHp = 70;
     private int dizonCurHp = 70;
@@ -163,15 +175,89 @@ public class BattlePanel extends JPanel {
     private FlatGameButton clearButton;
     private FlatGameButton shuffleButton;
 
-    // Background images (San Pedro Cathedral)
+    // Responsive Layout & Scaling Fields
+    private FlatGameButton backBtn;
+    private FlatGameButton fullscreenBtn;
+    private JPanel arenaCard;
+    private JPanel juanSide;
+    private JLabel juanTitle;
+    private JPanel dizonSide;
+    private JPanel centerSide;
+    private JPanel logCard;
+    private JPanel actionRow;
+    private JPanel damagePreviewCard;
+    private JPanel bottomPanel;
+    private JPanel gridPanel;
+    private JPanel leftUtils;
+    private JPanel rightUtils;
+    private JPanel leftWrapper;
+    private JPanel rightWrapper;
+    private JPanel tilesRow;
+    private JLabel bonusTip;
+
+    private float currentResponsiveScale = 1.0f;
+    private int currentTileSize = 52;
+    private int lastLayoutW = -1;
+    private int lastLayoutH = -1;
+
+    // Background images (Sky, Indigenous Border Frame, Landmarks)
+    private Image skyBgImage;
+    private Image indigFrameImage;
     private Image sanPedroBgImage;
     private Image sanPedroPhoto;
+    private Image blueBuildingBgImage;
+    private Image durianMuseumBgImage;
+    private Image mtApoBgImage;
+
+    // High-resolution letter tile assets (A-Z)
+    private final Map<Character, BufferedImage> letterTileImages = new HashMap<>();
 
     public BattlePanel(JuanWord app, DataManager dm) {
         this.app = app;
         this.dm = (dm != null) ? dm : DataManager.getInstance();
         loadLetterData();
+        preloadLetterTileImages();
         buildUI();
+    }
+
+    private void preloadLetterTileImages() {
+        if (app == null) return;
+        for (char c = 'A'; c <= 'Z'; c++) {
+            Image raw = app.loadGameImage("letters/" + c + ".png");
+            if (raw == null) raw = app.loadGameImage("letters/" + Character.toLowerCase(c) + ".png");
+            if (raw == null) raw = app.loadGameImage("letters/" + ((c - 'A') + 1) + ".png");
+            if (raw != null) {
+                letterTileImages.put(c, toBufferedImage(raw));
+            }
+        }
+    }
+
+    public BufferedImage getLetterTileImage(char letter) {
+        char upper = Character.toUpperCase(letter);
+        BufferedImage img = letterTileImages.get(upper);
+        if (img == null && app != null) {
+            Image raw = app.loadGameImage("letters/" + upper + ".png");
+            if (raw == null) raw = app.loadGameImage("letters/" + Character.toLowerCase(upper) + ".png");
+            if (raw == null) raw = app.loadGameImage("letters/" + ((upper - 'A') + 1) + ".png");
+            if (raw != null) {
+                img = toBufferedImage(raw);
+                letterTileImages.put(upper, img);
+            }
+        }
+        return img;
+    }
+
+    private BufferedImage toBufferedImage(Image img) {
+        if (img == null) return null;
+        if (img instanceof BufferedImage) return (BufferedImage) img;
+        int w = img.getWidth(null);
+        int h = img.getHeight(null);
+        if (w <= 0 || h <= 0) return null;
+        BufferedImage bImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = bImg.createGraphics();
+        g2.drawImage(img, 0, 0, null);
+        g2.dispose();
+        return bImg;
     }
 
     private void loadLetterData() {
@@ -320,12 +406,26 @@ public class BattlePanel extends JPanel {
         }
     }
 
-    private void buildUI() {
-        // Load San Pedro Cathedral backgrounds (illustrated game art + authentic photo fallback)
-        sanPedroBgImage = app.loadGameImage("san_pedro_cathedral_bg.png");
-        sanPedroPhoto = app.loadGameImage("san_pedro_cathedral_photo.jpg");
+    public void dismissTitleCardForTesting() {
+        if (titleCardOverlay != null) {
+            titleCardOverlay.dismiss();
+        }
+    }
 
-        // Battle content layout with San Pedro Cathedral background
+    private void buildUI() {
+        // Load Stage & Map backgrounds (Clouds bg.png, Indigenous Border indigframe.png, and Landmark Icons)
+        skyBgImage = app.loadGameImage("bg.png");
+        indigFrameImage = app.loadGameImage("indigframe.png");
+        blueBuildingBgImage = app.loadGameImage("bluebuilding.png");
+        if (blueBuildingBgImage == null) blueBuildingBgImage = app.loadGameImage("Blue Building.png");
+        durianMuseumBgImage = app.loadGameImage("durianmuseum.png");
+        if (durianMuseumBgImage == null) durianMuseumBgImage = app.loadGameImage("durianmuseumwithbg.png");
+        sanPedroBgImage = app.loadGameImage("sanpedro.png");
+        if (sanPedroBgImage == null) sanPedroBgImage = app.loadGameImage("san_pedro_cathedral_bg.png");
+        mtApoBgImage = app.loadGameImage("mtapo.png");
+        if (mtApoBgImage == null) mtApoBgImage = app.loadGameImage("mtapowithbg.png");
+
+        // Battle content layout with dynamic map background
         battleContentPanel = new JPanel(new BorderLayout(0, 6)) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -337,43 +437,63 @@ public class BattlePanel extends JPanel {
                 int w = getWidth();
                 int h = getHeight();
 
-                // Solid base: Midnight Navy
-                g2.setColor(GamePalette.MIDNIGHT_NAVY);
-                g2.fillRect(0, 0, w, h);
+                // 1. Layer 1: Cloud & Sky Background (bg.png)
+                if (skyBgImage != null) {
+                    g2.drawImage(skyBgImage, 0, 0, w, h, null);
+                } else {
+                    g2.setColor(GamePalette.MIDNIGHT_NAVY);
+                    g2.fillRect(0, 0, w, h);
+                }
 
-                // San Pedro Cathedral background image
-                Image bg = (sanPedroBgImage != null) ? sanPedroBgImage : sanPedroPhoto;
-                if (bg != null && mapName != null && mapName.toLowerCase().contains("san pedro")) {
-                    int imgW = bg.getWidth(null);
-                    int imgH = bg.getHeight(null);
+                // 2. Layer 2: Landmark Icon of Current Level
+                Image icon = null;
+                String mLower = (mapName != null) ? mapName.toLowerCase() : "";
+                if (mLower.contains("blue") || mLower.contains("building")) {
+                    icon = blueBuildingBgImage;
+                } else if (mLower.contains("museum") || mLower.contains("durian")) {
+                    icon = durianMuseumBgImage;
+                } else if (mLower.contains("apo")) {
+                    icon = mtApoBgImage;
+                } else {
+                    icon = (sanPedroBgImage != null) ? sanPedroBgImage : sanPedroPhoto;
+                }
+
+                if (icon != null) {
+                    int imgW = icon.getWidth(null);
+                    int imgH = icon.getHeight(null);
                     if (imgW > 0 && imgH > 0) {
-                        double scale = Math.max((double) w / imgW, (double) h / imgH);
+                        double scale = Math.min((double) (w - 100) / imgW, (double) (h - 60) / imgH) * 1.08;
                         int drawW = (int) Math.round(imgW * scale);
                         int drawH = (int) Math.round(imgH * scale);
                         int drawX = (w - drawW) / 2;
-                        int drawY = (h - drawH) / 2;
-                        g2.drawImage(bg, drawX, drawY, drawW, drawH, null);
+                        int drawY = h - drawH - 22; // Anchored near bottom inside frame
+                        g2.drawImage(icon, drawX, drawY, drawW, drawH, null);
                     }
-
-                    // Scrim overlay: soft translucent Midnight Navy so the cathedral is clearly visible while keeping text sharp
-                    g2.setColor(new Color(1, 0, 72, 75));
-                    g2.fillRect(0, 0, w, h);
                 }
+
+                // 3. Layer 3: Indigenous Border Frame (indigframe.png)
+                if (indigFrameImage != null) {
+                    g2.drawImage(indigFrameImage, 0, 0, w, h, null);
+                }
+
+                // 4. Scrim overlay: soft translucent Midnight Navy so combat arena & text remain sharp
+                g2.setColor(new Color(12, 16, 52, 95));
+                g2.fillRect(0, 0, w, h);
 
                 g2.dispose();
             }
         };
         battleContentPanel.setOpaque(false);
-        battleContentPanel.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
+        battleContentPanel.setBorder(BorderFactory.createEmptyBorder(14, 20, 14, 20));
 
         // 1. TOP HEADER BAR
         JPanel headerBar = new JPanel(new BorderLayout(12, 0));
         headerBar.setOpaque(false);
 
-        FlatGameButton backBtn = new FlatGameButton("← Balik sa Mapa", GamePalette.CERULEAN, GamePalette.MIDNIGHT_NAVY, GamePalette.SKY_BLUE);
+        backBtn = new FlatGameButton("← Balik sa Mapa", GamePalette.CERULEAN, GamePalette.MIDNIGHT_NAVY, GamePalette.SKY_BLUE);
         backBtn.setCornerRadius(10);
         backBtn.setPreferredSize(new Dimension(145, 34));
-        if (app.customCursor != null) backBtn.setCursor(app.customCursor);
+        if (app != null && app.customCursor != null) backBtn.setCursor(app.customCursor);
         backBtn.addActionListener(e -> exitBattle());
 
         JPanel centerHeader = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
@@ -397,9 +517,27 @@ public class BattlePanel extends JPanel {
         pacingInfoLabel.setFont(new Font("Arial", Font.BOLD, 13));
         pacingInfoLabel.setForeground(GamePalette.SKY);
 
+        fullscreenBtn = new FlatGameButton(app != null && app.isFullScreen() ? "✕⛶" : "⛶", GamePalette.DUSK_NAVY, GamePalette.MIDNIGHT_NAVY, GamePalette.SKY_BLUE);
+        fullscreenBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        fullscreenBtn.setCornerRadius(8);
+        fullscreenBtn.setPreferredSize(new Dimension(38, 34));
+        fullscreenBtn.setToolTipText("Toggle Full Screen (F11 / Alt+Enter)");
+        if (app != null && app.customCursor != null) fullscreenBtn.setCursor(app.customCursor);
+        fullscreenBtn.addActionListener(e -> {
+            if (app != null) {
+                app.toggleFullScreen();
+                fullscreenBtn.setText(app.isFullScreen() ? "✕⛶" : "⛶");
+            }
+        });
+
+        JPanel rightHeader = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        rightHeader.setOpaque(false);
+        rightHeader.add(pacingInfoLabel);
+        rightHeader.add(fullscreenBtn);
+
         headerBar.add(backBtn, BorderLayout.WEST);
         headerBar.add(centerHeader, BorderLayout.CENTER);
-        headerBar.add(pacingInfoLabel, BorderLayout.EAST);
+        headerBar.add(rightHeader, BorderLayout.EAST);
         battleContentPanel.add(headerBar, BorderLayout.NORTH);
 
         // 2. CENTER: COMBAT ARENA (Juan vs Dizon / Alviola / Rola)
@@ -407,8 +545,8 @@ public class BattlePanel extends JPanel {
         battleContentPanel.add(arenaPanel, BorderLayout.CENTER);
 
         // 3. SOUTH: BOTTOM GAMEPLAY PANEL (Word Tray + Attack Button + Letter Tiles)
-        JPanel bottomPanel = createBottomPanel();
-        battleContentPanel.add(bottomPanel, BorderLayout.SOUTH);
+        JPanel bPanel = createBottomPanel();
+        battleContentPanel.add(bPanel, BorderLayout.SOUTH);
 
         // Layered Pane to host Battle Content (Layer 0) and Round Title Card Overlay (Layer 1)
         layeredPane = new JLayeredPane() {
@@ -416,11 +554,14 @@ public class BattlePanel extends JPanel {
             public void doLayout() {
                 int w = getWidth();
                 int h = getHeight();
+                updateResponsiveLayout(w, h);
                 if (battleContentPanel != null) {
                     battleContentPanel.setBounds(0, 0, w, h);
+                    battleContentPanel.doLayout();
                 }
                 if (titleCardOverlay != null) {
                     titleCardOverlay.setBounds(0, 0, w, h);
+                    titleCardOverlay.doLayout();
                 }
             }
         };
@@ -437,7 +578,7 @@ public class BattlePanel extends JPanel {
 
     // --- UPPER COMBAT ARENA ---
     private JPanel createArenaPanel() {
-        JPanel arenaCard = new JPanel(new BorderLayout(12, 0)) {
+        arenaCard = new JPanel(new BorderLayout(12, 0)) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -463,16 +604,19 @@ public class BattlePanel extends JPanel {
         arenaCard.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
         // LEFT FIGHTER: JUAN
-        JPanel juanSide = new JPanel(new BorderLayout(0, 4));
+        juanSide = new JPanel(new BorderLayout(0, 4));
         juanSide.setOpaque(false);
         juanSide.setPreferredSize(new Dimension(185, 160));
 
-        JLabel juanTitle = new JLabel("JUAN (Ikaw)", SwingConstants.CENTER);
+        juanTitle = new JLabel("JUAN (Ikaw)", SwingConstants.CENTER);
         juanTitle.setFont(new Font("Arial", Font.BOLD, 14));
         juanTitle.setForeground(GamePalette.CREAM);
 
-        Image sprite = app.loadGameImage("Main Character Idle_1.png");
-        juanAvatarPanel = new JuanAvatarPanel(sprite);
+        Image idleSprite = app.loadGameImage("maincharacteridle.png");
+        if (idleSprite == null) idleSprite = app.loadGameImage("Main Character Idle_1.png");
+        Image preAttackSprite = app.loadGameImage("maincharapreattack.png");
+        Image attackSprite = app.loadGameImage("maincharattack.png");
+        juanAvatarPanel = new JuanAvatarPanel(idleSprite, preAttackSprite, attackSprite);
 
         JPanel juanHpBox = new JPanel(new GridLayout(2, 1, 0, 3));
         juanHpBox.setOpaque(false);
@@ -497,11 +641,11 @@ public class BattlePanel extends JPanel {
         juanSide.add(juanBottom, BorderLayout.SOUTH);
 
         // CENTER: BOOKWORM COMBAT CENTER (Status Log, Popped Tiles Rack, Attack & Damage Preview)
-        JPanel centerSide = new JPanel(new BorderLayout(0, 4));
+        centerSide = new JPanel(new BorderLayout(0, 4));
         centerSide.setOpaque(false);
 
         // 1. TOP: Status Log Card (Height ~32px)
-        JPanel logCard = new JPanel(new BorderLayout());
+        logCard = new JPanel(new BorderLayout());
         logCard.setBackground(GamePalette.DUSK_NAVY);
         logCard.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(GamePalette.SKY_BLUE, 1, true),
@@ -521,10 +665,10 @@ public class BattlePanel extends JPanel {
         wordRack.add(poppedTilesContainer, BorderLayout.CENTER);
 
         // 3. BOTTOM: Damage Preview Card + Prominent Hero Attack Button (Height ~46px)
-        JPanel actionRow = new JPanel(new BorderLayout(8, 0));
+        actionRow = new JPanel(new BorderLayout(8, 0));
         actionRow.setOpaque(false);
 
-        JPanel damagePreviewCard = new JPanel(new BorderLayout(0, 0));
+        damagePreviewCard = new JPanel(new BorderLayout(0, 0));
         damagePreviewCard.setBackground(GamePalette.DUSK_NAVY);
         damagePreviewCard.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(GamePalette.SKY_BLUE, 1, true),
@@ -546,7 +690,7 @@ public class BattlePanel extends JPanel {
         centerSide.add(actionRow, BorderLayout.SOUTH);
 
         // RIGHT FIGHTER: DYNAMIC ENEMY (Dizon / Alviola / Rola)
-        JPanel dizonSide = new JPanel(new BorderLayout(0, 4));
+        dizonSide = new JPanel(new BorderLayout(0, 4));
         dizonSide.setOpaque(false);
         dizonSide.setPreferredSize(new Dimension(185, 160));
 
@@ -580,18 +724,19 @@ public class BattlePanel extends JPanel {
 
     // --- BOTTOM GAMEPLAY PANEL (Letter Tiles at Bottom + Utility Controls) ---
     private JPanel createBottomPanel() {
-        JPanel bottomContainer = new JPanel(new BorderLayout(0, 0));
-        bottomContainer.setOpaque(false);
-        bottomContainer.setBorder(BorderFactory.createEmptyBorder(2, 0, 4, 0));
+        bottomPanel = new JPanel(new BorderLayout(0, 0));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
 
-        // Letter Tiles at Bottom flanked by Backspace, Clear, Shuffle
-        JPanel tilesRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
-        tilesRow.setOpaque(false);
+        int tileSize = 52;
+        int gridGap = 6;
+        int gridW = 4 * tileSize + 3 * gridGap; // 226px
+        int gridH = 4 * tileSize + 3 * gridGap; // 226px
 
-        // Left Utility buttons
-        JPanel leftUtils = new JPanel(new GridLayout(2, 1, 0, 6));
+        // Left Utility buttons (← Back, ✕ Clear)
+        leftUtils = new JPanel(new GridLayout(2, 1, 0, 8));
         leftUtils.setOpaque(false);
-        leftUtils.setPreferredSize(new Dimension(110, 92));
+        leftUtils.setPreferredSize(new Dimension(112, 90));
 
         backspaceButton = new FlatGameButton("← Back", GamePalette.SEQUESTA, GamePalette.MIDNIGHT_NAVY, GamePalette.DUSK_NAVY);
         backspaceButton.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -609,20 +754,21 @@ public class BattlePanel extends JPanel {
         leftUtils.add(clearButton);
 
         // Center 4x4 Grid of 16 Letter Tiles at the bottom of the screen
-        JPanel gridPanel = new JPanel(new GridLayout(4, 4, 6, 5));
+        gridPanel = new JPanel(new GridLayout(4, 4, gridGap, gridGap));
         gridPanel.setOpaque(false);
-        gridPanel.setPreferredSize(new Dimension(256, 178));
+        gridPanel.setPreferredSize(new Dimension(gridW, gridH));
 
         for (int i = 0; i < 16; i++) {
             LetterTileButton tile = new LetterTileButton(i);
+            tile.setPreferredSize(new Dimension(tileSize, tileSize));
             tiles[i] = tile;
             gridPanel.add(tile);
         }
 
-        // Right Utility buttons & tip
-        JPanel rightUtils = new JPanel(new GridLayout(2, 1, 0, 6));
+        // Right Utility buttons & tip (Bag-o / Shuffle & 5+ Letter tip)
+        rightUtils = new JPanel(new GridLayout(2, 1, 0, 8));
         rightUtils.setOpaque(false);
-        rightUtils.setPreferredSize(new Dimension(120, 92));
+        rightUtils.setPreferredSize(new Dimension(112, 90));
 
         shuffleButton = new FlatGameButton("Bag-o", GamePalette.SEQUESTA, GamePalette.MIDNIGHT_NAVY, GamePalette.DUSK_NAVY);
         shuffleButton.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -631,18 +777,196 @@ public class BattlePanel extends JPanel {
         if (app.customCursor != null) shuffleButton.setCursor(app.customCursor);
         shuffleButton.addActionListener(e -> shuffleGrid());
 
-        JLabel bonusTip = new JLabel("<html><center><font color='#387940'><b>✓ 5+ Letra</b></font><br><font color='#9EE6FE'>Dako'g Bili!</font></center></html>", SwingConstants.CENTER);
+        bonusTip = new JLabel("<html><center><font color='#387940'><b>✓ 5+ Letra</b></font><br><font color='#9EE6FE'>Dako'g Bili!</font></center></html>", SwingConstants.CENTER);
         bonusTip.setFont(new Font("Arial", Font.PLAIN, 11));
 
         rightUtils.add(shuffleButton);
         rightUtils.add(bonusTip);
 
-        tilesRow.add(leftUtils);
-        tilesRow.add(gridPanel);
-        tilesRow.add(rightUtils);
+        // Symmetrical wrappers ensuring gridPanel is MATHEMATICALLY DEAD-CENTER in the window
+        int utilWrapperW = 120;
+        int sideGap = 20;
 
-        bottomContainer.add(tilesRow, BorderLayout.CENTER);
-        return bottomContainer;
+        leftWrapper = new JPanel(new GridBagLayout());
+        leftWrapper.setOpaque(false);
+        leftWrapper.setPreferredSize(new Dimension(utilWrapperW, gridH));
+        leftWrapper.add(leftUtils);
+
+        rightWrapper = new JPanel(new GridBagLayout());
+        rightWrapper.setOpaque(false);
+        rightWrapper.setPreferredSize(new Dimension(utilWrapperW, gridH));
+        rightWrapper.add(rightUtils);
+
+        tilesRow = new JPanel(new FlowLayout(FlowLayout.CENTER, sideGap, 0));
+        tilesRow.setOpaque(false);
+        tilesRow.add(leftWrapper);
+        tilesRow.add(gridPanel);
+        tilesRow.add(rightWrapper);
+
+        bottomPanel.add(tilesRow, BorderLayout.CENTER);
+        return bottomPanel;
+    }
+
+    public float getResponsiveScale() {
+        return currentResponsiveScale;
+    }
+
+    public int getTileSize() {
+        return currentTileSize;
+    }
+
+    public void updateResponsiveLayout(int w, int h) {
+        if (w <= 0 || h <= 0) return;
+        if (w == lastLayoutW && h == lastLayoutH) return;
+        lastLayoutW = w;
+        lastLayoutH = h;
+
+        float scaleX = w / 960.0f;
+        float scaleY = h / 580.0f;
+        float S = Math.min(scaleX, scaleY);
+        if (S < 0.85f) S = 0.85f;
+        if (S > 2.5f) S = 2.5f;
+        currentResponsiveScale = S;
+
+        // 1. Top Header Bar
+        if (backBtn != null) {
+            backBtn.setPreferredSize(new Dimension((int) Math.round(145 * S), (int) Math.round(34 * S)));
+            backBtn.setFont(new Font("Arial", Font.BOLD, (int) Math.max(11, Math.round(12 * S))));
+        }
+        if (fullscreenBtn != null) {
+            fullscreenBtn.setPreferredSize(new Dimension((int) Math.round(38 * S), (int) Math.round(34 * S)));
+            fullscreenBtn.setFont(new Font("SansSerif", Font.BOLD, (int) Math.max(12, Math.round(14 * S))));
+            fullscreenBtn.setText(app != null && app.isFullScreen() ? "✕⛶" : "⛶");
+        }
+        if (locationTitleLabel != null) {
+            locationTitleLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(17 * S)));
+        }
+        if (difficultyBadgeLabel != null) {
+            difficultyBadgeLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(12 * S)));
+            difficultyBadgeLabel.setBorder(BorderFactory.createEmptyBorder(
+                (int) Math.round(2 * S), (int) Math.round(8 * S), (int) Math.round(2 * S), (int) Math.round(8 * S)
+            ));
+        }
+        if (pacingInfoLabel != null) {
+            pacingInfoLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(13 * S)));
+        }
+
+        // 2. Upper Combat Arena Card
+        if (arenaCard != null) {
+            int padV = (int) Math.round(8 * S);
+            int padH = (int) Math.round(16 * S);
+            arenaCard.setBorder(BorderFactory.createEmptyBorder(padV, padH, padV, padH));
+        }
+        int fighterSideW = (int) Math.round(185 * S);
+        int fighterSideH = (int) Math.round(160 * S);
+        if (juanSide != null) {
+            juanSide.setPreferredSize(new Dimension(fighterSideW, fighterSideH));
+        }
+        if (dizonSide != null) {
+            dizonSide.setPreferredSize(new Dimension(fighterSideW, fighterSideH));
+        }
+        if (juanTitle != null) {
+            juanTitle.setFont(new Font("Arial", Font.BOLD, (int) Math.round(14 * S)));
+        }
+        if (juanHpText != null) {
+            juanHpText.setFont(new Font("Arial", Font.BOLD, (int) Math.round(12 * S)));
+        }
+        if (juanStatsLabel != null) {
+            juanStatsLabel.setFont(new Font("Arial", Font.PLAIN, (int) Math.round(11 * S)));
+        }
+        if (enemyTitleLabel != null) {
+            enemyTitleLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(14 * S)));
+        }
+        if (enemyIntentLabel != null) {
+            enemyIntentLabel.setFont(new Font("Arial", Font.PLAIN, (int) Math.round(11 * S)));
+        }
+        if (juanHpBar != null) {
+            juanHpBar.setPreferredSize(new Dimension((int) Math.round(100 * S), (int) Math.round(16 * S)));
+        }
+        if (dizonHealthBar != null) {
+            dizonHealthBar.setPreferredSize(new Dimension((int) Math.round(100 * S), (int) Math.round(16 * S)));
+        }
+
+        // Combat Center (Status log, word rack, attack button, damage preview)
+        if (logCard != null) {
+            logCard.setPreferredSize(new Dimension((int) Math.round(540 * S), (int) Math.round(32 * S)));
+        }
+        if (battleLogLabel != null) {
+            battleLogLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.max(10, Math.round(11 * S))));
+        }
+        if (wordRack != null) {
+            wordRack.setPreferredSize(new Dimension((int) Math.round(480 * S), (int) Math.round(66 * S)));
+        }
+        int poppedTileSize = (int) Math.round(48 * S);
+        if (poppedTilesContainer != null) {
+            int gap = (int) Math.max(3, Math.round(6 * S));
+            poppedTilesContainer.setLayout(new FlowLayout(FlowLayout.CENTER, gap, gap));
+            for (PoppedLetterTile pt : poppedTiles) {
+                pt.setPreferredSize(new Dimension(poppedTileSize, poppedTileSize));
+            }
+        }
+        if (damagePreviewCard != null) {
+            damagePreviewCard.setPreferredSize(new Dimension((int) Math.round(320 * S), (int) Math.round(46 * S)));
+        }
+        if (damagePreviewLabel != null) {
+            damagePreviewLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(12 * S)));
+        }
+        if (attackButton != null) {
+            attackButton.setPreferredSize(new Dimension((int) Math.round(175 * S), (int) Math.round(46 * S)));
+        }
+
+        // 3. Bottom Letter Tiles Grid & Utilities (Dead-Centered)
+        int tileSize = (int) Math.round(52 * S);
+        currentTileSize = tileSize;
+        int gridGap = (int) Math.max(4, Math.round(6 * S));
+        int gridW = 4 * tileSize + 3 * gridGap;
+        int gridH = 4 * tileSize + 3 * gridGap;
+
+        if (gridPanel != null) {
+            gridPanel.setPreferredSize(new Dimension(gridW, gridH));
+            if (gridPanel.getLayout() instanceof GridLayout) {
+                ((GridLayout) gridPanel.getLayout()).setHgap(gridGap);
+                ((GridLayout) gridPanel.getLayout()).setVgap(gridGap);
+            }
+        }
+        for (int i = 0; i < 16; i++) {
+            if (tiles[i] != null) {
+                tiles[i].setPreferredSize(new Dimension(tileSize, tileSize));
+            }
+        }
+
+        int utilW = (int) Math.round(112 * S);
+        int utilH = (int) Math.round(90 * S);
+        if (leftUtils != null) {
+            leftUtils.setPreferredSize(new Dimension(utilW, utilH));
+        }
+        if (rightUtils != null) {
+            rightUtils.setPreferredSize(new Dimension(utilW, utilH));
+        }
+        int btnFontSz = (int) Math.max(10, Math.round(12 * S));
+        if (backspaceButton != null) backspaceButton.setFont(new Font("SansSerif", Font.BOLD, btnFontSz));
+        if (clearButton != null) clearButton.setFont(new Font("SansSerif", Font.BOLD, btnFontSz));
+        if (shuffleButton != null) shuffleButton.setFont(new Font("SansSerif", Font.BOLD, btnFontSz));
+        if (bonusTip != null) bonusTip.setFont(new Font("Arial", Font.PLAIN, (int) Math.max(9, Math.round(11 * S))));
+
+        int utilWrapperW = (int) Math.round(120 * S);
+        if (leftWrapper != null) {
+            leftWrapper.setPreferredSize(new Dimension(utilWrapperW, gridH));
+        }
+        if (rightWrapper != null) {
+            rightWrapper.setPreferredSize(new Dimension(utilWrapperW, gridH));
+        }
+        int sideGap = (int) Math.round(20 * S);
+        if (tilesRow != null && tilesRow.getLayout() instanceof FlowLayout) {
+            ((FlowLayout) tilesRow.getLayout()).setHgap(sideGap);
+        }
+
+        if (titleCardOverlay != null) {
+            titleCardOverlay.updateResponsiveLayout(S);
+        }
+
+        revalidate();
+        repaint();
     }
 
     // --- GAMEPLAY ACTIONS ---
@@ -738,6 +1062,8 @@ public class BattlePanel extends JPanel {
 
             // Pop up into middle screen Bookworm word rack!
             PoppedLetterTile pTile = new PoppedLetterTile(tile.getTileComponent(), tile);
+            int popTileSz = (int) Math.round(48 * currentResponsiveScale);
+            pTile.setPreferredSize(new Dimension(popTileSz, popTileSz));
             poppedTiles.add(pTile);
             if (poppedTilesContainer != null) {
                 poppedTilesContainer.add(pTile);
@@ -938,24 +1264,17 @@ public class BattlePanel extends JPanel {
         }
 
         // Valid word attack!
+        isEnemyTurnActive = true;
+        if (attackButton != null) attackButton.setEnabled(false);
+
         int basePts = calculateBasePoints(word);
         double mult = difficulty.getLengthMultiplier(word.length());
         int damage = (int) Math.round(basePts * mult);
         if (damage < 1) damage = 1;
 
-        String dialNote = "";
-        if (word.length() >= 5) {
-            dialNote = " (Kusog nga atake!)";
-        }
-
-        // Hit active enemy
-        enemyCurHp = Math.max(0, enemyCurHp - damage);
-        dizonCurHp = enemyCurHp;
-        if (currentEnemy != null) {
-            currentEnemy.takeDamage(damage);
-        }
-        updateCombatBars();
-        if (dizonBox != null) dizonBox.triggerHit();
+        final String dialNote = (word.length() >= 5) ? " (Kusog nga atake!)" : "";
+        final int finalDamage = damage;
+        final String submittedWord = word.toUpperCase();
 
         // Refill used tiles (Bookworm falling tile effect) with random decorators
         for (LetterTileButton usedTile : selectedTiles) {
@@ -972,27 +1291,54 @@ public class BattlePanel extends JPanel {
             poppedTilesContainer.repaint();
         }
         updateWordTray();
-        saveGameState(); // Persist refilled letter tiles & enemy HP immediately
 
-        battleLogLabel.setText("<html><center>🎯 Gisumiter ang \"" + word.toUpperCase() + "\"! Naigo si " + enemyName + "!" + dialNote + "</center></html>");
+        battleLogLabel.setText("<html><center>⚔️ Giandam ni Juan ang atake gamit ang \"" + submittedWord + "\"!</center></html>");
 
-        // Check Victory
-        if (enemyCurHp <= 0) {
-            handleVictory();
-            return;
+        Runnable onStrikeImpact = () -> {
+            // Hit active enemy at strike apex
+            enemyCurHp = Math.max(0, enemyCurHp - finalDamage);
+            dizonCurHp = enemyCurHp;
+            if (currentEnemy != null) {
+                currentEnemy.takeDamage(finalDamage);
+            }
+            updateCombatBars();
+            if (dizonBox != null) dizonBox.triggerHit();
+            saveGameState(); // Persist refilled letter tiles & enemy HP immediately
+            battleLogLabel.setText("<html><center>🎯 Gisumiter ang \"" + submittedWord + "\"! Naigo si " + enemyName + "!" + dialNote + "</center></html>");
+        };
+
+        Runnable onAttackComplete = () -> {
+            // Check Enemy Defeated / Victory
+            if (enemyCurHp <= 0) {
+                if (turnTimer != null) turnTimer.stop();
+                battleLogLabel.setText("<html><center>💥 <b>GRABENG IGO!</b> Napildi si <b>" + enemyName + "</b>!</center></html>");
+
+                if (dizonBox != null) {
+                    dizonBox.triggerDeath(() -> {
+                        handleEnemyDefeated();
+                    });
+                } else {
+                    handleEnemyDefeated();
+                }
+                return;
+            }
+
+            // Enemy turn with delayed animation!
+            // Pause 350ms so player can register the exchange before enemy counterattacks
+            javax.swing.Timer turnDelay = new javax.swing.Timer(350, e -> {
+                ((javax.swing.Timer) e.getSource()).stop();
+                enemyTurn();
+            });
+            turnDelay.setRepeats(false);
+            turnDelay.start();
+        };
+
+        if (juanAvatarPanel != null) {
+            juanAvatarPanel.triggerAttack(onStrikeImpact, onAttackComplete);
+        } else {
+            onStrikeImpact.run();
+            onAttackComplete.run();
         }
-
-        // Enemy turn with delayed animation!
-        isEnemyTurnActive = true;
-        if (attackButton != null) attackButton.setEnabled(false);
-
-        // Pause 450ms so player can register their own hit before enemy counterattacks
-        javax.swing.Timer turnDelay = new javax.swing.Timer(450, e -> {
-            ((javax.swing.Timer) e.getSource()).stop();
-            enemyTurn();
-        });
-        turnDelay.setRepeats(false);
-        turnDelay.start();
     }
 
     private void enemyTurn() {
@@ -1118,6 +1464,159 @@ public class BattlePanel extends JPanel {
         }
     }
 
+    // --- ENEMY DEFEATED TRANSITION & NEXT ENEMY ENTRANCE ---
+    private void handleEnemyDefeated() {
+        if (turnTimer != null) turnTimer.stop();
+
+        // Calculate rewards according to stage & difficulty
+        int coinsEarned = (int) Math.round(20 * stageNum * difficulty.rewardMultiplier);
+        int xpEarned = (int) Math.round(40 * stageNum * difficulty.rewardMultiplier);
+        int scoreEarned = (int) Math.round((enemyMaxHp * 10) * difficulty.scoreMultiplier);
+
+        if (currentPlayer != null) {
+            currentPlayer.coins += coinsEarned;
+            currentPlayer.experience += xpEarned;
+            currentPlayer.score += scoreEarned;
+            currentPlayer.currentRound++;
+            currentPlayer.currentHealth = juanCurHp;
+
+            // Unlock next stage / boss if cleared for this specific difficulty
+            String diffLabel = (difficulty != null && difficulty.label != null) ? difficulty.label : "Sakto";
+            if (stageNum == 1) {
+                currentPlayer.recordStageUnlock(diffLabel, 2);
+            } else if (stageNum == 2) {
+                currentPlayer.recordStageUnlock(diffLabel, 3); // Unlocks Boss Rola for this difficulty!
+            } else if (stageNum == 3) {
+                currentPlayer.recordStageUnlock(diffLabel, 4); // Cleared Boss Rola for this difficulty!
+            }
+
+            currentPlayer.lastSaved = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            dm.savePlayer(currentPlayer);
+            dm.addHighScore(currentPlayer.playerName, currentPlayer.score, stageNum);
+            dm.recordCreatureDefeated(currentPlayer.playerId, "E00" + stageNum);
+        }
+
+        updateJuanInfo();
+
+        if (stageNum == 1) {
+            // Stage 1 cleared: Advance to Stage 2 (Alviola) with slide-in entrance from right!
+            advanceToNextEnemy(2, "ALVIOLA", "The Steel Box", 15);
+        } else if (stageNum == 2) {
+            // Stage 2 cleared: Advance to Stage 3 (Rola Boss) with slide-in entrance from right!
+            advanceToNextEnemy(3, "ROLA", "THE BOSS", 22);
+        } else {
+            // Stage 3 Boss cleared: Map victory!
+            handleVictory();
+        }
+    }
+
+    private void advanceToNextEnemy(int nextStage, String nextEnemyName, String nextEnemyTitle, int nextAtk) {
+        advanceToNextEnemy(nextStage, nextEnemyName, nextEnemyTitle, nextAtk, null);
+    }
+
+    private void advanceToNextEnemy(int nextStage, String nextEnemyName, String nextEnemyTitle, int nextAtk, Runnable onComplete) {
+        this.stageNum = nextStage;
+        if (currentPlayer != null) {
+            currentPlayer.currentStage = nextStage;
+            currentPlayer.currentRound = 1;
+            currentPlayer.savedDifficulty = difficulty.label;
+            currentPlayer.recordStageUnlock(difficulty.label, nextStage);
+            dm.savePlayer(currentPlayer);
+        }
+
+        // Factory Method creates next enemy
+        this.currentEnemy = EnemyFactory.createEnemy(nextStage, difficulty);
+        this.enemyName = (currentEnemy != null) ? currentEnemy.getName() : nextEnemyName;
+        this.enemyMaxHp = (currentEnemy != null) ? currentEnemy.getMaxHp() : 95;
+        this.enemyCurHp = enemyMaxHp;
+        this.enemyAtk = (currentEnemy != null) ? currentEnemy.getAtk() : nextAtk;
+        this.dizonMaxHp = enemyMaxHp;
+        this.dizonCurHp = enemyCurHp;
+
+        // Update UI headers
+        if (enemyTitleLabel != null) {
+            enemyTitleLabel.setText("STAGE " + nextStage + ": " + enemyName + " (" + nextEnemyTitle + ")");
+            if (nextStage == 3) {
+                enemyTitleLabel.setForeground(GamePalette.HONEY_GOLD);
+            } else {
+                enemyTitleLabel.setForeground(GamePalette.SPICY_SWEETCORN);
+            }
+        }
+        if (enemyIntentLabel != null) {
+            enemyIntentLabel.setText("ATK: " + enemyAtk + " kada turno");
+        }
+        if (locationTitleLabel != null) {
+            locationTitleLabel.setText((mapName != null ? mapName.toUpperCase() : "MAPA") + " - STAGE " + nextStage);
+        }
+
+        // Reset & animate enemy health bar
+        if (dizonHealthBar != null) {
+            dizonHealthBar.setHp(0, enemyMaxHp);
+        }
+
+        // Announce new enemy arrival in battle log
+        battleLogLabel.setText("<html><center>⚠️ <b>BAG-ONG KAAWAY!</b> Niduol si <b>" + enemyName + "</b> gikan sa tuo!</center></html>");
+
+        // Animate new enemy entering from the right side of the screen!
+        if (dizonBox != null) {
+            dizonBox.triggerEntrance(currentEnemy, () -> {
+                // Enemy arrived and settled!
+                animateHealthBarFill(enemyMaxHp);
+
+                // Reset turns / timer
+                if (difficulty.hasTimer) {
+                    timerSeconds = difficulty.turnLimitOrSeconds;
+                    pacingInfoLabel.setText("⏱️ Timer: " + timerSeconds + "s");
+                    if (turnTimer != null) turnTimer.start();
+                } else if (difficulty == DifficultySetting.SAKTO) {
+                    turnsLeft = difficulty.turnLimitOrSeconds;
+                    pacingInfoLabel.setText("Turns Left: " + turnsLeft);
+                }
+
+                battleLogLabel.setText("<html><center>⚔️ Andam na si <b>" + enemyName + "</b>! Imong turno, Juan!</center></html>");
+
+                isEnemyTurnActive = false;
+                if (attackButton != null) attackButton.setEnabled(true);
+                saveGameState();
+                if (onComplete != null) onComplete.run();
+            });
+        } else {
+            if (dizonHealthBar != null) dizonHealthBar.setHp(enemyMaxHp, enemyMaxHp);
+            isEnemyTurnActive = false;
+            if (attackButton != null) attackButton.setEnabled(true);
+            saveGameState();
+            if (onComplete != null) onComplete.run();
+        }
+    }
+
+    private void animateHealthBarFill(int targetHp) {
+        if (dizonHealthBar == null) return;
+        final int steps = 12;
+        final int[] step = {0};
+        javax.swing.Timer fillTimer = new javax.swing.Timer(25, null);
+        fillTimer.addActionListener(e -> {
+            step[0]++;
+            int currentVal = (int) Math.round((double) targetHp * step[0] / steps);
+            dizonHealthBar.setHp(currentVal, targetHp);
+            if (step[0] >= steps) {
+                fillTimer.stop();
+                dizonHealthBar.setHp(targetHp, targetHp);
+            }
+        });
+        fillTimer.start();
+    }
+
+    // Public test hook for enemy transition testing
+    public void forceNextEnemyTransitionForTesting(int nextStage, Runnable onComplete) {
+        if (dizonBox != null) {
+            dizonBox.triggerDeath(() -> {
+                advanceToNextEnemy(nextStage, nextStage == 2 ? "ALVIOLA" : (nextStage == 3 ? "ROLA" : "DIZON"),
+                    nextStage == 2 ? "The Steel Box" : (nextStage == 3 ? "THE BOSS" : "The Box"),
+                    nextStage == 2 ? 15 : (nextStage == 3 ? 22 : 10), onComplete);
+            });
+        }
+    }
+
     // --- VICTORY & DEFEAT ---
     private void handleVictory() {
         if (turnTimer != null) turnTimer.stop();
@@ -1222,20 +1721,41 @@ public class BattlePanel extends JPanel {
             }
         } else {
             // Stage 3 (Rola) Defeated!
+            String nextUnlockNote = "";
+            String mLower = (mapName != null) ? mapName.toLowerCase() : "";
+            if (mLower.contains("blue") || mLower.contains("building")) {
+                if (currentPlayer != null) {
+                    currentPlayer.unlockNextMap(2); // Unlocks Davao Museum!
+                }
+                nextUnlockNote = "\n⭐ NA-UNLOCK NA ANG BAG-ONG MAPA: DAVAO MUSEUM (Medium)!";
+            } else if (mLower.contains("museum") || mLower.contains("durian")) {
+                if (currentPlayer != null) {
+                    currentPlayer.unlockNextMap(3); // Unlocks San Pedro Cathedral!
+                }
+                nextUnlockNote = "\n⭐ NA-UNLOCK NA ANG BAG-ONG MAPA: SAN PEDRO CATHEDRAL (Hard)!";
+            } else if (mLower.contains("san pedro") || mLower.contains("pedro")) {
+                if (currentPlayer != null) {
+                    currentPlayer.unlockNextMap(4); // Unlocks Mt. Apo!
+                }
+                nextUnlockNote = "\n⭐ NA-UNLOCK NA ANG PINAKALISOD NGA MAPA: MT. APO (Extreme)!";
+            }
+
             if (currentPlayer != null) {
                 currentPlayer.currentRound = 0; // Run successfully completed
                 dm.savePlayer(currentPlayer);
             }
-            String vicMsg = "👑 DAKONG KADAOGAN! (SAN PEDRO CATHEDRAL CLEARED!)\n\n"
+            String displayMap = (mapName != null && !mapName.isEmpty()) ? mapName.toUpperCase() : "MAPA";
+            String vicMsg = "👑 DAKONG KADAOGAN! (" + displayMap + " CLEARED!)\n\n"
                     + "Napildi nimo ang Boss nga si ROLA!\n"
-                    + "Nahuman nimo ang tanang 3 ka Yugto sa San Pedro Cathedral!\n\n"
+                    + "Nahuman nimo ang tanang 3 ka Yugto sa " + (mapName != null ? mapName : "Mapa") + "!\n\n"
                     + "Dakong Ganti:\n"
                     + "  • +" + coinsEarned + " Coins\n"
                     + "  • +" + xpEarned + " XP\n"
-                    + "  • +" + scoreEarned + " Score\n\n"
+                    + "  • +" + scoreEarned + " Score\n"
+                    + nextUnlockNote + "\n\n"
                     + "Pahalipay! Andam na si Juan sa sunod nga mga hagit!";
 
-            JOptionPane.showMessageDialog(this, vicMsg, "Kadaogan sa San Pedro Cathedral!", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, vicMsg, "Kadaogan sa " + (mapName != null ? mapName : "Mapa") + "!", JOptionPane.INFORMATION_MESSAGE);
             exitBattle();
         }
     }
@@ -1316,6 +1836,9 @@ public class BattlePanel extends JPanel {
         }
         if (enemyIntentLabel != null) {
             enemyIntentLabel.setText("ATK: " + enemyAtk + " kada turno");
+        }
+        if (fullscreenBtn != null && app != null) {
+            fullscreenBtn.setText(app.isFullScreen() ? "✕⛶" : "⛶");
         }
     }
 
@@ -1474,8 +1997,8 @@ public class BattlePanel extends JPanel {
             this.letter = Character.toUpperCase(this.tileComponent.getLetter());
             this.points = this.tileComponent.getPoints();
             this.sourceTile = sourceTile;
-            setPreferredSize(new Dimension(48, 54));
-            setMinimumSize(new Dimension(48, 54));
+            setPreferredSize(new Dimension(48, 48));
+            setMinimumSize(new Dimension(48, 48));
             setOpaque(false);
             if (app.customCursor != null) setCursor(app.customCursor);
             setToolTipText("I-klik aron tangtangon kini nga letra (Click to remove)");
@@ -1523,11 +2046,12 @@ public class BattlePanel extends JPanel {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
             int compW = getWidth();
             int compH = getHeight();
-            int tileW = 44;
-            int tileH = 48;
+            int tileW = Math.max(32, Math.min(compW - 4, compH - 4));
+            int tileH = tileW;
 
             // Apply scale and bounce offset centered on component
             g2.translate(compW / 2.0, compH / 2.0 + offsetY);
@@ -1541,47 +2065,84 @@ public class BattlePanel extends JPanel {
             g2.setColor(new Color(0, 0, 0, 45));
             g2.fillRoundRect(x + 2, y + 4, tileW, tileH, 10, 10);
 
-            // Tile Background (Solid)
+            // Tile Background
             String currentWord = getSelectedWord();
             boolean isValid = !currentWord.isEmpty() && dm.isValidWord(currentWord);
 
-            if (isValid) {
-                // Honey Gold Bookworm Tile (Solid)
-                g2.setColor(isHovered ? GamePalette.SPICY_SWEETCORN : GamePalette.HONEY_GOLD);
+            BufferedImage tileImg = getLetterTileImage(letter);
+            if (tileImg != null) {
+                // Outer glow if valid word or hovered
+                if (isValid) {
+                    g2.setColor(new Color(245, 180, 50, 180));
+                    g2.setStroke(new BasicStroke(3.0f));
+                    g2.drawRoundRect(x - 1, y - 1, tileW + 2, tileH + 2, 10, 10);
+                } else if (isHovered) {
+                    g2.setColor(new Color(255, 100, 100, 180));
+                    g2.setStroke(new BasicStroke(2.5f));
+                    g2.drawRoundRect(x - 1, y - 1, tileW + 2, tileH + 2, 10, 10);
+                }
+
+                g2.drawImage(tileImg, x, y, tileW, tileH, null);
+
+                if (isValid) {
+                    Graphics2D gTint = (Graphics2D) g2.create();
+                    gTint.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.18f));
+                    gTint.setColor(new Color(255, 200, 50));
+                    gTint.fillRoundRect(x, y, tileW, tileH, 8, 8);
+                    gTint.dispose();
+
+                    g2.setColor(new Color(240, 150, 30));
+                    g2.setStroke(new BasicStroke(2.0f));
+                    g2.drawRoundRect(x, y, tileW, tileH, 8, 8);
+                } else if (isHovered) {
+                    g2.setColor(new Color(255, 90, 90));
+                    g2.setStroke(new BasicStroke(2.0f));
+                    g2.drawRoundRect(x, y, tileW, tileH, 8, 8);
+                }
             } else {
-                // Cream Tile (Solid)
-                g2.setColor(isHovered ? Color.WHITE : GamePalette.CREAM);
+                // Procedural fallback
+                if (isValid) {
+                    g2.setColor(isHovered ? GamePalette.SPICY_SWEETCORN : GamePalette.HONEY_GOLD);
+                } else {
+                    g2.setColor(isHovered ? Color.WHITE : GamePalette.CREAM);
+                }
+                g2.fillRoundRect(x, y, tileW, tileH, 10, 10);
+
+                if (isValid) {
+                    g2.setColor(isHovered ? GamePalette.SPICY_SWEETCORN : GamePalette.PUMPKIN_ORANGE);
+                    g2.setStroke(new BasicStroke(isHovered ? 2.2f : 1.8f));
+                } else {
+                    g2.setColor(isHovered ? GamePalette.PUMPKIN_ORANGE : GamePalette.SKY_BLUE);
+                    g2.setStroke(new BasicStroke(isHovered ? 2.0f : 1.4f));
+                }
+                g2.drawRoundRect(x, y, tileW, tileH, 10, 10);
+
+                // Main Letter (Centered)
+                g2.setFont(new Font("Arial", Font.BOLD, 22));
+                String str = String.valueOf(letter);
+                FontMetrics fm = g2.getFontMetrics();
+                int lx = x + (tileW - fm.stringWidth(str)) / 2;
+                int ly = y + (tileH + fm.getAscent() - fm.getDescent()) / 2 - 1;
+                g2.setColor(GamePalette.MIDNIGHT_NAVY);
+                g2.drawString(str, lx, ly);
+
+                // Points Value (Bottom-Right Subscript for procedural fallback)
+                g2.setFont(new Font("Arial", Font.BOLD, 10));
+                String ptStr = String.valueOf(points);
+                FontMetrics pfm = g2.getFontMetrics();
+                int pw = pfm.stringWidth(ptStr);
+                int px = x + tileW - pw - 4;
+                int py = y + tileH - 4;
+
+                g2.setColor(new Color(255, 255, 255, 190));
+                g2.fillRoundRect(px - 2, py - pfm.getAscent() + 1, pw + 4, pfm.getAscent() + 2, 4, 4);
+                g2.setColor(new Color(210, 195, 175));
+                g2.setStroke(new BasicStroke(1.0f));
+                g2.drawRoundRect(px - 2, py - pfm.getAscent() + 1, pw + 4, pfm.getAscent() + 2, 4, 4);
+
+                g2.setColor(isValid ? new Color(200, 80, 20) : GamePalette.MIDNIGHT_NAVY);
+                g2.drawString(ptStr, px, py);
             }
-            g2.fillRoundRect(x, y, tileW, tileH, 10, 10);
-
-            // Border
-            if (isValid) {
-                g2.setColor(isHovered ? GamePalette.SPICY_SWEETCORN : GamePalette.PUMPKIN_ORANGE);
-                g2.setStroke(new BasicStroke(isHovered ? 2.2f : 1.8f));
-            } else {
-                g2.setColor(isHovered ? GamePalette.PUMPKIN_ORANGE : GamePalette.SKY_BLUE);
-                g2.setStroke(new BasicStroke(isHovered ? 2.0f : 1.4f));
-            }
-            g2.drawRoundRect(x, y, tileW, tileH, 10, 10);
-
-            // Main Letter (Centered)
-            g2.setFont(new Font("Arial", Font.BOLD, 22));
-            String str = String.valueOf(letter);
-            FontMetrics fm = g2.getFontMetrics();
-            int lx = x + (tileW - fm.stringWidth(str)) / 2;
-            int ly = y + (tileH + fm.getAscent() - fm.getDescent()) / 2 - 1;
-
-            // Letter text
-            g2.setColor(GamePalette.MIDNIGHT_NAVY);
-            g2.drawString(str, lx, ly);
-
-            // Points Value (Bottom-Right Subscript)
-            g2.setFont(new Font("Arial", Font.BOLD, 10));
-            String ptStr = String.valueOf(points);
-            int px = x + tileW - g2.getFontMetrics().stringWidth(ptStr) - 4;
-            int py = y + tileH - 4;
-            g2.setColor(isValid ? GamePalette.MIDNIGHT_NAVY : GamePalette.PUMPKIN_ORANGE);
-            g2.drawString(ptStr, px, py);
 
             // PATTERN 4: DECORATOR - Render decorator badge on popped tile
             if (tileComponent != null) {
@@ -1678,7 +2239,9 @@ public class BattlePanel extends JPanel {
             g2.drawRoundRect(x, y, w, h, 14, 14);
 
             // Main Text: ⚔️ ATAKE!
-            g2.setFont(new Font("Arial", Font.BOLD, 15));
+            int titleSize = Math.max(12, (int) Math.round(h * 0.35));
+            int subSize = Math.max(9, (int) Math.round(h * 0.24));
+            g2.setFont(new Font("Arial", Font.BOLD, titleSize));
             String title = "⚔️ ATAKE!";
             FontMetrics fm = g2.getFontMetrics();
             int tw = fm.stringWidth(title);
@@ -1692,19 +2255,22 @@ public class BattlePanel extends JPanel {
             } else {
                 sub = "(Pili ug letra)";
             }
-            g2.setFont(new Font("Arial", Font.BOLD, 11));
+            g2.setFont(new Font("Arial", Font.BOLD, subSize));
             int sw = g2.getFontMetrics().stringWidth(sub);
 
             // Draw Title and Subtitle centered
-            g2.setFont(new Font("Arial", Font.BOLD, 15));
-            g2.setColor(new Color(0, 0, 0, 80));
-            g2.drawString(title, x + (w - tw) / 2 + 1, y + 20); // shadow
-            g2.setColor(GamePalette.CREAM);
-            g2.drawString(title, x + (w - tw) / 2, y + 19);
+            int titleY = y + (int) Math.round(h * 0.46);
+            int subY = y + (int) Math.round(h * 0.80);
 
-            g2.setFont(new Font("Arial", Font.BOLD, 11));
+            g2.setFont(new Font("Arial", Font.BOLD, titleSize));
+            g2.setColor(new Color(0, 0, 0, 80));
+            g2.drawString(title, x + (w - tw) / 2 + 1, titleY + 1); // shadow
+            g2.setColor(GamePalette.CREAM);
+            g2.drawString(title, x + (w - tw) / 2, titleY);
+
+            g2.setFont(new Font("Arial", Font.BOLD, subSize));
             g2.setColor(isValid ? GamePalette.SPICY_SWEETCORN : GamePalette.SKY);
-            g2.drawString(sub, x + (w - sw) / 2, y + 34);
+            g2.drawString(sub, x + (w - sw) / 2, subY);
 
             g2.dispose();
         }
@@ -1851,6 +2417,39 @@ public class BattlePanel extends JPanel {
         }
     }
 
+    // --- DEFEAT PARTICLE FOR DEATH ANIMATION ---
+    private static class DefeatParticle {
+        double x, y, vx, vy;
+        int size;
+        Color color;
+        float alpha = 1.0f;
+
+        DefeatParticle(double x, double y, double vx, double vy, int size, Color color) {
+            this.x = x;
+            this.y = y;
+            this.vx = vx;
+            this.vy = vy;
+            this.size = size;
+            this.color = color;
+        }
+
+        void update() {
+            x += vx;
+            y += vy;
+            vy += 0.35; // gravity
+            alpha = Math.max(0f, alpha - 0.055f);
+        }
+
+        void render(Graphics2D g2) {
+            if (alpha <= 0.01f) return;
+            Graphics2D gp = (Graphics2D) g2.create();
+            gp.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            gp.setColor(color);
+            gp.fillOval((int) x, (int) y, size, size);
+            gp.dispose();
+        }
+    }
+
     // --- CUSTOM ENEMY BOX SPRITE PANEL (Dizon, Alviola, Rola) ---
     private static class EnemyBoxPanel extends JPanel {
         protected boolean isHurt = false;
@@ -1860,6 +2459,15 @@ public class BattlePanel extends JPanel {
         protected int stageNum = 1;
         protected String enemyName = "DIZON";
         protected Enemy currentEnemyObj;
+
+        // Animated transition states (Death, Disappearance, Slide-in Entrance from Right)
+        protected boolean isDying = false;
+        protected float deathAlpha = 1.0f;
+        protected float deathScale = 1.0f;
+        protected int deathDropOffset = 0;
+        protected boolean isEntering = false;
+        protected int entranceOffset = 0;
+        protected final java.util.List<DefeatParticle> particles = new java.util.ArrayList<>();
 
         EnemyBoxPanel() {
             setOpaque(false);
@@ -1876,6 +2484,13 @@ public class BattlePanel extends JPanel {
             this.isAttacking = false;
             this.shakeOffset = 0;
             this.lungeOffset = 0;
+            this.deathAlpha = 1.0f;
+            this.deathScale = 1.0f;
+            this.deathDropOffset = 0;
+            this.entranceOffset = 0;
+            this.isDying = false;
+            this.isEntering = false;
+            this.particles.clear();
             repaint();
         }
 
@@ -1887,6 +2502,13 @@ public class BattlePanel extends JPanel {
             this.isAttacking = false;
             this.shakeOffset = 0;
             this.lungeOffset = 0;
+            this.deathAlpha = 1.0f;
+            this.deathScale = 1.0f;
+            this.deathDropOffset = 0;
+            this.entranceOffset = 0;
+            this.isDying = false;
+            this.isEntering = false;
+            this.particles.clear();
             repaint();
         }
 
@@ -1905,6 +2527,135 @@ public class BattlePanel extends JPanel {
                 repaint();
                 ((javax.swing.Timer) e.getSource()).stop();
             }).start();
+        }
+
+        // Enemy dies, shudders, collapses, bursts defeat particles, and disappears
+        void triggerDeath(Runnable onDisappeared) {
+            this.isDying = true;
+            this.isHurt = true;
+            this.isAttacking = false;
+            this.lungeOffset = 0;
+            this.deathAlpha = 1.0f;
+            this.deathScale = 1.0f;
+            this.deathDropOffset = 0;
+            this.particles.clear();
+
+            final int totalFrames = 22; // ~650ms at 30ms per frame
+            final int[] frame = {0};
+
+            javax.swing.Timer deathTimer = new javax.swing.Timer(30, null);
+            deathTimer.addActionListener(e -> {
+                frame[0]++;
+                if (frame[0] <= 6) {
+                    // Phase 1: Violent shudder and hurt flash
+                    shakeOffset = (frame[0] % 2 == 0) ? 8 : -8;
+                    isHurt = true;
+                    // On frame 5, spawn defeat burst particles
+                    if (frame[0] == 5) {
+                        int cx = getWidth() / 2;
+                        int cy = getHeight() / 2;
+                        Color[] pColors = {
+                            GamePalette.HONEY_GOLD,
+                            GamePalette.PUMPKIN_ORANGE,
+                            Color.WHITE,
+                            GamePalette.SPICY_SWEETCORN
+                        };
+                        for (int i = 0; i < 20; i++) {
+                            double angle = (2 * Math.PI / 20) * i;
+                            double speed = 3.2 + (i % 3) * 1.6;
+                            particles.add(new DefeatParticle(
+                                cx, cy,
+                                Math.cos(angle) * speed,
+                                Math.sin(angle) * speed - 2.5,
+                                6 + (i % 3) * 2,
+                                pColors[i % pColors.length]
+                            ));
+                        }
+                    }
+                } else {
+                    // Phase 2: Fade, shrink and sink into ground
+                    shakeOffset = 0;
+                    isHurt = false;
+                    float progress = (float) (frame[0] - 6) / (totalFrames - 6);
+                    deathAlpha = Math.max(0f, 1.0f - progress);
+                    deathScale = Math.max(0.15f, 1.0f - 0.75f * progress);
+                    deathDropOffset = (int) (24 * progress);
+                }
+
+                // Update particles
+                for (int i = particles.size() - 1; i >= 0; i--) {
+                    DefeatParticle p = particles.get(i);
+                    p.update();
+                    if (p.alpha <= 0.01f) {
+                        particles.remove(i);
+                    }
+                }
+
+                if (getParent() != null) getParent().repaint();
+                repaint();
+
+                if (frame[0] >= totalFrames) {
+                    deathTimer.stop();
+                    deathAlpha = 0f;
+                    isDying = false;
+                    shakeOffset = 0;
+                    repaint();
+                    if (getParent() != null) getParent().repaint();
+                    if (onDisappeared != null) {
+                        onDisappeared.run();
+                    }
+                }
+            });
+            deathTimer.start();
+        }
+
+        // New enemy shows up from the right side of the screen and smoothly settles into position
+        void triggerEntrance(Enemy newEnemy, Runnable onArrived) {
+            setEnemy(newEnemy);
+            this.deathAlpha = 1.0f;
+            this.deathScale = 1.0f;
+            this.deathDropOffset = 0;
+            this.isDying = false;
+            this.particles.clear();
+            this.isEntering = true;
+
+            final int startOffset = 320; // Enters from offscreen right
+            this.entranceOffset = startOffset;
+
+            final int totalFrames = 22; // ~550ms
+            final int[] frame = {0};
+
+            javax.swing.Timer enterTimer = new javax.swing.Timer(25, null);
+            enterTimer.addActionListener(e -> {
+                frame[0]++;
+                float t = (float) frame[0] / totalFrames;
+                if (t >= 1.0f) {
+                    entranceOffset = 0;
+                    isEntering = false;
+                    enterTimer.stop();
+                    // Subtle arrival impact thump
+                    shakeOffset = 3;
+                    new javax.swing.Timer(80, evt -> {
+                        shakeOffset = 0;
+                        repaint();
+                        if (getParent() != null) getParent().repaint();
+                        ((javax.swing.Timer) evt.getSource()).stop();
+                    }).start();
+
+                    if (getParent() != null) getParent().repaint();
+                    repaint();
+                    if (onArrived != null) {
+                        onArrived.run();
+                    }
+                } else {
+                    // Ease out cubic
+                    float ease = (float) (1.0 - Math.pow(1.0 - t, 3));
+                    entranceOffset = (int) (startOffset * (1.0f - ease));
+                    if (getParent() != null) getParent().repaint();
+                    repaint();
+                }
+            });
+            enterTimer.start();
         }
 
         void triggerAttack(Runnable onImpact, Runnable onComplete) {
@@ -1947,15 +2698,41 @@ public class BattlePanel extends JPanel {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            // Allow drawing outside component bounds during entrance so it slides from offscreen right!
+            g2.setClip(null);
 
-            int w = 110;
-            int h = 85;
-            int x = (getWidth() - w) / 2 + shakeOffset + lungeOffset;
-            int y = (getHeight() - h) / 2 + (stageNum == 3 ? 10 : 0); // leave room for boss crown if stage 3
+            // Render defeat particles if any
+            for (DefeatParticle p : particles) {
+                p.render(g2);
+            }
 
-            // Box shadow
-            g2.setColor(new Color(0, 0, 0, 35));
-            g2.fillOval(x + 5, y + h - 6, w - 10, 14);
+            // If completely dead / disappeared, do not render body
+            if (deathAlpha <= 0.001f) {
+                g2.dispose();
+                return;
+            }
+
+            int panelH = getHeight();
+            int panelW = getWidth();
+            int baseW = 110;
+            int baseH = 85;
+            float eScale = 1.0f;
+            if (panelH > 100) {
+                eScale = Math.min((float) panelW / 140f, (float) panelH / 100f);
+                if (eScale < 1.0f) eScale = 1.0f;
+                if (eScale > 2.2f) eScale = 2.2f;
+            }
+            int w = (int) Math.round(baseW * eScale);
+            int h = (int) Math.round(baseH * eScale);
+            int x = (panelW - w) / 2 + shakeOffset + lungeOffset + entranceOffset;
+            int y = (panelH - h) / 2 + (stageNum == 3 ? 10 : 0) + deathDropOffset;
+
+            // Box shadow (fades with deathAlpha)
+            if (deathAlpha > 0.1f) {
+                int shadowAlpha = (int) (35 * deathAlpha);
+                g2.setColor(new Color(0, 0, 0, Math.min(255, Math.max(0, shadowAlpha))));
+                g2.fillOval(x + 5, y + h - 6, w - 10, 14);
+            }
 
             // Motion wind trails when lunging forward towards Juan
             if (isAttacking && lungeOffset < -5) {
@@ -1966,17 +2743,38 @@ public class BattlePanel extends JPanel {
                 g2.drawLine(x + w + 3, y + 62, x + w + 24, y + 62);
             }
 
-            // PATTERN 2: FACTORY METHOD - Polymorphic sprite rendering via Enemy product
-            if (currentEnemyObj != null) {
-                currentEnemyObj.render(g2, x, y, w, h, isHurt, lungeOffset);
-            } else if (stageNum == 2) {
-                new AlviolaEnemy().render(g2, x, y, w, h, isHurt, lungeOffset);
-            } else if (stageNum == 3) {
-                new RolaBossEnemy().render(g2, x, y, w, h, isHurt, lungeOffset);
-            } else {
-                new DizonEnemy().render(g2, x, y, w, h, isHurt, lungeOffset);
+            // Motion trails when rushing in from the right edge
+            if (isEntering && entranceOffset > 15) {
+                g2.setColor(new Color(110, 210, 255, Math.min(220, entranceOffset)));
+                g2.setStroke(new BasicStroke(2.8f));
+                g2.drawLine(x + w + 6, y + 22, x + w + 36, y + 22);
+                g2.drawLine(x + w + 12, y + 44, x + w + 50, y + 44);
+                g2.drawLine(x + w + 8, y + 66, x + w + 38, y + 66);
             }
 
+            // Apply death alpha & scale transformations
+            Graphics2D gEnemy = (Graphics2D) g2.create();
+            if (deathAlpha < 1.0f || deathScale < 0.999f) {
+                gEnemy.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, deathAlpha));
+                int cx = x + w / 2;
+                int cy = y + h / 2;
+                gEnemy.translate(cx, cy);
+                gEnemy.scale(deathScale, deathScale);
+                gEnemy.translate(-cx, -cy);
+            }
+
+            // PATTERN 2: FACTORY METHOD - Polymorphic sprite rendering via Enemy product
+            if (currentEnemyObj != null) {
+                currentEnemyObj.render(gEnemy, x, y, w, h, isHurt, lungeOffset);
+            } else if (stageNum == 2) {
+                new AlviolaEnemy().render(gEnemy, x, y, w, h, isHurt, lungeOffset);
+            } else if (stageNum == 3) {
+                new RolaBossEnemy().render(gEnemy, x, y, w, h, isHurt, lungeOffset);
+            } else {
+                new DizonEnemy().render(gEnemy, x, y, w, h, isHurt, lungeOffset);
+            }
+
+            gEnemy.dispose();
             g2.dispose();
         }
     }
@@ -1984,20 +2782,55 @@ public class BattlePanel extends JPanel {
     // Subclass alias for backwards compatibility
     private static class DizonBoxPanel extends EnemyBoxPanel {}
 
-    // --- JUAN HERO AVATAR PANEL WITH HIT REACTION ANIMATION ---
-    private static class JuanAvatarPanel extends JPanel {
-        private final Image sprite;
-        private boolean isHurt = false;
+    // --- JUAN HERO AVATAR PANEL WITH ATTACK & HIT REACTION ANIMATIONS ---
+    public enum HeroAnimState {
+        IDLE, PRE_ATTACK, ATTACK
+    }
+
+    public static class JuanAvatarPanel extends JPanel {
+        private final Image idleSprite;
+        private final Image preAttackSprite;
+        private final Image attackSprite;
+
+        private HeroAnimState currentAnimState = HeroAnimState.IDLE;
+        private boolean isAttacking = false;
+        private int lungeOffset = 0;
         private int shakeOffset = 0;
+        private boolean isHurt = false;
         private float hitFlashAlpha = 0f;
 
-        JuanAvatarPanel(Image sprite) {
-            this.sprite = sprite;
+        public JuanAvatarPanel(Image idleSprite, Image preAttackSprite, Image attackSprite) {
+            this.idleSprite = idleSprite;
+            this.preAttackSprite = preAttackSprite;
+            this.attackSprite = attackSprite;
             setOpaque(false);
-            setPreferredSize(new Dimension(100, 90));
+            setPreferredSize(new Dimension(140, 110));
         }
 
-        void triggerHit() {
+        public JuanAvatarPanel(Image sprite) {
+            this(sprite, null, null);
+        }
+
+        public HeroAnimState getAnimState() {
+            return currentAnimState;
+        }
+
+        public int getLungeOffset() {
+            return lungeOffset;
+        }
+
+        public boolean isAttacking() {
+            return isAttacking;
+        }
+
+        public void setManualStateForTesting(HeroAnimState state, int lunge) {
+            this.currentAnimState = state;
+            this.lungeOffset = lunge;
+            this.isAttacking = (state != HeroAnimState.IDLE || lunge != 0);
+            repaint();
+        }
+
+        public void triggerHit() {
             this.isHurt = true;
             this.hitFlashAlpha = 0.75f;
             this.shakeOffset = -8;
@@ -2023,31 +2856,118 @@ public class BattlePanel extends JPanel {
             shakeTimer.start();
         }
 
+        public void triggerAttack(Runnable onImpact, Runnable onComplete) {
+            this.isAttacking = true;
+            this.isHurt = false;
+            this.shakeOffset = 0;
+            this.lungeOffset = 0;
+            this.currentAnimState = HeroAnimState.PRE_ATTACK;
+            repaint();
+
+            // Frame animation steps:
+            // 0..2: PRE_ATTACK (wind-up crouch, subtle pullback)
+            // 3..7: ATTACK (sword strike forward thrust, apex at frame 5)
+            // 8..10: IDLE (recovering back to 0)
+            final int[] frame = {0};
+            final int[] offsets = {-3, -6, -4, 15, 30, 42, 38, 26, 14, 5, 0};
+            final HeroAnimState[] states = {
+                HeroAnimState.PRE_ATTACK,
+                HeroAnimState.PRE_ATTACK,
+                HeroAnimState.PRE_ATTACK,
+                HeroAnimState.ATTACK,
+                HeroAnimState.ATTACK,
+                HeroAnimState.ATTACK,
+                HeroAnimState.ATTACK,
+                HeroAnimState.ATTACK,
+                HeroAnimState.IDLE,
+                HeroAnimState.IDLE,
+                HeroAnimState.IDLE
+            };
+
+            javax.swing.Timer attackTimer = new javax.swing.Timer(36, null);
+            attackTimer.addActionListener(e -> {
+                frame[0]++;
+                if (frame[0] < offsets.length) {
+                    lungeOffset = offsets[frame[0]];
+                    currentAnimState = states[frame[0]];
+                    if (frame[0] == 5) { // Apex of strike
+                        if (onImpact != null) onImpact.run();
+                    }
+                    repaint();
+                } else {
+                    lungeOffset = 0;
+                    currentAnimState = HeroAnimState.IDLE;
+                    isAttacking = false;
+                    repaint();
+                    attackTimer.stop();
+                    if (onComplete != null) onComplete.run();
+                }
+            });
+            attackTimer.start();
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.setClip(null); // Allow sword strike without boundary clipping
 
-            int x = (getWidth() - 80) / 2 + shakeOffset;
-            int y = (getHeight() - 80) / 2;
+            int panelH = getHeight();
+            int h = panelH > 0 ? (int) Math.round(panelH * 0.94) : 155;
+            if (h < 110) h = 110;
+            int w = (int) Math.round(h * (300.0 / 500.0));
 
-            if (sprite != null) {
-                g2.drawImage(sprite, x, y, 80, 80, null);
+            // Anchor boots firmly on arena floor baseline
+            int targetGroundY = (panelH > 0) ? panelH - 14 : 140;
+            int y = targetGroundY - (int) Math.round(h * (440.0 / 500.0));
+            int x = (getWidth() - w) / 2 + shakeOffset + lungeOffset;
+
+            // Ground shadow directly under boots
+            int shadowW = (int) Math.round(w * 0.7);
+            g2.setColor(new Color(0, 0, 0, 60));
+            g2.fillOval(x + (w - shadowW) / 2, targetGroundY - 6, shadowW, 12);
+
+            // Motion wind/slash trails when lunging forward
+            if (isAttacking && lungeOffset > 10) {
+                g2.setColor(new Color(255, 220, 110, Math.min(220, lungeOffset * 5)));
+                g2.setStroke(new BasicStroke(2.2f));
+                g2.drawLine(x - 24, y + h / 2 - 12, x - 4, y + h / 2 - 12);
+                g2.drawLine(x - 36, y + h / 2 + 6, x - 6, y + h / 2 + 6);
+                g2.drawLine(x - 20, y + h / 2 + 22, x - 4, y + h / 2 + 22);
+            }
+
+            Image spriteToDraw;
+            switch (currentAnimState) {
+                case PRE_ATTACK:
+                    spriteToDraw = (preAttackSprite != null) ? preAttackSprite : idleSprite;
+                    break;
+                case ATTACK:
+                    spriteToDraw = (attackSprite != null) ? attackSprite : idleSprite;
+                    break;
+                case IDLE:
+                default:
+                    spriteToDraw = idleSprite;
+                    break;
+            }
+
+            if (spriteToDraw != null) {
+                g2.drawImage(spriteToDraw, x, y, w, h, null);
                 if (isHurt && hitFlashAlpha > 0f) {
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, hitFlashAlpha));
                     g2.setColor(GamePalette.CRIMSON_RED);
-                    g2.fillRect(x, y, 80, 80);
+                    g2.fillRect(x, y, w, h);
                 }
             } else {
-                g2.setFont(new Font("Arial", Font.BOLD, 20));
+                g2.setFont(new Font("Arial", Font.BOLD, 18));
                 g2.setColor(isHurt ? GamePalette.CRIMSON_RED : GamePalette.CREAM);
-                g2.drawString("👤 JUAN", x + 5, y + 50);
+                g2.drawString("👤 JUAN", x + 5, y + h / 2);
             }
 
             if (isHurt) {
                 g2.setFont(new Font("Arial", Font.BOLD, 22));
-                g2.drawString("💥", x + 40, y + 25);
+                g2.drawString("💥", x + w / 2, y + 20);
             }
 
             g2.dispose();
@@ -2056,6 +2976,7 @@ public class BattlePanel extends JPanel {
 
     // --- ROUND TITLE CARD OVERLAY ---
     private class RoundTitleCardOverlay extends JPanel {
+        private final JPanel card;
         private final JLabel locationLabel;
         private final JLabel stageRoundLabel;
         private final JLabel vsLabel;
@@ -2077,7 +2998,7 @@ public class BattlePanel extends JPanel {
             });
 
             // Center Modal Card (540 x 240)
-            JPanel card = new JPanel(new BorderLayout(0, 10)) {
+            card = new JPanel(new BorderLayout(0, 10)) {
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
@@ -2152,6 +3073,25 @@ public class BattlePanel extends JPanel {
             add(card);
         }
 
+        void updateResponsiveLayout(float S) {
+            int cardW = (int) Math.round(540 * S);
+            int cardH = (int) Math.round(240 * S);
+            card.setPreferredSize(new Dimension(cardW, cardH));
+            int padV = (int) Math.round(18 * S);
+            int padH = (int) Math.round(24 * S);
+            card.setBorder(BorderFactory.createEmptyBorder(padV, padH, (int) Math.round(16 * S), padH));
+
+            locationLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(13 * S)));
+            stageRoundLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(26 * S)));
+            vsLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(20 * S)));
+            subtitleLabel.setFont(new Font("Arial", Font.ITALIC, (int) Math.round(13 * S)));
+
+            dismissBtn.setFont(new Font("Arial", Font.BOLD, (int) Math.round(13 * S)));
+            dismissBtn.setPreferredSize(new Dimension((int) Math.round(160 * S), (int) Math.round(36 * S)));
+            revalidate();
+            repaint();
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -2213,7 +3153,7 @@ public class BattlePanel extends JPanel {
             setFocusPainted(false);
             setContentAreaFilled(false);
             setBorderPainted(false);
-            setPreferredSize(new Dimension(54, 38));
+            setPreferredSize(new Dimension(52, 52));
             if (app.customCursor != null) setCursor(app.customCursor);
 
             addMouseListener(new MouseAdapter() {
@@ -2259,47 +3199,86 @@ public class BattlePanel extends JPanel {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
             int w = getWidth() - 4;
             int h = getHeight() - 4;
             int x = 2;
             int y = 2;
 
-            if (isSelected) {
-                // Honey Gold Selected Tile (Solid)
-                g2.setColor(GamePalette.HONEY_GOLD);
-                g2.fillRoundRect(x, y, w, h, 10, 10);
+            char ch = Character.toUpperCase(getLetter());
+            BufferedImage tileImg = getLetterTileImage(ch);
 
-                g2.setColor(GamePalette.PUMPKIN_ORANGE);
+            if (isSelected) {
+                // Golden aura for selected tile
+                g2.setColor(new Color(245, 180, 50, 175));
+                g2.setStroke(new BasicStroke(3.5f));
+                g2.drawRoundRect(x - 1, y - 1, w + 2, h + 2, 10, 10);
+            } else if (isHovered) {
+                // Sky blue hover aura
+                g2.setColor(new Color(90, 190, 255, 160));
                 g2.setStroke(new BasicStroke(2.5f));
-                g2.drawRoundRect(x, y, w, h, 10, 10);
+                g2.drawRoundRect(x - 1, y - 1, w + 2, h + 2, 10, 10);
+            }
+
+            if (tileImg != null) {
+                // Draw high-resolution alphabet tile sprite centered as a square
+                int size = Math.min(w, h);
+                int drawX = x + (w - size) / 2;
+                int drawY = y + (h - size) / 2;
+                g2.drawImage(tileImg, drawX, drawY, size, size, null);
+
+                if (isSelected) {
+                    Graphics2D gTint = (Graphics2D) g2.create();
+                    gTint.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.16f));
+                    gTint.setColor(new Color(255, 200, 50));
+                    gTint.fillRoundRect(drawX, drawY, size, size, 8, 8);
+                    gTint.dispose();
+
+                    g2.setColor(new Color(240, 150, 30));
+                    g2.setStroke(new BasicStroke(2.2f));
+                    g2.drawRoundRect(drawX, drawY, size, size, 8, 8);
+                } else if (isHovered) {
+                    g2.setColor(new Color(110, 200, 255));
+                    g2.setStroke(new BasicStroke(1.8f));
+                    g2.drawRoundRect(drawX, drawY, size, size, 8, 8);
+                }
             } else {
-                // Cream Tile
-                Color bg = isHovered ? Color.WHITE : GamePalette.CREAM;
+                // Fallback procedural rendering if sprite is unavailable
+                Color bg = isSelected ? GamePalette.HONEY_GOLD : (isHovered ? Color.WHITE : GamePalette.CREAM);
                 g2.setColor(bg);
                 g2.fillRoundRect(x, y, w, h, 10, 10);
 
-                g2.setColor(isHovered ? GamePalette.SKY_BLUE : GamePalette.DUSK_NAVY);
-                g2.setStroke(new BasicStroke(isHovered ? 2f : 1.2f));
+                g2.setColor(isSelected ? GamePalette.PUMPKIN_ORANGE : (isHovered ? GamePalette.SKY_BLUE : GamePalette.DUSK_NAVY));
+                g2.setStroke(new BasicStroke(isSelected ? 2.5f : (isHovered ? 2f : 1.2f)));
                 g2.drawRoundRect(x, y, w, h, 10, 10);
+
+                // Main Letter (Centered)
+                g2.setFont(new Font("Arial", Font.BOLD, 19));
+                g2.setColor(GamePalette.MIDNIGHT_NAVY);
+                String str = String.valueOf(ch);
+                FontMetrics fm = g2.getFontMetrics();
+                int lx = x + (w - fm.stringWidth(str)) / 2;
+                int ly = y + (h + fm.getAscent() - fm.getDescent()) / 2 - 1;
+                g2.drawString(str, lx, ly);
+
+                // Points Value (Bottom Right Subscript with high-contrast badge for procedural fallback)
+                g2.setFont(new Font("Arial", Font.BOLD, 9));
+                String ptStr = String.valueOf(getPoints());
+                FontMetrics pfm = g2.getFontMetrics();
+                int pw = pfm.stringWidth(ptStr);
+                int px = x + w - pw - 4;
+                int py = y + h - 4;
+
+                g2.setColor(new Color(255, 255, 255, 190));
+                g2.fillRoundRect(px - 2, py - pfm.getAscent() + 1, pw + 4, pfm.getAscent() + 2, 4, 4);
+                g2.setColor(new Color(210, 195, 175));
+                g2.setStroke(new BasicStroke(1.0f));
+                g2.drawRoundRect(px - 2, py - pfm.getAscent() + 1, pw + 4, pfm.getAscent() + 2, 4, 4);
+
+                g2.setColor(isSelected ? GamePalette.PUMPKIN_ORANGE : GamePalette.MIDNIGHT_NAVY);
+                g2.drawString(ptStr, px, py);
             }
-
-            // Main Letter (Centered)
-            g2.setFont(new Font("Arial", Font.BOLD, 19));
-            g2.setColor(GamePalette.MIDNIGHT_NAVY);
-            String str = String.valueOf(Character.toUpperCase(getLetter()));
-            FontMetrics fm = g2.getFontMetrics();
-            int lx = x + (w - fm.stringWidth(str)) / 2;
-            int ly = y + (h + fm.getAscent() - fm.getDescent()) / 2 - 1;
-            g2.drawString(str, lx, ly);
-
-            // Points Value (Bottom Right Subscript)
-            g2.setFont(new Font("Arial", Font.BOLD, 9));
-            g2.setColor(isSelected ? GamePalette.MIDNIGHT_NAVY : GamePalette.PUMPKIN_ORANGE);
-            String ptStr = String.valueOf(getPoints());
-            int px = x + w - g2.getFontMetrics().stringWidth(ptStr) - 4;
-            int py = y + h - 4;
-            g2.drawString(ptStr, px, py);
 
             // PATTERN 4: DECORATOR - Render decorator badge (Gold star / Healing heart)
             if (tileComponent != null) {

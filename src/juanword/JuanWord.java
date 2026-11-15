@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 public class JuanWord extends JFrame {
 
@@ -25,16 +26,43 @@ public class JuanWord extends JFrame {
     private JPanel playerCardPanel;
 
     // Menu buttons
-    private JButton continueButton;
+    private ImageAssetButton continueButton;
+    private ImageAssetButton startButton;
+    private ImageAssetButton settingButton;
+    private ImageAssetButton exitButton;
 
-    // Battle Panel
+    // Panels
     private BattlePanel battlePanel;
+    public MapSelectPanel mapSelectPanel;
+
+    // Fullscreen and window state management
+    private boolean isFullScreen = false;
+    private Rectangle windowedBounds = new Rectangle(100, 100, 960, 540);
 
     public JuanWord() {
         setTitle("Juan Word");
         setSize(960, 540); // 16:9 aspect ratio
+        setMinimumSize(new Dimension(800, 500));
+        setResizable(true);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null); // Center window on screen
+
+        // Enable native macOS fullscreen support
+        getRootPane().putClientProperty("apple.awt.fullScreenable", true);
+
+        // Global hotkey listener for F11 and Alt+Enter / Meta+Enter Fullscreen toggle
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                if (e.getKeyCode() == KeyEvent.VK_F11) {
+                    toggleFullScreen();
+                    return true;
+                } else if (e.getKeyCode() == KeyEvent.VK_ENTER && (e.isAltDown() || e.isMetaDown())) {
+                    toggleFullScreen();
+                    return true;
+                }
+            }
+            return false;
+        });
 
         // Save game state when closing via window 'X' or JVM shutdown
         addWindowListener(new WindowAdapter() {
@@ -73,36 +101,186 @@ public class JuanWord extends JFrame {
         mainContainer = new JPanel(cardLayout);
 
         battlePanel = new BattlePanel(this, dataManager);
+        mapSelectPanel = new MapSelectPanel(this);
 
         mainContainer.add(createStartScreen(), "START");
-        mainContainer.add(createMapSelectScreen(), "MAP_SELECT");
+        mainContainer.add(mapSelectPanel, "MAP_SELECT");
         mainContainer.add(battlePanel, "BATTLE");
 
         add(mainContainer);
     }
 
+    public void toggleFullScreen() {
+        setFullScreen(!isFullScreen);
+    }
+
+    public void setFullScreen(boolean fullScreen) {
+        if (this.isFullScreen == fullScreen) return;
+        this.isFullScreen = fullScreen;
+
+        if (fullScreen) {
+            windowedBounds = getBounds();
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            setExtendedState(JFrame.NORMAL);
+            if (windowedBounds != null) {
+                setBounds(windowedBounds);
+            } else {
+                setSize(960, 540);
+                setLocationRelativeTo(null);
+            }
+        }
+        revalidate();
+        repaint();
+    }
+
+    public boolean isFullScreen() {
+        return isFullScreen;
+    }
+
+    public ImageAssetButton getContinueButton() {
+        return continueButton;
+    }
+
+    public ImageAssetButton getStartButton() {
+        return startButton;
+    }
+
+    public ImageAssetButton getSettingButton() {
+        return settingButton;
+    }
+
+    public ImageAssetButton getExitButton() {
+        return exitButton;
+    }
+
     // --- START SCREEN ---
-    private JPanel createStartScreen() {
-        // Load start screen background (TITLE_PAGE.png with fallback)
-        String bgPath = new java.io.File("TITLE_PAGE.png").exists() ? "TITLE_PAGE.png" : "TITILE_PAGE.png";
-        Image startBg = new ImageIcon(bgPath).getImage();
-        Image titleImage = new ImageIcon("Title.png").getImage();
+    public JPanel createStartScreen() {
+        // Load menu screen layers: bg.png (sky), mtapo.png (Mount Apo), indigframe.png (indigenous border frame)
+        Image skyBg = loadGameImage("bg.png");
+        Image mtApo = loadGameImage("mtapo.png");
+        Image indigFrame = loadGameImage("indigframe.png");
+        String fallbackPath = new java.io.File("TITLE_PAGE.png").exists() ? "TITLE_PAGE.png" : "TITILE_PAGE.png";
+        Image fallbackBg = loadGameImage(fallbackPath);
+        Image titleImage = loadGameImage("Title.png");
+
+        // Declare containers early so doLayout can dynamically scale them
+        final JPanel topBar = new JPanel(new BorderLayout());
+        final JPanel bottomContainer = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        final JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 0, 6));
+        buttonPanel.setOpaque(false);
 
         JPanel backgroundPanel = new JPanel() {
+            private BufferedImage cachedComposite = null;
+            private int cachedW = -1;
+            private int cachedH = -1;
+
+            @Override
+            public void doLayout() {
+                int w = getWidth();
+                int h = getHeight();
+                if (w > 0 && h > 0) {
+                    float S = Math.min((float) w / 960f, (float) h / 540f);
+                    float btnScale = Math.max(1.0f, Math.min(S, 2.2f));
+                    int btnW = Math.round(192 * btnScale);
+                    int btnH = Math.round(48 * btnScale);
+                    int strut = Math.max(4, Math.round(6 * btnScale));
+                    int totalH = 4 * btnH + 3 * strut;
+
+                    if (continueButton != null) continueButton.setTargetSize(btnW, btnH);
+                    if (startButton != null) startButton.setTargetSize(btnW, btnH);
+                    if (settingButton != null) settingButton.setTargetSize(btnW, btnH);
+                    if (exitButton != null) exitButton.setTargetSize(btnW, btnH);
+
+                    if (buttonPanel != null) {
+                        if (buttonPanel.getLayout() instanceof GridLayout) {
+                            ((GridLayout) buttonPanel.getLayout()).setVgap(strut);
+                        }
+                        buttonPanel.setPreferredSize(new Dimension(btnW, totalH));
+                        buttonPanel.setMinimumSize(new Dimension(btnW, totalH));
+                        buttonPanel.setMaximumSize(new Dimension(btnW, totalH));
+                        buttonPanel.setSize(btnW, totalH);
+                        buttonPanel.invalidate();
+                    }
+
+                    if (playerCardPanel != null) {
+                        int cardW = Math.round(230 * btnScale);
+                        int cardH = Math.round(48 * btnScale);
+                        playerCardPanel.setPreferredSize(new Dimension(cardW, cardH));
+                        playerCardPanel.setMaximumSize(new Dimension(cardW + 10, cardH + 4));
+                        if (playerNameLabel != null) playerNameLabel.setFont(new Font("Arial", Font.BOLD, (int) Math.round(13 * btnScale)));
+                        if (playerInfoLabel != null) playerInfoLabel.setFont(new Font("Arial", Font.PLAIN, (int) Math.round(11 * btnScale)));
+                    }
+
+                    int bPad = Math.max(16, (int) (20 * S));
+                    bottomContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, bPad, 0));
+                    bottomContainer.invalidate();
+
+                    int tPad = Math.max(12, (int) (18 * S));
+                    int lPad = Math.max(16, (int) (24 * S));
+                    topBar.setBorder(BorderFactory.createEmptyBorder(tPad, lPad, 0, 0));
+                    topBar.invalidate();
+                }
+                super.doLayout();
+                if (bottomContainer != null) {
+                    bottomContainer.doLayout();
+                }
+                if (buttonPanel != null) {
+                    buttonPanel.doLayout();
+                }
+            }
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(startBg, 0, 0, getWidth(), getHeight(), this);
+                int w = getWidth();
+                int h = getHeight();
+                if (w <= 0 || h <= 0) return;
 
+                // Rebuild cached background composite if size changes (render-to-texture for 60 FPS)
+                if (cachedComposite == null || cachedW != w || cachedH != h) {
+                    cachedW = w;
+                    cachedH = h;
+                    cachedComposite = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D gComp = cachedComposite.createGraphics();
+                    gComp.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                    gComp.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    // 1. Base Layer: Sky & Atmospheric Background (bg.png)
+                    if (skyBg != null) {
+                        gComp.drawImage(skyBg, 0, 0, w, h, null);
+                    } else if (fallbackBg != null) {
+                        gComp.drawImage(fallbackBg, 0, 0, w, h, null);
+                    }
+
+                    // 2. Middleground Layer: Mount Apo & Foothills (mtapo.png)
+                    if (mtApo != null) {
+                        gComp.drawImage(mtApo, 0, 0, w, h, null);
+                    }
+
+                    // 3. Border Layer: Authentic Indigenous Decorative Frame (indigframe.png)
+                    if (indigFrame != null) {
+                        gComp.drawImage(indigFrame, 0, 0, w, h, null);
+                    }
+
+                    gComp.dispose();
+                }
+
+                // Blit the composited background in 1 pass
+                g.drawImage(cachedComposite, 0, 0, this);
+
+                // 4. Foreground Layer: Prominent Game Title Logo (Title.png)
                 if (titleImage != null) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-                    // Resize title card and place it centered at the top (slightly larger)
-                    int titleW = (int) (getWidth() * 0.46);
+                    // Resize title card and place it centered at the top (prominently larger & responsive)
+                    int maxTitleW = (int) (w * 0.55);
+                    int maxTitleH = (int) (h * 0.38);
+                    int titleW = Math.min(maxTitleW, maxTitleH * 1163 / 586);
                     int titleH = titleW * 586 / 1163;
-                    int titleX = (getWidth() - titleW) / 2;
-                    int titleY = 18; // 18px from top
+                    int titleX = (w - titleW) / 2;
+                    int titleY = Math.max(16, (int) (h * 0.035));
 
                     g2.drawImage(titleImage, titleX, titleY, titleW, titleH, this);
                     g2.dispose();
@@ -111,60 +289,44 @@ public class JuanWord extends JFrame {
         };
         backgroundPanel.setLayout(new BorderLayout());
 
-        // Top bar for Player Card (top-left)
-        JPanel topBar = new JPanel(new BorderLayout());
+        // Top bar for Player Card (top-left, cleanly inset inside indigenous frame)
         topBar.setOpaque(false);
-        topBar.setBorder(BorderFactory.createEmptyBorder(16, 20, 0, 0));
+        topBar.setBorder(BorderFactory.createEmptyBorder(18, 24, 0, 0));
 
         playerCardPanel = createPlayerCardPanel();
         topBar.add(playerCardPanel, BorderLayout.WEST);
         backgroundPanel.add(topBar, BorderLayout.NORTH);
 
-        // Buttons: CONTINUE (on top of START), START, SETTING, EXIT
-        continueButton = new FlatGameButton("CONTINUE", GamePalette.HONEY_GOLD, GamePalette.MIDNIGHT_NAVY, GamePalette.SPICY_SWEETCORN);
-        stylePlainMenuButton(continueButton);
+        // Buttons from Juan Word Assets: CONTINUE, START / NEW GAME, SETTINGS, EXIT
+        continueButton = new ImageAssetButton("continuebtn.png", 192, 48);
+        styleImageButton(continueButton);
         continueButton.addActionListener(e -> handleContinueGame());
 
-        ImageIcon startIcon = new ImageIcon("Start Button.png");
-        JButton startButton = new JButton(startIcon);
+        startButton = new ImageAssetButton("startbtn.png", 192, 48);
         styleImageButton(startButton);
         startButton.addActionListener(e -> handleStartGame());
 
-        ImageIcon settingIcon = new ImageIcon("Setting Button.png");
-        JButton settingButton = new JButton(settingIcon);
+        settingButton = new ImageAssetButton("settingbtn.png", 192, 48);
         styleImageButton(settingButton);
         settingButton.addActionListener(e -> showSettingsDialog());
 
-        // Exit button (plain button for exiting the game)
-        JButton exitButton = new FlatGameButton("EXIT", GamePalette.CRIMSON_RED, GamePalette.CREAM, GamePalette.DARK_RED);
-        stylePlainMenuButton(exitButton);
+        exitButton = new ImageAssetButton("exitbtn.png", 192, 48);
+        styleImageButton(exitButton);
         exitButton.addActionListener(e -> {
             saveGameOnExit();
             System.exit(0);
         });
 
         // Stack buttons vertically
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.setOpaque(false);
-
-        continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        settingButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        buttonPanel.removeAll();
         buttonPanel.add(continueButton);
-        buttonPanel.add(Box.createVerticalStrut(8));
         buttonPanel.add(startButton);
-        buttonPanel.add(Box.createVerticalStrut(8));
         buttonPanel.add(settingButton);
-        buttonPanel.add(Box.createVerticalStrut(8));
         buttonPanel.add(exitButton);
 
         // Center bottom buttonPanel horizontally
-        JPanel bottomContainer = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         bottomContainer.setOpaque(false);
-        bottomContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0)); // 16px space from bottom
+        bottomContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         bottomContainer.add(buttonPanel);
 
         backgroundPanel.add(bottomContainer, BorderLayout.SOUTH);
@@ -172,93 +334,27 @@ public class JuanWord extends JFrame {
         return backgroundPanel;
     }
 
-    // --- PLACEHOLDER MAP SELECT SCREEN ---
-    private JPanel createMapSelectScreen() {
-        JPanel mapPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                // Semi-transparent overlay so map buttons stand out
-                g.setColor(new Color(GamePalette.MIDNIGHT_NAVY.getRed(), GamePalette.MIDNIGHT_NAVY.getGreen(), GamePalette.MIDNIGHT_NAVY.getBlue(), 215));
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        mapPanel.setLayout(new BorderLayout(20, 20));
-        mapPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
-
-        // Top Header bar
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setOpaque(false);
-
-        FlatGameButton backButton = new FlatGameButton("← Balik", GamePalette.CERULEAN, GamePalette.MIDNIGHT_NAVY, GamePalette.SKY_BLUE);
-        backButton.setPreferredSize(new Dimension(100, 36));
-        backButton.setCornerRadius(10);
-        if (customCursor != null) {
-            backButton.setCursor(customCursor);
+    // --- MAP SELECT SCREEN ---
+    public JPanel createMapSelectScreen() {
+        if (mapSelectPanel == null) {
+            mapSelectPanel = new MapSelectPanel(this);
         }
-        backButton.addActionListener(e -> {
-            if (currentPlayer != null) {
-                Player fresh = dataManager.loadPlayer(currentPlayer.playerId);
-                if (fresh != null) {
-                    currentPlayer = fresh;
-                }
-            }
-            updatePlayerCard();
-            updateContinueButton();
-            cardLayout.show(mainContainer, "START");
-        });
+        return mapSelectPanel;
+    }
 
-        JLabel titleLabel = new JLabel("MAP SELECT", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(GamePalette.CREAM);
-
-        // Cog Settings button on top right
-        Image cogImg = new ImageIcon("Cog Setting.png").getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-        JButton cogButton = new JButton(new ImageIcon(cogImg));
-        styleImageButton(cogButton);
-        cogButton.setToolTipText("Settings");
-        cogButton.addActionListener(e -> showSettingsDialog());
-
-        headerPanel.add(backButton, BorderLayout.WEST);
-        headerPanel.add(titleLabel, BorderLayout.CENTER);
-        headerPanel.add(cogButton, BorderLayout.EAST);
-        mapPanel.add(headerPanel, BorderLayout.NORTH);
-
-        // Grid of 6 maps (2 rows x 3 columns)
-        JPanel gridPanel = new JPanel(new GridLayout(2, 3, 20, 20));
-        gridPanel.setOpaque(false);
-
-        String[][] maps = {
-            {"San Pedro Cathedral", "Katung daan nga simbahan"},
-            {"Davao City Hall", "Sentro sa gobyerno"},
-            {"Davao City Clock Tower", "Tungod sa City Hall"},
-            {"Ateneo de Davao University", "AdDU Roxas Campus"},
-            {"Ramon Magsaysay Park", "Entrance / Waling-waling"},
-            {"Davao City Museum", "Durian architectural design"}
-        };
-
-        for (int i = 0; i < maps.length; i++) {
-            String mapName = maps[i][0];
-            String mapDesc = maps[i][1];
-            boolean isUnlocked = (i == 0); // San Pedro Cathedral is unlocked; remaining 5 are locked
-
-            MapTileButton mapBtn = new MapTileButton(mapName, mapDesc, isUnlocked);
-            if (isUnlocked) {
-                mapBtn.addActionListener(e -> showSanPedroStagesDialog());
-            } else {
-                mapBtn.addActionListener(e -> showLockedMapDialog(mapName));
-            }
-
-            gridPanel.add(mapBtn);
+    // Return to start screen from other panels
+    public void showStartScreen() {
+        if (currentPlayer != null) {
+            Player fresh = dataManager.loadPlayer(currentPlayer.playerId);
+            if (fresh != null) currentPlayer = fresh;
         }
-
-        mapPanel.add(gridPanel, BorderLayout.CENTER);
-        return mapPanel;
+        updatePlayerCard();
+        updateContinueButton();
+        cardLayout.show(mainContainer, "START");
     }
 
     // Modal dialog explaining a locked map
-    private void showLockedMapDialog(String mapName) {
+    public void showLockedMapDialog(String mapName) {
         JOptionPane.showMessageDialog(
             this,
             "<html><center><font size='4' color='#D36F02'><b>🔒 NAKA-LOCK PA KINI NGA MAPA</b></font><br><br>"
@@ -571,10 +667,18 @@ public class JuanWord extends JFrame {
         dialog.setVisible(true);
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player p) {
+        this.currentPlayer = p;
+    }
+
     // Modal Settings dialog that reads from and saves to data/settings.csv
-    private void showSettingsDialog() {
+    public void showSettingsDialog() {
         JDialog dialog = new JDialog(this, "Settings", true);
-        dialog.setSize(380, 310);
+        dialog.setSize(380, 360);
         dialog.setLocationRelativeTo(this);
         dialog.getContentPane().setBackground(GamePalette.DEEP_INDIGO);
         dialog.setLayout(new BorderLayout(15, 15));
@@ -601,7 +705,7 @@ public class JuanWord extends JFrame {
         dialog.add(top, BorderLayout.NORTH);
 
         // Controls
-        JPanel center = new JPanel(new GridLayout(3, 1, 0, 10));
+        JPanel center = new JPanel(new GridLayout(4, 1, 0, 8));
         center.setOpaque(false);
         center.setBorder(BorderFactory.createEmptyBorder(5, 40, 10, 40));
 
@@ -617,6 +721,12 @@ public class JuanWord extends JFrame {
         sfxCheck.setOpaque(false);
         if (customCursor != null) sfxCheck.setCursor(customCursor);
 
+        JCheckBox fullScreenCheck = new JCheckBox("Full Screen (F11)", isFullScreen());
+        fullScreenCheck.setFont(new Font("Arial", Font.BOLD, 14));
+        fullScreenCheck.setForeground(GamePalette.CREAM);
+        fullScreenCheck.setOpaque(false);
+        if (customCursor != null) fullScreenCheck.setCursor(customCursor);
+
         JPanel volPanel = new JPanel(new BorderLayout(5, 5));
         volPanel.setOpaque(false);
         JLabel volLabel = new JLabel("Volume: " + current.volume + "%");
@@ -631,6 +741,7 @@ public class JuanWord extends JFrame {
 
         center.add(musicCheck);
         center.add(sfxCheck);
+        center.add(fullScreenCheck);
         center.add(volPanel);
         dialog.add(center, BorderLayout.CENTER);
 
@@ -645,6 +756,7 @@ public class JuanWord extends JFrame {
             current.sfxOn = sfxCheck.isSelected();
             current.volume = volSlider.getValue();
             dataManager.saveSettings(current);
+            setFullScreen(fullScreenCheck.isSelected());
             dialog.dispose();
             JOptionPane.showMessageDialog(this, "Settings saved successfully to data/settings.csv!");
         });
@@ -709,7 +821,8 @@ public class JuanWord extends JFrame {
         card.setToolTipText("Click to switch or create player profiles");
 
         // Avatar icon on the left
-        Image sprite = loadGameImage("Main Character Idle_1.png");
+        Image sprite = loadGameImage("maincharacteridle.png");
+        if (sprite == null) sprite = loadGameImage("Main Character Idle_1.png");
         JLabel avatarLabel;
         if (sprite != null) {
             Image scaled = sprite.getScaledInstance(34, 34, Image.SCALE_SMOOTH);
@@ -795,9 +908,15 @@ public class JuanWord extends JFrame {
             if (customCursor != null) {
                 continueButton.setCursor(customCursor);
             }
+            if (startButton != null) {
+                startButton.setImage("newgamebtn.png");
+            }
         } else {
             continueButton.setToolTipText("Walay aktibo nga dula (No active game in progress)");
             continueButton.setCursor(Cursor.getDefaultCursor());
+            if (startButton != null) {
+                startButton.setImage("startbtn.png");
+            }
         }
         continueButton.repaint();
     }
@@ -840,7 +959,10 @@ public class JuanWord extends JFrame {
             updateContinueButton();
         }
 
-        // Proceed to map select
+        // Proceed to map select with entrance animation
+        if (mapSelectPanel != null) {
+            mapSelectPanel.startEntranceAnimation();
+        }
         cardLayout.show(mainContainer, "MAP_SELECT");
     }
 
@@ -1016,6 +1138,9 @@ public class JuanWord extends JFrame {
             if (fresh != null) {
                 currentPlayer = fresh;
             }
+        }
+        if (mapSelectPanel != null) {
+            mapSelectPanel.startEntranceAnimation();
         }
         cardLayout.show(mainContainer, "MAP_SELECT");
         updatePlayerCard();
@@ -1229,7 +1354,8 @@ public class JuanWord extends JFrame {
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 76));
 
         // Left Avatar
-        Image sprite = loadGameImage("Main Character Idle_1.png");
+        Image sprite = loadGameImage("maincharacteridle.png");
+        if (sprite == null) sprite = loadGameImage("Main Character Idle_1.png");
         JLabel avatar;
         if (sprite != null) {
             avatar = new JLabel(new ImageIcon(sprite.getScaledInstance(36, 36, Image.SCALE_SMOOTH)));
@@ -1448,7 +1574,7 @@ public class JuanWord extends JFrame {
     }
 
     // Helper method to remove default button borders and backgrounds for pixel art
-    private void styleImageButton(JButton button) {
+    public void styleImageButton(JButton button) {
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);

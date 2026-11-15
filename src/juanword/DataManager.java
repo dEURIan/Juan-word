@@ -43,7 +43,7 @@ public class DataManager {
     public static final Path DICTIONARY = DATA_DIR.resolve("cebuano_dictionary_all_entries.csv");
 
     // Standard CSV headers
-    private static final String PLAYERS_HEADER = "playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved,savedTiles,savedDifficulty,savedEnemyHealth,savedMap,unlockedSayonStage,unlockedSaktoStage,unlockedLisodStage";
+    private static final String PLAYERS_HEADER = "playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved,savedTiles,savedDifficulty,savedEnemyHealth,savedMap,unlockedSayonStage,unlockedSaktoStage,unlockedLisodStage,unlockedMapIndex";
     private static final String UNLOCKS_HEADER = "playerId,stage1Unlocked,stage2Unlocked,stage3Unlocked,stage4Unlocked,tikbalangDefeated,kapreDefeated,manananggalDefeated,aswangDefeated";
     private static final String SETTINGS_HEADER = "playerId,musicOn,sfxOn,volume";
     private static final String HIGHSCORES_HEADER = "playerName,score,stageReached,date";
@@ -114,6 +114,9 @@ public class DataManager {
     public void savePlayer(Player p) {
         p.lastSaved = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         List<String> lines = readLines(PLAYERS);
+        if (lines.isEmpty() || !lines.get(0).startsWith("playerId,")) {
+            lines.add(0, PLAYERS_HEADER);
+        }
         boolean found = false;
         for (int i = 1; i < lines.size(); i++) {
             if (lines.get(i).startsWith(p.playerId + ",")) {
@@ -176,11 +179,18 @@ public class DataManager {
         List<String> lines = readLines(file);
         if (lines.isEmpty()) return;
         List<String> updated = new ArrayList<>();
-        updated.add(lines.get(0)); // Always keep header row intact
+        String header = lines.get(0);
+        if (file.equals(PLAYERS) && !header.startsWith("playerId,")) {
+            header = PLAYERS_HEADER;
+        }
+        updated.add(header); // Always keep header row intact
         for (int i = 1; i < lines.size(); i++) {
-            if (!lines.get(i).startsWith(playerId + ",")) {
-                updated.add(lines.get(i));
-            }
+            String line = lines.get(i).trim();
+            if (line.isEmpty()) continue;
+            if (line.startsWith(playerId + ",")) continue;
+            // Filter out any broken fragments
+            if (file.equals(PLAYERS) && !line.startsWith("P")) continue;
+            updated.add(line);
         }
         writeLines(file, updated);
     }

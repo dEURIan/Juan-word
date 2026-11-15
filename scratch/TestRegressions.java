@@ -22,15 +22,15 @@ public class TestRegressions {
         BattlePanel panel = new BattlePanel(app, DataManager.getInstance());
 
         // Stage 1: Dizon
-        panel.setupBattle(new Player("P001", "Juan"), "San Pedro Cathedral", 1, "Sakto");
+        panel.setupBattle(new Player("P_TEST_REG", "TestReg"), "San Pedro Cathedral", 1, "Sakto");
         assert "DIZON".equals(panel.getCurrentEnemy().getName()) : "Stage 1 enemy should be Dizon";
 
         // Stage 2: Alviola
-        panel.setupBattle(new Player("P001", "Juan"), "San Pedro Cathedral", 2, "Sakto");
+        panel.setupBattle(new Player("P_TEST_REG", "TestReg"), "San Pedro Cathedral", 2, "Sakto");
         assert "ALVIOLA".equals(panel.getCurrentEnemy().getName()) : "Stage 2 enemy should be Alviola";
 
         // Stage 3: Rola
-        panel.setupBattle(new Player("P001", "Juan"), "San Pedro Cathedral", 3, "Sakto");
+        panel.setupBattle(new Player("P_TEST_REG", "TestReg"), "San Pedro Cathedral", 3, "Sakto");
         assert "ROLA".equals(panel.getCurrentEnemy().getName()) : "Stage 3 enemy should be Rola";
 
         System.out.println("  ✓ Stages 1, 2, and 3 configure correct enemy entities and stats.");
@@ -40,7 +40,7 @@ public class TestRegressions {
         System.out.println("\n--- Testing Enemy Attack Animation ---");
         JuanWord app = new JuanWord();
         BattlePanel panel = new BattlePanel(app, DataManager.getInstance());
-        panel.setupBattle(new Player("P001", "Juan"), "San Pedro Cathedral", 1, "Sakto");
+        panel.setupBattle(new Player("P_TEST_REG", "TestReg"), "San Pedro Cathedral", 1, "Sakto");
 
         Field boxField = BattlePanel.class.getDeclaredField("dizonBox");
         boxField.setAccessible(true);
@@ -112,7 +112,7 @@ public class TestRegressions {
         System.out.println("\n--- Testing Bookworm Word Rack and Health Bar ---");
         JuanWord app = new JuanWord();
         BattlePanel panel = new BattlePanel(app, DataManager.getInstance());
-        panel.setupBattle(new Player("P001", "Juan"), "San Pedro Cathedral", 1, "Sakto");
+        panel.setupBattle(new Player("P_TEST_REG", "TestReg"), "San Pedro Cathedral", 1, "Sakto");
 
         Field tilesField = BattlePanel.class.getDeclaredField("tiles");
         tilesField.setAccessible(true);
@@ -130,5 +130,6 @@ public class TestRegressions {
         assert rack != null : "Bookworm Word Rack must be initialized";
 
         System.out.println("  ✓ Word rack and enemy health bar initialized and functional.");
+        DataManager.getInstance().deletePlayer("P_TEST_REG");
     }
 }
