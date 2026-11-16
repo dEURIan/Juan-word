@@ -42,10 +42,13 @@ public final class JuanWord extends JFrame {
     public JuanWord() {
         super("JuanWord: Lexical Combat RPG");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setResizable(false);
+        setResizable(true);
+        setMinimumSize(new Dimension(800, 500));
         setSize(WIDTH, HEIGHT);
         getContentPane().setPreferredSize(new Dimension(WIDTH, HEIGHT));
         pack();
+
+        getRootPane().putClientProperty("apple.awt.fullScreenable", true);
 
         try {
             BufferedImage cursorImg = ImageLoader.load("Cursor.png");
@@ -68,7 +71,31 @@ public final class JuanWord extends JFrame {
         setContentPane(root);
         installClosingHook();
 
+        root.registerKeyboardAction(
+            e -> toggleFullScreen(),
+            javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F11, 0),
+            javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW
+        );
+
         showScreen(Screen.START);
+    }
+
+    public boolean isFullScreen() {
+        return (getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH;
+    }
+
+    public void setFullScreen(boolean fs) {
+        if (fs) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            setExtendedState(JFrame.NORMAL);
+            setSize(WIDTH, HEIGHT);
+            setLocationRelativeTo(null);
+        }
+    }
+
+    public void toggleFullScreen() {
+        setFullScreen(!isFullScreen());
     }
 
     public void showScreen(Screen screen) {

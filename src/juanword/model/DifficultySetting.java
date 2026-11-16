@@ -4,7 +4,7 @@ public enum DifficultySetting {
     SAYON(1, new double[]{0.80, 1.00, 1.20, 1.45, 1.80, 1.80}, 0, 0, 1.0, "Sayon"),
     SAKTO(2, new double[]{0.40, 0.65, 1.00, 1.45, 1.90, 2.40}, 0, 0, 1.15, "Sakto"),
     LISOD(3, new double[]{0.20, 0.35, 0.85, 1.50, 2.20, 3.00}, 25, 8, 1.30, "Lisod"),
-    EXTREME(4, new double[]{0.10, 0.25, 0.70, 1.25, 1.25, 1.25}, 20, 0, 1.50, "Extreme");
+    EXTREME(4, new double[]{0.15, 0.35, 0.85, 1.60, 2.40, 3.20}, 20, 0, 1.50, "Extreme");
 
     private final int mapIndex;
     private final double[] lengthMultipliers;

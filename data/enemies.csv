@@ -11,3 +11,4 @@ map_index,stage_index,enemy_id,display_name,is_boss,base_hp,base_attack,sprite_p
 4,1,MONKEY,Monkey,false,130,16,assets/sprites/monkey.png
 4,2,KARABAW,Karabaw,false,160,20,assets/sprites/karabaw.png
 4,3,BOSS_PORTER,Boss Porter,true,300,24,assets/sprites/porter.png
+4,4,GUDO,Gudo,true,200,15,assets/sprites/gudoidle.png

@@ -26,7 +26,7 @@ public abstract class Enemy {
         EnemySpec spec = DataManager.getInstance().getEnemySpecById(this.enemyId);
         double scale = this.difficulty.getStatScale();
         if (spec != null) {
-            this.maxHp = Math.max(1, (int) Math.round(spec.baseHp() * scale));
+            this.maxHp = Math.max(1, (int) Math.round(spec.baseHp() * scale)); //easy 1.0x, medium 1.15x, hard 1.30x, extreme 1.50x
             this.attack = Math.max(1, (int) Math.round(spec.baseAttack() * scale));
             this.boss = spec.boss();
             this.spritePath = spec.spritePath();
@@ -42,6 +42,7 @@ public abstract class Enemy {
     public String getName() { return name; }
     public String getEnemyId() { return enemyId; }
     public String getSpritePath() { return spritePath; }
+    public String getAttackSpritePath() { return null; }
     public int getMaxHp() { return maxHp; }
     public int getCurrentHp() { return currentHp; }
     public int getAttack() { return attack; }

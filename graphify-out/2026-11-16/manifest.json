@@ -486,10 +486,10 @@
     "semantic_hash": "5b427c7749c4dc430530a3e2617a89cd"
   },
   "scratch/TestJuanAttackAnimation.java": {
-    "mtime": 1794800658.9626043,
-    "seen": 1794800764.50032,
-    "ast_hash": "af51e60b8bf90429582e8a6ac468d651",
-    "semantic_hash": "af51e60b8bf90429582e8a6ac468d651"
+    "mtime": 1794813442.2054284,
+    "seen": 1794813447.0268428,
+    "ast_hash": "29c3e09abfab17bba72c2764f56e7fb4",
+    "semantic_hash": "29c3e09abfab17bba72c2764f56e7fb4"
   },
   "scratch/CaptureJuanAttackBattleScreenshots.java": {
     "mtime": 1794757133.1925652,
@@ -684,10 +684,10 @@
     "semantic_hash": "f11f28bd19d711d339609f884e2c3e4a"
   },
   "scratch/InspectLandmarkSprites.java": {
-    "mtime": 1794797440.2196653,
-    "seen": 1794797446.621118,
-    "ast_hash": "081e1ee23438551f4ef6fec654f7d748",
-    "semantic_hash": "081e1ee23438551f4ef6fec654f7d748"
+    "mtime": 1794811342.4541698,
+    "seen": 1794811349.931263,
+    "ast_hash": "1824a9e659a31825a96a3dc5beef5e13",
+    "semantic_hash": "1824a9e659a31825a96a3dc5beef5e13"
   },
   "scratch/RenderAnnotatedMapSelect.java": {
     "mtime": 1794797457.3132362,
@@ -774,10 +774,10 @@
     "semantic_hash": "58ea1f2c7a694dc2945dfd5e62101bcf"
   },
   "src/juanword/enemy/Enemy.java": {
-    "mtime": 1794799751.243361,
-    "seen": 1794800495.252167,
-    "ast_hash": "1e26d183c4dcb7a015b7aee44e03fb21",
-    "semantic_hash": "1e26d183c4dcb7a015b7aee44e03fb21"
+    "mtime": 1794813725.081517,
+    "seen": 1794814270.5906188,
+    "ast_hash": "bc1854778bf3dcd124304f435a21d87c",
+    "semantic_hash": "bc1854778bf3dcd124304f435a21d87c"
   },
   "src/juanword/enemy/EnemyFactory.java": {
     "mtime": 1794800145.9579592,
@@ -840,8 +840,8 @@
     "semantic_hash": "021b8238fe912bafed6424c3758f570e"
   },
   "src/juanword/model/BattleContext.java": {
-    "mtime": 1794799764.2222185,
-    "seen": 1794800495.252177,
+    "mtime": 1794813725.0864477,
+    "seen": 1794814270.590823,
     "ast_hash": "ee9958e37d5f7d2808d388c4246d4986",
     "semantic_hash": "ee9958e37d5f7d2808d388c4246d4986"
   },
@@ -918,10 +918,10 @@
     "semantic_hash": "0f7b2107db548dfdd7286497f212b6ae"
   },
   "src/juanword/ui/BattlePanel.java": {
-    "mtime": 1794805402.6499553,
-    "seen": 1794805424.417162,
-    "ast_hash": "316dbcdf14d2f92f19a4fa10c6b4c879",
-    "semantic_hash": "316dbcdf14d2f92f19a4fa10c6b4c879"
+    "mtime": 1794815115.1629016,
+    "seen": 1794815177.706696,
+    "ast_hash": "5e69ca7613b1cad8bec63275a6371f96",
+    "semantic_hash": "5e69ca7613b1cad8bec63275a6371f96"
   },
   "src/juanword/ui/EnemyAnimator.java": {
     "mtime": 1794801658.8146613,
@@ -942,28 +942,28 @@
     "semantic_hash": "4999fdb06c405eb989f39506913cda5b"
   },
   "src/juanword/ui/Landmark.java": {
-    "mtime": 1794804725.7661285,
-    "seen": 1794804737.3960052,
-    "ast_hash": "63cb76c56ef81bc2cd01a5430e3971c6",
-    "semantic_hash": "63cb76c56ef81bc2cd01a5430e3971c6"
+    "mtime": 1794815089.3670368,
+    "seen": 1794815177.706752,
+    "ast_hash": "479981773484e7790ef174984d4546de",
+    "semantic_hash": "479981773484e7790ef174984d4546de"
   },
   "src/juanword/ui/MapSelectPanel.java": {
-    "mtime": 1794809796.7373269,
-    "seen": 1794809814.72834,
-    "ast_hash": "e00f0f16351793e1b46359c894c40f87",
-    "semantic_hash": "e00f0f16351793e1b46359c894c40f87"
+    "mtime": 1794815765.9864717,
+    "seen": 1794815803.10255,
+    "ast_hash": "71746f07f5f339b49e9db2bd306315a0",
+    "semantic_hash": "71746f07f5f339b49e9db2bd306315a0"
   },
   "src/juanword/ui/PlayerAnimator.java": {
-    "mtime": 1794803111.869281,
-    "seen": 1794803263.485607,
-    "ast_hash": "f64f12f633e8ee0b1e8b174e82fea9fe",
-    "semantic_hash": "f64f12f633e8ee0b1e8b174e82fea9fe"
+    "mtime": 1794813409.5157316,
+    "seen": 1794813425.674977,
+    "ast_hash": "6ffb4cbf1c4a18a7b601d825e2bf5ab4",
+    "semantic_hash": "6ffb4cbf1c4a18a7b601d825e2bf5ab4"
   },
   "src/juanword/ui/StartPanel.java": {
-    "mtime": 1794803253.6857893,
-    "seen": 1794803263.485609,
-    "ast_hash": "0900d5a80174103d7357ecad1dabdda0",
-    "semantic_hash": "0900d5a80174103d7357ecad1dabdda0"
+    "mtime": 1794811701.214992,
+    "seen": 1794811708.898296,
+    "ast_hash": "63df67b79dc435155dc8c229476e2457",
+    "semantic_hash": "63df67b79dc435155dc8c229476e2457"
   },
   "scratch/RenderDesignCheck.java": {
     "mtime": 1794805447.8859384,
@@ -1018,5 +1018,83 @@
     "seen": 1794809777.5690508,
     "ast_hash": "ffe5f576df4ebd39ff6f87f8045341a2",
     "semantic_hash": "ffe5f576df4ebd39ff6f87f8045341a2"
+  },
+  "scratch/InspectDurian.java": {
+    "mtime": 1794811210.6393049,
+    "seen": 1794811256.5782552,
+    "ast_hash": "f766da54de3563cf8bd32084fef5c7de",
+    "semantic_hash": "f766da54de3563cf8bd32084fef5c7de"
+  },
+  "scratch/TestCropDurian.java": {
+    "mtime": 1794811488.4205163,
+    "seen": 1794811537.588135,
+    "ast_hash": "503e170561a2cd06e14371d34294199f",
+    "semantic_hash": "503e170561a2cd06e14371d34294199f"
+  },
+  "scratch/CropDurianMuseum.java": {
+    "mtime": 1794811529.1325614,
+    "seen": 1794811537.586878,
+    "ast_hash": "7bb716ded307a9a3ffa90f1f5ae07c98",
+    "semantic_hash": "7bb716ded307a9a3ffa90f1f5ae07c98"
+  },
+  "scratch/RenderLatestScreenshots.java": {
+    "mtime": 1794815857.983187,
+    "seen": 1794815886.570292,
+    "ast_hash": "28b66997c3649142b6b325df93328187",
+    "semantic_hash": "28b66997c3649142b6b325df93328187"
+  },
+  "scratch/TestLatestChanges.java": {
+    "mtime": 1794815783.0938163,
+    "seen": 1794815803.101485,
+    "ast_hash": "10567beedf356288747aa1efe7602beb",
+    "semantic_hash": "10567beedf356288747aa1efe7602beb"
+  },
+  "scratch/RenderDialogAndLitAttack.java": {
+    "mtime": 1794812023.6873968,
+    "seen": 1794812036.1326668,
+    "ast_hash": "b7f2c5f11624a8abbeddd1b4df6f7161",
+    "semantic_hash": "b7f2c5f11624a8abbeddd1b4df6f7161"
+  },
+  "scratch/RenderCharacterAnimationShowcase.java": {
+    "mtime": 1794813480.1192882,
+    "seen": 1794813553.28094,
+    "ast_hash": "efb4253329306412c8e29c23f3b67290",
+    "semantic_hash": "efb4253329306412c8e29c23f3b67290"
+  },
+  "scratch/RenderCharacterSpriteStrip.java": {
+    "mtime": 1794813499.6879423,
+    "seen": 1794813553.280942,
+    "ast_hash": "d878152441bc26379bb83035d52cc68c",
+    "semantic_hash": "d878152441bc26379bb83035d52cc68c"
+  },
+  "scratch/CheckBBoxes.java": {
+    "mtime": 1794814920.2475698,
+    "seen": 1794814925.32065,
+    "ast_hash": "550aa3a49353f947f3e6b47492b522e4",
+    "semantic_hash": "550aa3a49353f947f3e6b47492b522e4"
+  },
+  "scratch/MeasureLandmarks.java": {
+    "mtime": 1794814950.637884,
+    "seen": 1794815177.7049348,
+    "ast_hash": "360e59b5b83bcedb8cce676f3cfc4cae",
+    "semantic_hash": "360e59b5b83bcedb8cce676f3cfc4cae"
+  },
+  "scratch/PrintLandmarkDrawRects.java": {
+    "mtime": 1794815029.5742385,
+    "seen": 1794815177.704984,
+    "ast_hash": "01057193ef056120af72a48e2e5767c1",
+    "semantic_hash": "01057193ef056120af72a48e2e5767c1"
+  },
+  "scratch/RenderMapIconsComparison.java": {
+    "mtime": 1794815157.5278587,
+    "seen": 1794815177.705247,
+    "ast_hash": "aa871920004e5657525f21c321cb38fe",
+    "semantic_hash": "aa871920004e5657525f21c321cb38fe"
+  },
+  "scratch/TestBiggerIcons.java": {
+    "mtime": 1794815063.1390185,
+    "seen": 1794815177.705318,
+    "ast_hash": "859f4ad67f20be745abdfa53482679ac",
+    "semantic_hash": "859f4ad67f20be745abdfa53482679ac"
   }
 }

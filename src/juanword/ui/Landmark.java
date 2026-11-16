@@ -34,7 +34,8 @@ public final class Landmark {
             } else if (mapIndex == 3) {
                 int subY = Math.min(201, raw.getHeight() - 1);
                 int subH = Math.min(865, raw.getHeight() - subY);
-                this.sprite = raw.getSubimage(0, subY, raw.getWidth(), subH);
+                int subW = Math.min(1612, raw.getWidth());
+                this.sprite = raw.getSubimage(0, subY, subW, subH);
             } else {
                 this.sprite = raw;
             }
@@ -89,12 +90,25 @@ public final class Landmark {
 
         int bw = bounds.width;
         int bh = bounds.height;
-        int sw = (int) (bw * scale);
-        int sh = (int) (bh * scale);
-        int sx = bounds.x + (bw - sw) / 2;
-        int sy = bounds.y + (bh - sh) / 2;
 
-        g2.drawImage(img, sx, sy, sw, sh, null);
+        if (mapIndex == 4) {
+            int sw = (int) (bw * scale);
+            int sh = (int) (bh * scale);
+            int sx = bounds.x + (bw - sw) / 2;
+            int sy = bounds.y + (bh - sh) / 2;
+            g2.drawImage(img, sx, sy, sw, sh, null);
+        } else {
+            // Preserve native aspect ratio so icons are never stretched or distorted
+            int imgW = img.getWidth();
+            int imgH = img.getHeight();
+            double scaleRatio = Math.min((double) bw / imgW, (double) bh / imgH);
+            int drawW = Math.max(1, (int) Math.round(imgW * scaleRatio * scale));
+            int drawH = Math.max(1, (int) Math.round(imgH * scaleRatio * scale));
+            int drawX = bounds.x + (bw - drawW) / 2;
+            int drawY = bounds.y + (bh - drawH); // Anchor to bottom of bounds (ground baseline)
+
+            g2.drawImage(img, drawX, drawY, drawW, drawH, null);
+        }
 
         if (locked && mapIndex != 4) {
             // Draw clean padlock emblem

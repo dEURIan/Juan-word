@@ -44,7 +44,7 @@ public final class FloatingText {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 
-        Font font = new Font(Font.SANS_SERIF, Font.BOLD, 18);
+        Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22);
         g2.setFont(font);
 
         // Shadow

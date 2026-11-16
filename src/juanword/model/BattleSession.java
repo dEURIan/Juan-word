@@ -43,11 +43,11 @@ public final class BattleSession {
     }
 
     public boolean isBossStage() {
-        return stageIndex == 3;
+        return (mapIndex == 4) ? stageIndex >= 3 : stageIndex == 3;
     }
 
     public boolean isFinalBoss() {
-        return mapIndex == 4 && stageIndex == 3;
+        return mapIndex == 4 && stageIndex >= 4;
     }
 
     public Player getPlayer() { return player; }

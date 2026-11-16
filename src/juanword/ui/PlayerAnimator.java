@@ -17,6 +17,7 @@ public final class PlayerAnimator {
     private int flashRemainingMs;
     private float shakeAmplitude;
     private float shakePhase;
+    private long idleElapsedMs;
 
     public PlayerAnimator(int anchorX, int anchorY) {
         this.anchorX = anchorX;
@@ -24,10 +25,22 @@ public final class PlayerAnimator {
     }
 
     public void startAttack(AttackType type) {
+        startAttack(type, 360);
+    }
+
+    public void startAttack(AttackType type, long durationMs) {
         this.attackType = (type != null) ? type : AttackType.SLASH;
-        this.attackDurationMs = 360;
+        this.attackDurationMs = Math.max(100, durationMs);
         this.attackElapsedMs = 0;
         this.impactReached = false;
+    }
+
+    public long getAttackDurationMs() {
+        return attackDurationMs;
+    }
+
+    public long getAttackElapsedMs() {
+        return attackElapsedMs;
     }
 
     public boolean isAttacking() {
@@ -37,9 +50,9 @@ public final class PlayerAnimator {
     public BufferedImage getActiveSprite(BufferedImage idle, BufferedImage preAttack, BufferedImage attack) {
         if (attackType == null) return idle;
         float t = (float) attackElapsedMs / attackDurationMs;
-        if (t < 0.35f) {
+        if (t < 0.30f) {
             return (preAttack != null) ? preAttack : idle;
-        } else if (t < 0.75f) {
+        } else if (t < 0.78f) {
             return (attack != null) ? attack : idle;
         } else {
             return idle;
@@ -70,6 +83,8 @@ public final class PlayerAnimator {
             if (attackElapsedMs >= attackDurationMs) {
                 attackType = null;
             }
+        } else {
+            idleElapsedMs += dtMs;
         }
 
         if (flashRemainingMs > 0) {
@@ -82,16 +97,63 @@ public final class PlayerAnimator {
         }
     }
 
+    public float getDrawOffsetX() {
+        float lungeX = 0f;
+        if (attackType != null) {
+            float t = (float) attackElapsedMs / attackDurationMs;
+            if (t < 0.30f) {
+                float p = t / 0.30f;
+                lungeX = (float) (-12.0 * Math.sin(p * Math.PI * 0.5));
+            } else if (t < 0.78f) {
+                float p = (t - 0.30f) / 0.48f;
+                lungeX = (float) (38.0 * Math.sin(p * Math.PI));
+            } else {
+                float p = (t - 0.78f) / 0.22f;
+                lungeX = (float) (12.0 * (1.0 - p));
+            }
+        }
+        float shakeOffset = (shakeAmplitude > 0) ? (float) (Math.sin(shakePhase) * shakeAmplitude) : 0f;
+        return lungeX + shakeOffset;
+    }
+
+    public float getDrawOffsetY() {
+        if (attackType == null) {
+            return (float) (Math.sin(idleElapsedMs * 0.0035) * 2.5);
+        }
+        return 0f;
+    }
+
+    public float getShadowScale() {
+        if (attackType == null) {
+            return 1.0f - 0.04f * (float) Math.sin(idleElapsedMs * 0.0035);
+        }
+        float t = (float) attackElapsedMs / attackDurationMs;
+        if (t >= 0.30f && t < 0.78f) {
+            float p = (t - 0.30f) / 0.48f;
+            return 1.0f + 0.12f * (float) Math.sin(p * Math.PI);
+        }
+        return 1.0f;
+    }
+
+    public long getIdleElapsedMs() {
+        return idleElapsedMs;
+    }
+
     public void paint(Graphics2D g2, BufferedImage sprite) {
         if (sprite == null) return;
         paint(g2, sprite, anchorX, anchorY, sprite.getWidth(), sprite.getHeight());
     }
 
     public void paint(Graphics2D g2, BufferedImage sprite, int targetX, int targetY, int targetW, int targetH) {
+        paint(g2, sprite, targetX, targetY, targetW, targetH, 0.90);
+    }
+
+    public void paint(Graphics2D g2, BufferedImage sprite, int targetX, int targetY, int targetW, int targetH, double footRatio) {
         if (sprite == null) return;
 
         AffineTransform oldXf = g2.getTransform();
-        float shakeOffset = (shakeAmplitude > 0) ? (float) (Math.sin(shakePhase) * shakeAmplitude) : 0f;
+        float offsetX = getDrawOffsetX();
+        float offsetY = getDrawOffsetY();
 
         double rotation = 0.0;
         double scaleX = 1.0;
@@ -99,29 +161,42 @@ public final class PlayerAnimator {
 
         if (attackType != null) {
             float t = (float) attackElapsedMs / attackDurationMs;
-            if (t < 0.35f) {
-                // Wind-up: lean back
-                float p = t / 0.35f;
-                rotation = -0.15 * p;
-            } else if (t < 0.70f) {
-                // Swing: lean forward sharply
-                float p = (t - 0.35f) / 0.35f;
-                rotation = -0.15 + 0.35 * p;
+            if (t < 0.30f) {
+                // Wind-up: pull back and lean back slightly
+                float p = t / 0.30f;
+                rotation = -0.14 * p;
+                scaleX = 0.98;
+                scaleY = 1.02;
+            } else if (t < 0.78f) {
+                // Strike: lean forward into slash
+                float p = (t - 0.30f) / 0.48f;
+                rotation = -0.14 + 0.30 * Math.sin(p * Math.PI);
                 scaleX = 1.08;
+                scaleY = 0.96;
             } else {
-                // Recover
-                float p = (t - 0.70f) / 0.30f;
-                rotation = 0.20 * (1.0 - p);
+                // Recover back to idle
+                float p = (t - 0.78f) / 0.22f;
+                rotation = 0.12 * (1.0 - p);
+                scaleX = 1.0 + 0.03 * (1.0 - p);
             }
+        } else {
+            // Idle breathing subtle scale
+            scaleY = 1.0 + 0.015 * Math.sin(idleElapsedMs * 0.0035);
+            scaleX = 1.0 - 0.008 * Math.sin(idleElapsedMs * 0.0035);
         }
 
-        int drawX = (int) (targetX + shakeOffset);
-        int drawY = targetY;
+        int drawX = (int) (targetX + offsetX);
+        int drawY = (int) (targetY + offsetY);
 
-        g2.translate(drawX + targetW / 2.0, drawY + targetH / 2.0);
+        // Pivot around feet / lower center for grounded, natural rotation
+        double pivotX = drawX + targetW / 2.0;
+        double pivotRatio = (footRatio > 0.0 && footRatio <= 1.0) ? footRatio : 0.90;
+        double pivotY = drawY + targetH * pivotRatio;
+
+        g2.translate(pivotX, pivotY);
         if (rotation != 0.0) g2.rotate(rotation);
         if (scaleX != 1.0 || scaleY != 1.0) g2.scale(scaleX, scaleY);
-        g2.translate(-targetW / 2.0, -targetH / 2.0);
+        g2.translate(-targetW / 2.0, -targetH * pivotRatio);
 
         g2.drawImage(sprite, 0, 0, targetW, targetH, null);
 

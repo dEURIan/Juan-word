@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,6 +28,7 @@ import juanword.model.BattleContext;
 import juanword.model.BattleOutcome;
 import juanword.model.BattleSession;
 import juanword.model.BattleSessionBuilder;
+import juanword.model.DifficultySetting;
 import juanword.model.Player;
 import juanword.tile.TileComponent;
 import juanword.tile.TileGridGenerator;
@@ -66,6 +68,16 @@ public final class BattlePanel extends JPanel {
     private BufferedImage playerPreAttackSprite;
     private BufferedImage playerAttackSprite;
     private BufferedImage enemySprite;
+    private BufferedImage enemyAttackSprite;
+
+    private long lastTickTime;
+    private BufferedImage cachedBgImage;
+    private int cachedBgW = -1;
+    private int cachedBgH = -1;
+    private BufferedImage cachedBgLandmark;
+    private BufferedImage cachedIndigFrame;
+    private int cachedFrameW = -1;
+    private int cachedFrameH = -1;
 
     private int tickAccumulatorMs;
     private boolean paused;
@@ -119,6 +131,8 @@ public final class BattlePanel extends JPanel {
         this.attackEffects.clear();
         this.pendingImpactAction = null;
         this.dialogueText = "Nagsugod na ang gubat! Pagpili ug mga letra gikan sa ubos para makatake.";
+        this.lastTickTime = System.currentTimeMillis();
+        this.cachedBgLandmark = null;
 
         // Landmark artwork for center watermark
         String lmName = switch (session.getMapIndex()) {
@@ -129,10 +143,22 @@ public final class BattlePanel extends JPanel {
             default -> "Blue Building.png";
         };
         this.landmarkIcon = ImageLoader.load(lmName);
-        this.playerSprite = ImageLoader.load("maincharacteridle.png");
-        this.playerPreAttackSprite = ImageLoader.load("maincharapreattack.png");
-        this.playerAttackSprite = ImageLoader.load("maincharattack.png");
+        if (session.getPlayer() != null && session.getPlayer().getPlayerName().equalsIgnoreCase("Gudo")) {
+            this.playerSprite = ImageLoader.load("gudoidle.png");
+            this.playerPreAttackSprite = ImageLoader.load("gudoidle.png");
+            this.playerAttackSprite = ImageLoader.load("gudoattack.png");
+        } else {
+            this.playerSprite = ImageLoader.load("maincharacteridle.png");
+            this.playerPreAttackSprite = ImageLoader.load("maincharapreattack.png");
+            this.playerAttackSprite = ImageLoader.load("maincharattack.png");
+        }
         this.enemySprite = ImageLoader.load(session.getEnemy().getSpritePath());
+        String enemyAtkPath = session.getEnemy().getAttackSpritePath();
+        this.enemyAttackSprite = (enemyAtkPath != null) ? ImageLoader.load(enemyAtkPath) : null;
+
+        if (session.getMapIndex() == 4 && session.getStageIndex() == 4) {
+            this.dialogueText = "MIPAKITA SI SIR GUDO! Andam na ba ka sa katapusang pagsulay?";
+        }
 
         this.playerAnimator = new PlayerAnimator(85, 245);
         this.enemyAnimator = new EnemyAnimator();
@@ -199,22 +225,27 @@ public final class BattlePanel extends JPanel {
     }
 
     private void gameTick(ActionEvent e) {
+        long now = System.currentTimeMillis();
+        long dt = (lastTickTime == 0) ? 16L : (now - lastTickTime);
+        lastTickTime = now;
+        long dtMs = Math.clamp(dt, 1L, 100L);
+
         if (paused) {
             repaint();
             return;
         }
 
-        playerAnimator.update(16);
-        enemyAnimator.update(16);
+        playerAnimator.update(dtMs);
+        enemyAnimator.update(dtMs);
 
-        for (AttackEffect ae : attackEffects) ae.update(16);
+        for (AttackEffect ae : attackEffects) ae.update(dtMs);
         attackEffects.removeIf(AttackEffect::isFinished);
 
-        for (FloatingText ft : floatingTexts) ft.update(16);
+        for (FloatingText ft : floatingTexts) ft.update(dtMs);
         floatingTexts.removeIf(FloatingText::isExpired);
 
         if (uiShakeFrames > 0) {
-            uiShakeFrames--;
+            uiShakeFrames = Math.max(0, uiShakeFrames - Math.max(1, (int) Math.round(dtMs / 16.0)));
         }
 
         if (playerAnimator.consumeImpact()) {
@@ -233,8 +264,8 @@ public final class BattlePanel extends JPanel {
         }
 
         // Count turn timer
-        tickAccumulatorMs += 16;
-        if (tickAccumulatorMs >= 1000) {
+        tickAccumulatorMs += dtMs;
+        while (tickAccumulatorMs >= 1000) {
             tickAccumulatorMs -= 1000;
             if (session != null && session.getDifficulty().isTimed() && !inputLocked) {
                 int sec = session.getTurnSeconds() - 1;
@@ -304,7 +335,18 @@ public final class BattlePanel extends JPanel {
             BattleContext ctx = new BattleContext(session, "", (txt, col) -> spawnFloatingText(txt, new Point(getWidth() / 2, 340), col));
             ctx.scrambleGrid();
             selectedPath.clear();
-            dialogueText = "Gibag-o ang tanang mga letra sa grid!";
+
+            // Clicking Bag-o inflicts self damage
+            int selfDamage = 5;
+            ctx.damagePlayer(selfDamage);
+            playerAnimator.triggerHit();
+            uiShakeFrames = 6;
+            spawnFloatingText("-" + selfDamage + " HP", new Point(140, 220), Color.RED);
+
+            dialogueText = "Gibag-o ang tanang letra! Naangol ka ug " + selfDamage + " HP sa Bag-o.";
+            if (session.getPlayerHp() <= 0) {
+                onDefeat();
+            }
             repaint();
             return;
         }
@@ -338,14 +380,27 @@ public final class BattlePanel extends JPanel {
         repaint();
     }
 
-    private void onClear() {
+    public void onClear() {
         selectedPath.clear();
         repaint();
+    }
+
+    public Rectangle getScrambleBtnBounds() {
+        return new Rectangle(scrambleBtnBounds);
+    }
+
+    public Rectangle getAttackBtnBounds() {
+        return new Rectangle(attackBtnBounds);
     }
 
     private void onSubmit() {
         if (selectedPath.isEmpty()) return;
         String word = getSelectedWord();
+        if (!DataManager.getInstance().isValidCebuanoWord(word)) {
+            uiShakeFrames = 6;
+            spawnFloatingText("Dili balido!", new Point(attackBtnBounds.x + attackBtnBounds.width / 2, attackBtnBounds.y - 12), new Color(255, 120, 80));
+            return;
+        }
         submitWord(word);
     }
 
@@ -358,7 +413,7 @@ public final class BattlePanel extends JPanel {
         return sb.toString();
     }
 
-    void submitWord(String word) {
+    public void submitWord(String word) {
         if (DataManager.getInstance().isValidCebuanoWord(word)) {
             List<TileComponent> tiles = new ArrayList<>();
             TileComponent[][] grid = session.getGrid();
@@ -371,13 +426,43 @@ public final class BattlePanel extends JPanel {
         }
     }
 
-    private int computeDamage(List<TileComponent> tiles) {
+    public int computeDamage(List<TileComponent> tiles) {
+        if (tiles == null || tiles.isEmpty()) return 0;
         int sum = 0;
         for (TileComponent t : tiles) {
             sum += t.getPoints();
         }
-        double mult = session.getDifficulty().getLengthMultiplier(tiles.size());
-        return Math.max(1, (int) Math.round(sum * mult));
+        int wordLen = tiles.size();
+        double mult = (session != null && session.getDifficulty() != null)
+            ? session.getDifficulty().getLengthMultiplier(wordLen)
+            : 1.0;
+        double dmg = sum * mult;
+
+        if (session != null) {
+            boolean isExtreme = session.getDifficulty() == DifficultySetting.EXTREME || session.getMapIndex() == 4;
+            boolean isFinalBoss = session.getEnemy() != null && "GUDO".equalsIgnoreCase(session.getEnemy().getEnemyId());
+            boolean isBoss = session.getEnemy() != null && session.getEnemy().isBoss();
+
+            if (isExtreme) {
+                // Ghost increase for Extreme: scale damage up to match 1.5x enemy HP pools
+                double ghostMult = 2.0;
+                int ghostFlat = 10 + Math.max(0, (wordLen - 2) * 4);
+                dmg = dmg * ghostMult + ghostFlat;
+
+                if (isFinalBoss) {
+                    // Extra ghost increase specifically for the final boss (Gudo)
+                    dmg = dmg * 1.35 + 12;
+                } else if (isBoss) {
+                    // Ghost increase for Extreme boss (e.g. Porter)
+                    dmg = dmg * 1.30 + 10;
+                }
+            } else if (isFinalBoss) {
+                // If Gudo is fought outside Extreme, still grant the final boss ghost boost
+                dmg = dmg * 1.50 + 20;
+            }
+        }
+
+        return Math.max(1, (int) Math.round(dmg));
     }
 
     private void resolveValidWord(List<TileComponent> tiles) {
@@ -398,7 +483,11 @@ public final class BattlePanel extends JPanel {
     private void playPlayerAttack(Runnable onImpact) {
         inputLocked = true;
         this.pendingImpactAction = onImpact;
-        playerAnimator.startAttack(AttackType.SLASH);
+        boolean isGudoPlayer = session != null && session.getPlayer() != null &&
+            session.getPlayer().getPlayerName() != null &&
+            session.getPlayer().getPlayerName().equalsIgnoreCase("Gudo");
+        long duration = isGudoPlayer ? 800L : 450L;
+        playerAnimator.startAttack(AttackType.SLASH, duration);
     }
 
     private void onPlayerImpact(int damage) {
@@ -419,7 +508,10 @@ public final class BattlePanel extends JPanel {
         inputLocked = true;
         AttackType type = session.getEnemy().getAttackType();
         this.pendingImpactAction = this::onEnemyImpact;
-        enemyAnimator.startAttack(type);
+        boolean isGudo = session != null && session.getEnemy() != null &&
+            "GUDO".equalsIgnoreCase(session.getEnemy().getEnemyId());
+        long duration = isGudo ? 800L : 450L;
+        enemyAnimator.startAttack(type, duration);
     }
 
     private void onEnemyImpact() {
@@ -485,11 +577,25 @@ public final class BattlePanel extends JPanel {
         return BattleOutcome.ONGOING;
     }
 
-    private void onVictory() {
+    public void onVictory() {
         loop.stop();
         int scoreAward = 100 * session.getStageIndex();
         session.getPlayer().addScore(scoreAward);
         session.getPlayer().recordDefeat(session.getEnemy().getEnemyId());
+
+        // In Mt. Apo, beating Boss Porter (stage 3) unlocks Gudo and proceeds immediately to the Gudo boss
+        if (session.getMapIndex() == 4 && session.getStageIndex() == 3) {
+            DataManager.getInstance().clearActiveBattle(session.getPlayer());
+            DataManager.getInstance().savePlayers();
+            BattleSession nextSession = new BattleSessionBuilder()
+                .withPlayer(session.getPlayer())
+                .onMap(4)
+                .atStage(4)
+                .withSavedHealth(session.getPlayerHp(), null)
+                .build();
+            begin(nextSession);
+            return;
+        }
 
         if (session.isBossStage()) {
             if (session.getMapIndex() == session.getPlayer().getUnlockedMap() && session.getMapIndex() < 4) {
@@ -499,7 +605,7 @@ public final class BattlePanel extends JPanel {
             DataManager.getInstance().savePlayers();
 
             if (session.isFinalBoss()) {
-                JOptionPane.showMessageDialog(this, "NADAUG KA SA TANANG MAPA!\nCongratulations Juan!", "DAUG!", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "NADAUG KA SA TANANG MAPA UG NALUPIG NIMO SI GUDO!\nCongratulations!", "KADAUGAN!", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "NADAUG ANG BOSS!\nNaabli ang sunod nga mapa!", "DAUG!", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -507,24 +613,14 @@ public final class BattlePanel extends JPanel {
         } else {
             DataManager.getInstance().clearActiveBattle(session.getPlayer());
             DataManager.getInstance().savePlayers();
-            int res = JOptionPane.showConfirmDialog(
-                this,
-                "NADAUG!\nGusto ba nimong mopadayon sa Stage " + (session.getStageIndex() + 1) + "?",
-                "Stage Clear",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            if (res == JOptionPane.YES_OPTION) {
-                BattleSession nextSession = new BattleSessionBuilder()
-                    .withPlayer(session.getPlayer())
-                    .onMap(session.getMapIndex())
-                    .atStage(session.getStageIndex() + 1)
-                    .withSavedHealth(session.getPlayerHp(), null)
-                    .build();
-                begin(nextSession);
-            } else {
-                host.returnToMap();
-            }
+            // Automatically advance to the next enemy with zero confirmation prompt
+            BattleSession nextSession = new BattleSessionBuilder()
+                .withPlayer(session.getPlayer())
+                .onMap(session.getMapIndex())
+                .atStage(session.getStageIndex() + 1)
+                .withSavedHealth(session.getPlayerHp(), null)
+                .build();
+            begin(nextSession);
         }
     }
 
@@ -537,10 +633,27 @@ public final class BattlePanel extends JPanel {
     }
 
     public void pauseGame() { this.paused = true; }
-    public void resumeGame() { this.paused = false; }
+    public void resumeGame() {
+        this.paused = false;
+        this.lastTickTime = System.currentTimeMillis();
+    }
+
+    public int getSelectedDamagePreview() {
+        if (selectedPath == null || selectedPath.isEmpty() || session == null) return 0;
+        TileComponent[][] grid = session.getGrid();
+        if (grid == null) return 0;
+        List<TileComponent> tiles = new ArrayList<>();
+        for (int[] pos : selectedPath) {
+            if (pos[0] >= 0 && pos[0] < 4 && pos[1] >= 0 && pos[1] < 4) {
+                tiles.add(grid[pos[0]][pos[1]]);
+            }
+        }
+        return computeDamage(tiles);
+    }
 
     public EnemyAnimator getEnemyAnimator() { return enemyAnimator; }
     public PlayerAnimator getPlayerAnimator() { return playerAnimator; }
+    public BattleSession getSession() { return session; }
 
     public void saveMidBattle() {
         if (isBattleActive()) {
@@ -578,31 +691,8 @@ public final class BattlePanel extends JPanel {
             g2.translate(sx, 0);
         }
 
-        // 1. Layer 1: Sky Background
-        if (skyBg != null) {
-            g2.drawImage(skyBg, 0, 0, w, h, null);
-        } else {
-            g2.setColor(MIDNIGHT_NAVY);
-            g2.fillRect(0, 0, w, h);
-        }
-
-        // 2. Layer 2: Landmark Watermark in Arena
-        if (landmarkIcon != null) {
-            int imgW = landmarkIcon.getWidth();
-            int imgH = landmarkIcon.getHeight();
-            if (imgW > 0 && imgH > 0) {
-                double scale = Math.min((double) (w - 120) / imgW, (double) (h - 70) / imgH) * 1.05;
-                int drawW = (int) Math.round(imgW * scale);
-                int drawH = (int) Math.round(imgH * scale);
-                int drawX = (w - drawW) / 2;
-                int drawY = h - drawH - 24;
-                g2.drawImage(landmarkIcon, drawX, drawY, drawW, drawH, null);
-            }
-        }
-
-        // 3. Layer 3: Soft Scrim for readability
-        g2.setColor(new Color(12, 16, 52, 105));
-        g2.fillRect(0, 0, w, h);
+        // 1-3. Cached Composite Background (Sky + Landmark + Scrim)
+        renderCachedBackground(g2, w, h);
 
         if (session == null) {
             drawIndigenousFrame(g2, w, h);
@@ -630,12 +720,21 @@ public final class BattlePanel extends JPanel {
     }
 
     private void drawTopHeaderBar(Graphics2D g2, int w, int h) {
+        double scaleX = w / 960.0;
+        double scaleY = h / 540.0;
+        double S = Math.min(scaleX, scaleY);
+
         // Back to map button
         g2.setColor(CERULEAN);
         g2.fillRoundRect(backToMapBounds.x, backToMapBounds.y, backToMapBounds.width, backToMapBounds.height, 10, 10);
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-        g2.drawString("← Balik sa Mapa", backToMapBounds.x + 14, backToMapBounds.y + 20);
+        int backFontSize = Math.max(13, (int) Math.round(13 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, backFontSize));
+        FontMetrics fmBack = g2.getFontMetrics();
+        String backText = "← Balik sa Mapa";
+        int bx = backToMapBounds.x + (backToMapBounds.width - fmBack.stringWidth(backText)) / 2;
+        int by = backToMapBounds.y + (backToMapBounds.height + fmBack.getAscent() - fmBack.getDescent()) / 2;
+        g2.drawString(backText, bx, by);
 
         // Map location & stage badge
         String mapLabel = switch (session.getMapIndex()) {
@@ -646,41 +745,57 @@ public final class BattlePanel extends JPanel {
             default -> "BLUE BUILDING";
         };
         String headerTitle = mapLabel + " - STAGE " + session.getStageIndex() + "  ";
-        g2.setFont(new Font(Font.SERIF, Font.BOLD, 16));
+        int titleFontSize = Math.max(16, (int) Math.round(17 * S));
+        Font titleFont = new Font(Font.SERIF, Font.BOLD, titleFontSize);
+        g2.setFont(titleFont);
         g2.setColor(Color.WHITE);
         FontMetrics fm = g2.getFontMetrics();
         int titleW = fm.stringWidth(headerTitle);
 
         String diffName = "[ " + session.getDifficulty().getDisplayName().toUpperCase() + " ]";
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-        int badgeW = g2.getFontMetrics().stringWidth(diffName) + 16;
+        int badgeFontSize = Math.max(11, (int) Math.round(12 * S));
+        Font badgeFont = new Font(Font.SANS_SERIF, Font.BOLD, badgeFontSize);
+        g2.setFont(badgeFont);
+        FontMetrics fmBadge = g2.getFontMetrics();
+        int badgeW = fmBadge.stringWidth(diffName) + (int) Math.round(18 * S);
+        int badgeH = Math.max(22, (int) Math.round(24 * S));
         int centerStartX = (w - (titleW + badgeW)) / 2;
 
-        g2.setFont(new Font(Font.SERIF, Font.BOLD, 16));
-        g2.drawString(headerTitle, centerStartX, backToMapBounds.y + 22);
+        int headerTextY = backToMapBounds.y + (backToMapBounds.height + fm.getAscent() - fm.getDescent()) / 2;
+        g2.setFont(titleFont);
+        g2.drawString(headerTitle, centerStartX, headerTextY);
 
         // Difficulty Pill
         int badgeX = centerStartX + titleW;
-        int badgeY = backToMapBounds.y + 5;
+        int badgeY = backToMapBounds.y + (backToMapBounds.height - badgeH) / 2;
         g2.setColor(new Color(40, 160, 60));
-        g2.fillRoundRect(badgeX, badgeY, badgeW, 22, 8, 8);
+        g2.fillRoundRect(badgeX, badgeY, badgeW, badgeH, 8, 8);
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
-        g2.drawString(diffName, badgeX + 8, badgeY + 15);
+        g2.setFont(badgeFont);
+        int btx = badgeX + (badgeW - fmBadge.stringWidth(diffName)) / 2;
+        int bty = badgeY + (badgeH + fmBadge.getAscent() - fmBadge.getDescent()) / 2;
+        g2.drawString(diffName, btx, bty);
 
         // Right side pacing / turn timer
         String pacingText = session.getDifficulty().isTimed()
             ? "Turn Timer: " + session.getTurnSeconds() + "s"
             : "Pacing: Relaxed (No Timer)";
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        int paceFontSize = Math.max(12, (int) Math.round(13 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, paceFontSize));
         g2.setColor(session.getTurnSeconds() <= 5 && session.getDifficulty().isTimed() ? Color.RED : new Color(180, 220, 255));
-        int pw = g2.getFontMetrics().stringWidth(pacingText);
-        g2.drawString(pacingText, w - pw - 45, backToMapBounds.y + 21);
+        FontMetrics fmPace = g2.getFontMetrics();
+        int pw = fmPace.stringWidth(pacingText);
+        int py = backToMapBounds.y + (backToMapBounds.height + fmPace.getAscent() - fmPace.getDescent()) / 2;
+        g2.drawString(pacingText, w - pw - (int) Math.round(45 * scaleX), py);
     }
 
     private void drawArenaCard(Graphics2D g2, int w, int h) {
         double scaleX = w / 960.0;
         double scaleY = h / 540.0;
+
+        String word = getSelectedWord();
+        boolean isWordValid = !word.isEmpty() && DataManager.getInstance().isValidCebuanoWord(word);
+        int dmgPreview = getSelectedDamagePreview();
 
         int cardX = (int) (20 * scaleX);
         int cardY = (int) (54 * scaleY);
@@ -699,79 +814,138 @@ public final class BattlePanel extends JPanel {
         int juanW = (int) (185 * scaleX);
         int enemyW = (int) (185 * scaleX);
 
-        // --- Left: Juan (Ikaw) ---
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        g2.setColor(CREAM_TILE);
-        String juanTitle = "JUAN (Ikaw)";
-        int jtw = g2.getFontMetrics().stringWidth(juanTitle);
-        g2.drawString(juanTitle, cardX + (juanW - jtw) / 2, cardY + (int) (20 * scaleY));
+        // Responsive sprite sizing: bigger in general, with extra scaling on full screen
+        boolean isFullScreen = (w >= 1200 || h >= 700 || (host != null && host.isFullScreen()));
+        double fullScreenBoost = isFullScreen ? 1.18 : (scaleY > 1.05 ? 1.0 + (scaleY - 1.0) * 0.18 : 1.0);
+        int baseSpriteH = 155; // Enlarged from 130 in general (+19% bigger in windowed mode)
 
-        int baselineY = cardY + (int) (160 * scaleY);
-        int spriteH = (int) (130 * scaleY);
+        // --- Left: Player (Ikaw) ---
+        double S = Math.min(scaleX, scaleY);
+        int playerTitleSize = Math.max(15, (int) Math.round(16 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, playerTitleSize));
+        g2.setColor(CREAM_TILE);
+        String playerTitle = "IKAW";
+        int jtw = g2.getFontMetrics().stringWidth(playerTitle);
+        g2.drawString(playerTitle, cardX + (juanW - jtw) / 2, cardY + (int) (22 * scaleY));
+
+        int baselineY = cardY + (int) (166 * scaleY);
+        int spriteH = (int) Math.round(baseSpriteH * scaleY * fullScreenBoost);
         int spriteW = (playerSprite != null) ? (int) Math.round(spriteH * (300.0 / 500.0)) : (int) (80 * scaleX);
         int spriteX = cardX + (juanW - spriteW) / 2;
-        int spriteY = baselineY - (int) Math.round(spriteH * (440.0 / 500.0));
 
-        // Ground shadow directly under boots
-        int shadowW = (int) Math.round(spriteW * 0.85);
-        g2.setColor(new Color(0, 0, 0, 60));
-        g2.fillOval(spriteX + (spriteW - shadowW) / 2, baselineY - 4, shadowW, 10);
-
-        // Paint Juan with attack stance frame progression
         BufferedImage activeJuan = playerAnimator.getActiveSprite(playerSprite, playerPreAttackSprite, playerAttackSprite);
-        playerAnimator.paint(g2, activeJuan, spriteX, spriteY, spriteW, spriteH);
+        boolean isGudoPlayerIdle = (activeJuan == playerSprite && session.getPlayer() != null && session.getPlayer().getPlayerName().equalsIgnoreCase("Gudo"));
+        double playerFootRatio = isGudoPlayerIdle ? (361.0 / 500.0) : (440.0 / 500.0);
+        int spriteY = baselineY - (int) Math.round(spriteH * playerFootRatio);
+
+        // Ground shadow directly under boots, synchronized with player animation
+        int shadowW = (int) Math.round(spriteW * 0.85 * playerAnimator.getShadowScale());
+        int shadowX = spriteX + (int) playerAnimator.getDrawOffsetX();
+        g2.setColor(new Color(0, 0, 0, 60));
+        g2.fillOval(shadowX + (spriteW - shadowW) / 2, baselineY - 4, shadowW, 10);
+
+        // Paint Juan with attack stance frame progression and grounded pivot
+        playerAnimator.paint(g2, activeJuan, spriteX, spriteY, spriteW, spriteH, playerFootRatio);
 
         // Juan Health Bar
         int hpBarW = (int) (160 * scaleX);
         int hpBarH = (int) (12 * scaleY);
         int hpBarX = cardX + (juanW - hpBarW) / 2;
-        int hpBarY = cardY + (int) (166 * scaleY);
+        int hpBarY = cardY + (int) (172 * scaleY);
         drawFlatHpBar(g2, hpBarX, hpBarY, hpBarW, hpBarH, session.getPlayerHp(), session.getPlayer().getMaxHp(), HP_GREEN);
 
         // HP & Score Text below
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+        int hpFontSize = Math.max(12, (int) Math.round(13 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, hpFontSize));
         g2.setColor(Color.WHITE);
         String hpText = "HP: " + session.getPlayerHp() + " / " + session.getPlayer().getMaxHp();
         int hpTw = g2.getFontMetrics().stringWidth(hpText);
-        g2.drawString(hpText, cardX + (juanW - hpTw) / 2, hpBarY + hpBarH + (int) (14 * scaleY));
+        g2.drawString(hpText, cardX + (juanW - hpTw) / 2, hpBarY + hpBarH + (int) (16 * scaleY));
 
-        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
+        int coinsFontSize = Math.max(11, (int) Math.round(12 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, coinsFontSize));
         g2.setColor(new Color(160, 215, 255));
         String coinsScore = "Coins: 0 • Score: " + session.getPlayer().getScore();
         int csW = g2.getFontMetrics().stringWidth(coinsScore);
-        g2.drawString(coinsScore, cardX + (juanW - csW) / 2, hpBarY + hpBarH + (int) (27 * scaleY));
+        g2.drawString(coinsScore, cardX + (juanW - csW) / 2, hpBarY + hpBarH + (int) (31 * scaleY));
 
         // --- Right: Enemy ---
         int enemyX = cardX + cardW - enemyW;
         String eName = session.getEnemy().getName().toUpperCase();
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        int eNameFontSize = Math.max(15, (int) Math.round(16 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, eNameFontSize));
         g2.setColor(new Color(255, 205, 50));
         int ew = g2.getFontMetrics().stringWidth(eName);
-        g2.drawString(eName, enemyX + (enemyW - ew) / 2, cardY + (int) (20 * scaleY));
+        g2.drawString(eName, enemyX + (enemyW - ew) / 2, cardY + (int) (22 * scaleY));
 
-        int eSpriteH = (int) (130 * scaleY);
-        int eSpriteW = (enemySprite != null) ? (int) Math.round(eSpriteH * (enemySprite.getWidth() / (double) Math.max(1, enemySprite.getHeight()))) : (int) (80 * scaleX);
+        int eSpriteH = (int) Math.round(baseSpriteH * scaleY * fullScreenBoost);
+        double eAspect = (enemySprite != null && enemySprite.getHeight() > 0)
+            ? (double) enemySprite.getWidth() / enemySprite.getHeight()
+            : (300.0 / 500.0);
+        int maxEnemyW = (int) (enemyW * 0.92);
+        int eSpriteW = (int) Math.round(eSpriteH * eAspect);
+        if (eSpriteW > maxEnemyW) {
+            eSpriteW = maxEnemyW;
+            eSpriteH = (int) Math.round(eSpriteW / eAspect);
+        }
         int eSpriteX = enemyX + (enemyW - eSpriteW) / 2;
-        int eSpriteY = baselineY - (int) Math.round(eSpriteH * (440.0 / 500.0));
 
-        // Ground shadow directly under boots
-        int eShadowW = (int) Math.round(eSpriteW * 0.85);
+        BufferedImage activeEnemy = enemyAnimator.getActiveSprite(enemySprite, enemyAttackSprite);
+        boolean isGudoEnemyIdle = (activeEnemy == enemySprite && session.getEnemy().getEnemyId().equals("GUDO"));
+        double enemyFootRatio = isGudoEnemyIdle ? (361.0 / 500.0) : (440.0 / 500.0);
+        int eSpriteY = baselineY - (int) Math.round(eSpriteH * enemyFootRatio);
+
+        // Ground shadow directly under boots, synchronized with enemy animation
+        int eShadowW = (int) Math.round(eSpriteW * 0.85 * enemyAnimator.getShadowScale());
+        int eShadowX = eSpriteX + (int) enemyAnimator.getDrawOffsetX();
         g2.setColor(new Color(0, 0, 0, 60));
-        g2.fillOval(eSpriteX + (eSpriteW - eShadowW) / 2, baselineY - 4, eShadowW, 10);
+        g2.fillOval(eShadowX + (eSpriteW - eShadowW) / 2, baselineY - 4, eShadowW, 10);
 
-        // Paint Enemy
-        enemyAnimator.paint(g2, enemySprite, eSpriteX, eSpriteY, eSpriteW, eSpriteH);
+        // Paint Enemy with attack stance frame progression and grounded pivot
+        enemyAnimator.paint(g2, activeEnemy, eSpriteX, eSpriteY, eSpriteW, eSpriteH, enemyFootRatio);
 
-        // Enemy Health Bar
+        // Enemy Health Bar with Prospective Damage Preview
+        int enemyCurHp = session.getEnemy().getCurrentHp();
+        int enemyMaxHp = session.getEnemy().getMaxHp();
         int eHpBarX = enemyX + (enemyW - hpBarW) / 2;
-        drawFlatHpBar(g2, eHpBarX, hpBarY, hpBarW, hpBarH, session.getEnemy().getCurrentHp(), session.getEnemy().getMaxHp(), HP_ORANGE);
+        drawEnemyHpBarWithPreview(g2, eHpBarX, hpBarY, hpBarW, hpBarH, enemyCurHp, enemyMaxHp, dmgPreview, isWordValid);
 
         // Enemy stats below
-        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
+        // Row 1: Enemy HP Text with Damage Preview Deduction
+        int eHpFontSize = Math.max(12, (int) Math.round(13 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, eHpFontSize));
+        FontMetrics fmHp = g2.getFontMetrics();
+
+        if (dmgPreview > 0) {
+            int remHp = Math.max(0, enemyCurHp - dmgPreview);
+            String mainHp = "HP: " + remHp + " / " + enemyMaxHp + " ";
+            String dmgTag = "(-" + dmgPreview + (remHp == 0 ? " LETHAL" : "") + ")";
+
+            int mainW = fmHp.stringWidth(mainHp);
+            int tagW = fmHp.stringWidth(dmgTag);
+            int totalTextW = mainW + tagW;
+            int textX = enemyX + (enemyW - totalTextW) / 2;
+            int textY = hpBarY + hpBarH + (int) (16 * scaleY);
+
+            g2.setColor(Color.WHITE);
+            g2.drawString(mainHp, textX, textY);
+
+            g2.setColor(new Color(255, 80, 75));
+            g2.drawString(dmgTag, textX + mainW, textY);
+        } else {
+            String eHpText = "HP: " + enemyCurHp + " / " + enemyMaxHp;
+            int eHpTw = fmHp.stringWidth(eHpText);
+            g2.setColor(Color.WHITE);
+            g2.drawString(eHpText, enemyX + (enemyW - eHpTw) / 2, hpBarY + hpBarH + (int) (16 * scaleY));
+        }
+
+        // Row 2: Enemy Attack Stat
+        int atkFontSize = Math.max(11, (int) Math.round(12 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, atkFontSize));
         g2.setColor(new Color(160, 215, 255));
         String atkStr = "ATK: " + session.getEnemy().getAttack() + " kada turno";
         int atkW = g2.getFontMetrics().stringWidth(atkStr);
-        g2.drawString(atkStr, enemyX + (enemyW - atkW) / 2, hpBarY + hpBarH + (int) (14 * scaleY));
+        g2.drawString(atkStr, enemyX + (enemyW - atkW) / 2, hpBarY + hpBarH + (int) (31 * scaleY));
 
         // --- Center: Dialogue, Word Rack, Word Status Bar & ATAKE Button ---
         int centerX = cardX + juanW + (int) (10 * scaleX);
@@ -785,10 +959,21 @@ public final class BattlePanel extends JPanel {
         g2.setColor(ARENA_BOX_BORDER);
         g2.drawRoundRect(centerX, logY, centerW, logH, 6, 6);
 
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
+        int logFontSize = Math.max(11, (int) Math.round(12 * S));
+        Font logFont = new Font(Font.SANS_SERIF, Font.BOLD, logFontSize);
+        FontMetrics fmLog = g2.getFontMetrics(logFont);
+        int maxLogW = centerW - (int) Math.round(20 * scaleX);
+        while (fmLog.stringWidth(dialogueText) > maxLogW && logFontSize > 9) {
+            logFontSize--;
+            logFont = new Font(Font.SANS_SERIF, Font.BOLD, logFontSize);
+            fmLog = g2.getFontMetrics(logFont);
+        }
+        g2.setFont(logFont);
         g2.setColor(CREAM_TILE);
-        int dtw = g2.getFontMetrics().stringWidth(dialogueText);
-        g2.drawString(dialogueText, centerX + (centerW - dtw) / 2, logY + (int) (20 * scaleY));
+        int dtw = fmLog.stringWidth(dialogueText);
+        int dtx = centerX + Math.max((int) Math.round(10 * scaleX), (centerW - dtw) / 2);
+        int dty = logY + (logH + fmLog.getAscent() - fmLog.getDescent()) / 2;
+        g2.drawString(dialogueText, dtx, dty);
 
         // 2. Middle Word Rack Box
         int rackY = logY + logH + (int) (5 * scaleY);
@@ -798,20 +983,35 @@ public final class BattlePanel extends JPanel {
         g2.setColor(ARENA_BOX_BORDER);
         g2.drawRoundRect(centerX, rackY, centerW, rackH, 6, 6);
 
-        String word = getSelectedWord();
         if (word.isEmpty()) {
             String prompt = "📖 Pindota ang mga letra sa ubos aron makaporma ug pulong";
-            g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+            int promptFontSize = Math.max(12, (int) Math.round(13 * S));
+            Font promptFont = new Font(Font.SANS_SERIF, Font.PLAIN, promptFontSize);
+            FontMetrics fmPr = g2.getFontMetrics(promptFont);
+            int maxPromptW = centerW - (int) Math.round(24 * scaleX);
+            while (fmPr.stringWidth(prompt) > maxPromptW && promptFontSize > 9) {
+                promptFontSize--;
+                promptFont = new Font(Font.SANS_SERIF, Font.PLAIN, promptFontSize);
+                fmPr = g2.getFontMetrics(promptFont);
+            }
+            g2.setFont(promptFont);
             g2.setColor(new Color(180, 200, 230));
-            int pw = g2.getFontMetrics().stringWidth(prompt);
-            g2.drawString(prompt, centerX + (centerW - pw) / 2, rackY + rackH / 2 + 5);
+            int pw = fmPr.stringWidth(prompt);
+            int prx = centerX + Math.max((int) Math.round(12 * scaleX), (centerW - pw) / 2);
+            int pry = rackY + (rackH + fmPr.getAscent() - fmPr.getDescent()) / 2;
+            g2.drawString(prompt, prx, pry);
         } else {
             // Render selected letter tiles inside the rack!
             int tileCount = selectedPath.size();
             int pTileSize = (int) Math.round(48 * Math.min(scaleX, scaleY));
             int pGap = 6;
+            int maxRackW = centerW - (int) Math.round(20 * scaleX);
             int totalRackW = tileCount * pTileSize + Math.max(0, tileCount - 1) * pGap;
-            int startTileX = centerX + (centerW - totalRackW) / 2;
+            if (totalRackW > maxRackW && tileCount > 0) {
+                pTileSize = Math.max(20, (maxRackW - Math.max(0, tileCount - 1) * pGap) / tileCount);
+                totalRackW = tileCount * pTileSize + Math.max(0, tileCount - 1) * pGap;
+            }
+            int startTileX = centerX + Math.max((int) Math.round(10 * scaleX), (centerW - totalRackW) / 2);
             int tileY = rackY + (rackH - pTileSize) / 2;
 
             TileComponent[][] grid = session.getGrid();
@@ -846,9 +1046,13 @@ public final class BattlePanel extends JPanel {
 
                 t.renderBadge(g2, tx, tileY, pTileSize);
 
-                g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 9));
+                int ptSize = Math.max(9, (int) Math.round(pTileSize * 0.22));
+                g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, ptSize));
                 g2.setColor(new Color(100, 100, 100));
-                g2.drawString(String.valueOf(t.getPoints()), tx + pTileSize - 10, tileY + pTileSize - 4);
+                FontMetrics fmPts = g2.getFontMetrics();
+                String ptStr = String.valueOf(t.getPoints());
+                int ptPad = Math.max(3, (int) (pTileSize * 0.08));
+                g2.drawString(ptStr, tx + pTileSize - fmPts.stringWidth(ptStr) - ptPad, tileY + pTileSize - ptPad);
             }
         }
 
@@ -863,51 +1067,109 @@ public final class BattlePanel extends JPanel {
         g2.setColor(ARENA_BOX_BORDER);
         g2.drawRoundRect(centerX, actY, prevW, actH, 6, 6);
 
+        Shape origClip = g2.getClip();
+        g2.clipRect(centerX, actY, prevW, actH);
+
         if (word.isEmpty()) {
-            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-            g2.setColor(Color.WHITE);
-            String emptyHint = "Pili ug mga letra sa ubos para makaporma ug pulong";
-            int ehw = g2.getFontMetrics().stringWidth(emptyHint);
-            g2.drawString(emptyHint, centerX + (prevW - ehw) / 2, actY + (int) (27 * scaleY));
+            String emptyHint = "Porma ug pulong sa ubos";
+            int hintFontSize = Math.max(12, (int) Math.round(13 * S));
+            Font hintFont = new Font(Font.SANS_SERIF, Font.BOLD, hintFontSize);
+            FontMetrics fmEh = g2.getFontMetrics(hintFont);
+            int maxHintW = prevW - (int) Math.round(20 * scaleX);
+            while (fmEh.stringWidth(emptyHint) > maxHintW && hintFontSize > 9) {
+                hintFontSize--;
+                hintFont = new Font(Font.SANS_SERIF, Font.BOLD, hintFontSize);
+                fmEh = g2.getFontMetrics(hintFont);
+            }
+            g2.setFont(hintFont);
+            g2.setColor(new Color(210, 225, 245));
+            int ehw = fmEh.stringWidth(emptyHint);
+            int ehx = centerX + Math.max((int) Math.round(10 * scaleX), (prevW - ehw) / 2);
+            int ehy = actY + (actH + fmEh.getAscent() - fmEh.getDescent()) / 2;
+            g2.drawString(emptyHint, ehx, ehy);
         } else {
-            List<TileComponent> tiles = new ArrayList<>();
-            TileComponent[][] grid = session.getGrid();
-            for (int[] pos : selectedPath) tiles.add(grid[pos[0]][pos[1]]);
-            int dmgPreview = computeDamage(tiles);
-
-            g2.setFont(new Font(Font.SERIF, Font.BOLD, 20));
-            g2.setColor(new Color(255, 230, 100));
-            g2.drawString(word, centerX + 16, actY + (int) (29 * scaleY));
-
-            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+            int dmgFontSize = Math.max(13, (int) Math.round(15 * S));
+            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, dmgFontSize));
             g2.setColor(new Color(100, 255, 120));
             String dmgStr = dmgPreview + " DMG";
-            int dw = g2.getFontMetrics().stringWidth(dmgStr);
-            g2.drawString(dmgStr, centerX + prevW - dw - 16, actY + (int) (27 * scaleY));
-        }
+            FontMetrics fmDmg = g2.getFontMetrics();
+            int dw = fmDmg.stringWidth(dmgStr);
+            int dy = actY + (actH + fmDmg.getAscent() - fmDmg.getDescent()) / 2;
+            int dx = centerX + prevW - dw - (int) Math.round(16 * scaleX);
+            g2.drawString(dmgStr, dx, dy);
 
-        // Right Hero Attack Button (⚔ ATAKE!)
+            int wordFontSize = Math.max(20, (int) Math.round(22 * S));
+            Font wordFont = new Font(Font.SERIF, Font.BOLD, wordFontSize);
+            FontMetrics fmWord = g2.getFontMetrics(wordFont);
+            int maxWordW = dx - centerX - (int) Math.round(24 * scaleX);
+            while (fmWord.stringWidth(word) > maxWordW && wordFontSize > 11) {
+                wordFontSize--;
+                wordFont = new Font(Font.SERIF, Font.BOLD, wordFontSize);
+                fmWord = g2.getFontMetrics(wordFont);
+            }
+            g2.setFont(wordFont);
+            g2.setColor(new Color(255, 230, 100));
+            int wy = actY + (actH + fmWord.getAscent() - fmWord.getDescent()) / 2;
+            g2.drawString(word, centerX + (int) Math.round(14 * scaleX), wy);
+        }
+        g2.setClip(origClip);
+
+        // Right Hero Attack Button (⚔ ATAKE!) - Lights up only if word is valid in CSV
         int atkBtnW = centerW - prevW - (int) (8 * scaleX);
         int atkX = centerX + prevW + (int) (8 * scaleX);
         attackBtnBounds.setBounds(atkX, actY, atkBtnW, actH);
 
-        g2.setColor(DARK_BLUE_BTN);
-        g2.fillRoundRect(attackBtnBounds.x, attackBtnBounds.y, attackBtnBounds.width, attackBtnBounds.height, 6, 6);
-        g2.setColor(ARENA_BOX_BORDER);
-        g2.setStroke(new BasicStroke(1.5f));
-        g2.drawRoundRect(attackBtnBounds.x, attackBtnBounds.y, attackBtnBounds.width, attackBtnBounds.height, 6, 6);
+        int atkBtnFontSize = Math.max(13, (int) Math.round(15 * S));
+        int subFontSize = Math.max(10, (int) Math.round(11 * S));
+        Font fontAtk = new Font(Font.SANS_SERIF, Font.BOLD, atkBtnFontSize);
+        Font fontSub = new Font(Font.SANS_SERIF, isWordValid ? Font.BOLD : Font.PLAIN, subFontSize);
 
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
-        g2.setColor(Color.WHITE);
+        FontMetrics fmA = g2.getFontMetrics(fontAtk);
+        FontMetrics fmS = g2.getFontMetrics(fontSub);
+        int gap = (int) Math.round(2 * S);
+        int totalTextH = fmA.getAscent() + gap + fmS.getAscent();
+        int topY = attackBtnBounds.y + (attackBtnBounds.height - totalTextH) / 2;
+        int line1Y = topY + fmA.getAscent();
+        int line2Y = line1Y + gap + fmS.getAscent();
+
         String atkLabel = "⚔ ATAKE!";
-        int aw = g2.getFontMetrics().stringWidth(atkLabel);
-        g2.drawString(atkLabel, attackBtnBounds.x + (attackBtnBounds.width - aw) / 2, attackBtnBounds.y + 19);
+        String subLabel = isWordValid ? "(ISUMITER)" : (word.isEmpty() ? "(Pili ug letra)" : "(Dili balido)");
 
-        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
-        g2.setColor(new Color(180, 200, 240));
-        String subLabel = word.isEmpty() ? "(Pili ug letra)" : "(Isumiter)";
-        int sw = g2.getFontMetrics().stringWidth(subLabel);
-        g2.drawString(subLabel, attackBtnBounds.x + (attackBtnBounds.width - sw) / 2, attackBtnBounds.y + 33);
+        if (isWordValid) {
+            // Radiant glowing gold button when word is in the dictionary CSV
+            g2.setColor(new Color(255, 195, 25));
+            g2.fillRoundRect(attackBtnBounds.x, attackBtnBounds.y, attackBtnBounds.width, attackBtnBounds.height, 6, 6);
+            g2.setColor(new Color(255, 245, 160));
+            g2.setStroke(new BasicStroke(2.0f));
+            g2.drawRoundRect(attackBtnBounds.x, attackBtnBounds.y, attackBtnBounds.width, attackBtnBounds.height, 6, 6);
+
+            g2.setFont(fontAtk);
+            g2.setColor(new Color(15, 20, 40));
+            int aw = fmA.stringWidth(atkLabel);
+            g2.drawString(atkLabel, attackBtnBounds.x + (attackBtnBounds.width - aw) / 2, line1Y);
+
+            g2.setFont(fontSub);
+            g2.setColor(new Color(40, 50, 80));
+            int sw = fmS.stringWidth(subLabel);
+            g2.drawString(subLabel, attackBtnBounds.x + (attackBtnBounds.width - sw) / 2, line2Y);
+        } else {
+            // Dimmed/unlit button when word is not in CSV or empty
+            g2.setColor(new Color(18, 22, 45, 180));
+            g2.fillRoundRect(attackBtnBounds.x, attackBtnBounds.y, attackBtnBounds.width, attackBtnBounds.height, 6, 6);
+            g2.setColor(new Color(45, 55, 85));
+            g2.setStroke(new BasicStroke(1.2f));
+            g2.drawRoundRect(attackBtnBounds.x, attackBtnBounds.y, attackBtnBounds.width, attackBtnBounds.height, 6, 6);
+
+            g2.setFont(fontAtk);
+            g2.setColor(new Color(110, 125, 155));
+            int aw = fmA.stringWidth(atkLabel);
+            g2.drawString(atkLabel, attackBtnBounds.x + (attackBtnBounds.width - aw) / 2, line1Y);
+
+            g2.setFont(fontSub);
+            g2.setColor(new Color(90, 105, 135));
+            int sw = fmS.stringWidth(subLabel);
+            g2.drawString(subLabel, attackBtnBounds.x + (attackBtnBounds.width - sw) / 2, line2Y);
+        }
     }
 
     private void drawBottomLetterGridAndButtons(Graphics2D g2, int w, int h) {
@@ -980,17 +1242,29 @@ public final class BattlePanel extends JPanel {
                     tile.renderBadge(g2, drawX, drawY, size);
 
                     // Points in bottom right
-                    g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+                    int ptFontSize = Math.max(10, (int) Math.round(size * 0.20));
+                    g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, ptFontSize));
                     g2.setColor(new Color(100, 100, 100));
-                    g2.drawString(String.valueOf(tile.getPoints()), drawX + size - 12, drawY + size - 4);
+                    String ptStr = String.valueOf(tile.getPoints());
+                    FontMetrics fmPt = g2.getFontMetrics();
+                    int ptPad = Math.max(3, (int) (size * 0.08));
+                    g2.drawString(ptStr, drawX + size - fmPt.stringWidth(ptStr) - ptPad, drawY + size - ptPad);
 
                     // Order badge if selected
                     if (isSelected) {
+                        int badgeDiam = Math.max(14, (int) Math.round(size * 0.30));
+                        int bx = drawX + size - badgeDiam - 2;
+                        int by = drawY + 2;
                         g2.setColor(new Color(240, 150, 30));
-                        g2.fillOval(drawX + size - 16, drawY + 2, 14, 14);
+                        g2.fillOval(bx, by, badgeDiam, badgeDiam);
                         g2.setColor(Color.WHITE);
-                        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 9));
-                        g2.drawString(String.valueOf(order), drawX + size - 12, drawY + 13);
+                        int orderFontSize = Math.max(9, (int) Math.round(badgeDiam * 0.65));
+                        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, orderFontSize));
+                        FontMetrics fmOrd = g2.getFontMetrics();
+                        String ordStr = String.valueOf(order);
+                        int ox = bx + (badgeDiam - fmOrd.stringWidth(ordStr)) / 2;
+                        int oy = by + (badgeDiam + fmOrd.getAscent() - fmOrd.getDescent()) / 2;
+                        g2.drawString(ordStr, ox, oy);
                     }
                 } else {
                     // Tile Background
@@ -1018,30 +1292,44 @@ public final class BattlePanel extends JPanel {
                     g2.drawString(ls, lx, ly);
 
                     // Points in bottom right
-                    g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
+                    int ptFontSize = Math.max(10, (int) Math.round(b.height * 0.20));
+                    g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, ptFontSize));
                     g2.setColor(new Color(100, 100, 100));
-                    g2.drawString(String.valueOf(tile.getPoints()), b.x + b.width - 12, b.y + b.height - 4);
+                    String ptStr = String.valueOf(tile.getPoints());
+                    FontMetrics fmPt = g2.getFontMetrics();
+                    int ptPad = Math.max(3, (int) (b.height * 0.08));
+                    g2.drawString(ptStr, b.x + b.width - fmPt.stringWidth(ptStr) - ptPad, b.y + b.height - ptPad);
 
                     // Order badge if selected
                     if (isSelected) {
+                        int badgeDiam = Math.max(14, (int) Math.round(b.height * 0.30));
+                        int bx = b.x + b.width - badgeDiam - 2;
+                        int by = b.y + 2;
                         g2.setColor(TILE_BORDER_SELECTED);
-                        g2.fillOval(b.x + b.width - 16, b.y + 2, 14, 14);
+                        g2.fillOval(bx, by, badgeDiam, badgeDiam);
                         g2.setColor(Color.WHITE);
-                        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 9));
-                        g2.drawString(String.valueOf(order), b.x + b.width - 12, b.y + 13);
+                        int orderFontSize = Math.max(9, (int) Math.round(badgeDiam * 0.65));
+                        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, orderFontSize));
+                        FontMetrics fmOrd = g2.getFontMetrics();
+                        String ordStr = String.valueOf(order);
+                        int ox = bx + (badgeDiam - fmOrd.stringWidth(ordStr)) / 2;
+                        int oy = by + (badgeDiam + fmOrd.getAscent() - fmOrd.getDescent()) / 2;
+                        g2.drawString(ordStr, ox, oy);
                     }
                 }
             }
         }
 
-        // --- Right Action Button: Bag-o (Scramble) & Bonus hint ---
+        // --- Right Action Button: Bag-o (Scramble) & Self-damage penalty hint ---
         drawFlatYellowButton(g2, scrambleBtnBounds, "Bag-o");
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
-        g2.setColor(new Color(40, 180, 80));
-        String bonusHint = "✓ 5+ Letra";
-        String bonusHint2 = "Dako'g Bili!";
-        g2.drawString(bonusHint, scrambleBtnBounds.x + 18, scrambleBtnBounds.y + 55);
-        g2.drawString(bonusHint2, scrambleBtnBounds.x + 12, scrambleBtnBounds.y + 70);
+        int penaltyFontSize = Math.max(10, (int) Math.round(11 * Math.min(w / 960.0, h / 540.0)));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, penaltyFontSize));
+        g2.setColor(new Color(255, 95, 80));
+        String penaltyHint = "-5 HP Kadaot";
+        FontMetrics fmPenalty = g2.getFontMetrics();
+        int pw = fmPenalty.stringWidth(penaltyHint);
+        int py = scrambleBtnBounds.y + scrambleBtnBounds.height + (int) Math.round(16 * (h / 540.0));
+        g2.drawString(penaltyHint, scrambleBtnBounds.x + (scrambleBtnBounds.width - pw) / 2, py);
     }
 
     private void drawFlatYellowButton(Graphics2D g2, Rectangle b, String label) {
@@ -1064,7 +1352,8 @@ public final class BattlePanel extends JPanel {
         g2.drawRoundRect(b.x, b.y, b.width, b.height, 8, 8);
 
         // Midnight Navy label text
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        int btnFontSize = Math.max(13, (int) Math.round(14 * Math.min(getWidth() / 960.0, getHeight() / 540.0)));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, btnFontSize));
         g2.setColor(new Color(0x01, 0x00, 0x48));
         FontMetrics fm = g2.getFontMetrics();
         int lx = b.x + (b.width - fm.stringWidth(label)) / 2;
@@ -1077,23 +1366,150 @@ public final class BattlePanel extends JPanel {
         g2.fillRect(x, y, bw, bh);
         float frac = (max > 0) ? Math.clamp((float) cur / max, 0f, 1f) : 0f;
         int fillW = (int) (bw * frac);
-        g2.setColor(fillCol);
-        g2.fillRect(x, y, fillW, bh);
+        if (fillW > 0) {
+            g2.setColor(fillCol);
+            g2.fillRect(x, y, fillW, bh);
+        }
+        g2.setColor(new Color(40, 45, 70));
+        g2.drawRect(x, y, bw, bh);
+    }
+
+    private void drawEnemyHpBarWithPreview(Graphics2D g2, int x, int y, int bw, int bh, int curHp, int maxHp, int dmgPreview, boolean isWordValid) {
+        // Trough background
+        g2.setColor(new Color(20, 20, 30));
+        g2.fillRect(x, y, bw, bh);
+
+        float curFrac = (maxHp > 0) ? Math.clamp((float) curHp / maxHp, 0f, 1f) : 0f;
+        int curW = (int) (bw * curFrac);
+
+        if (dmgPreview <= 0) {
+            // Normal orange bar
+            if (curW > 0) {
+                g2.setColor(HP_ORANGE);
+                g2.fillRect(x, y, curW, bh);
+            }
+        } else {
+            int remHp = Math.max(0, curHp - dmgPreview);
+            float remFrac = (maxHp > 0) ? Math.clamp((float) remHp / maxHp, 0f, 1f) : 0f;
+            int remW = (int) (bw * remFrac);
+            int dmgW = curW - remW;
+
+            // 1. Remaining HP in solid HP_ORANGE
+            if (remW > 0) {
+                g2.setColor(HP_ORANGE);
+                g2.fillRect(x, y, remW, bh);
+            }
+
+            // 2. Prospective Damage slice
+            if (dmgW > 0) {
+                int dmgX = x + remW;
+                double pulse = 0.85 + 0.15 * Math.sin(System.currentTimeMillis() * 0.009);
+                int r = (int) Math.clamp(245 * pulse, 180, 255);
+                Color damageFill = isWordValid
+                    ? new Color(r, 42, 38)
+                    : new Color(240, 95, 45, 220);
+
+                g2.setColor(damageFill);
+                g2.fillRect(dmgX, y, dmgW, bh);
+
+                // Subtle dividing line between remaining HP and damage chunk
+                if (remW > 0) {
+                    g2.setColor(new Color(25, 25, 35));
+                    g2.fillRect(dmgX, y, 1, bh);
+                }
+
+                // Crisp border highlight around the damage slice
+                g2.setColor(new Color(255, 205, 205, 190));
+                g2.drawRect(dmgX, y, Math.max(0, dmgW - 1), Math.max(0, bh - 1));
+            }
+        }
+
+        // Clean border around entire trough
+        g2.setColor(new Color(40, 45, 70));
+        g2.drawRect(x, y, bw, bh);
+    }
+
+    private void renderCachedBackground(Graphics2D g2, int w, int h) {
+        if (w <= 0 || h <= 0) return;
+        if (cachedBgImage == null || cachedBgW != w || cachedBgH != h || cachedBgLandmark != landmarkIcon) {
+            cachedBgImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+            Graphics2D bgG2 = cachedBgImage.createGraphics();
+            bgG2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            bgG2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+            // Layer 1: Sky
+            if (skyBg != null) {
+                bgG2.drawImage(skyBg, 0, 0, w, h, null);
+            } else {
+                bgG2.setColor(MIDNIGHT_NAVY);
+                bgG2.fillRect(0, 0, w, h);
+            }
+
+            // Layer 2: Landmark Background
+            if (landmarkIcon != null) {
+                int imgW = landmarkIcon.getWidth();
+                int imgH = landmarkIcon.getHeight();
+                if (imgW > 0 && imgH > 0) {
+                    double scale = Math.max((double) (w * 0.88) / imgW, (double) (h * 0.92) / imgH);
+                    int drawW = (int) Math.round(imgW * scale);
+                    int drawH = (int) Math.round(imgH * scale);
+                    int drawX = (w - drawW) / 2;
+                    int drawY = h - drawH - (int) (10 * (h / 540.0));
+                    bgG2.drawImage(landmarkIcon, drawX, drawY, drawW, drawH, null);
+                }
+            }
+
+            // Layer 3: Soft Scrim
+            bgG2.setColor(new Color(12, 16, 52, 105));
+            bgG2.fillRect(0, 0, w, h);
+
+            bgG2.dispose();
+            cachedBgW = w;
+            cachedBgH = h;
+            cachedBgLandmark = landmarkIcon;
+        }
+
+        g2.drawImage(cachedBgImage, 0, 0, null);
     }
 
     private void drawIndigenousFrame(Graphics2D g2, int w, int h) {
-        if (indigFrame != null) {
-            g2.drawImage(indigFrame, 0, 0, w, h, null);
+        if (indigFrame == null || w <= 0 || h <= 0) return;
+        if (cachedIndigFrame == null || cachedFrameW != w || cachedFrameH != h) {
+            cachedIndigFrame = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D fg = cachedIndigFrame.createGraphics();
+            fg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            fg.drawImage(indigFrame, 0, 0, w, h, null);
+            fg.dispose();
+            cachedFrameW = w;
+            cachedFrameH = h;
         }
+        g2.drawImage(cachedIndigFrame, 0, 0, null);
+    }
+
+    public static int calculatePreviewRemainingHp(int curHp, int dmgPreview) {
+        return Math.max(0, curHp - Math.max(0, dmgPreview));
+    }
+
+    public static int calculateDamageSliceWidth(int barWidth, int curHp, int maxHp, int dmgPreview) {
+        if (maxHp <= 0 || curHp <= 0 || dmgPreview <= 0) return 0;
+        float curFrac = Math.clamp((float) curHp / maxHp, 0f, 1f);
+        int curW = (int) (barWidth * curFrac);
+        int remHp = Math.max(0, curHp - dmgPreview);
+        float remFrac = Math.clamp((float) remHp / maxHp, 0f, 1f);
+        int remW = (int) (barWidth * remFrac);
+        return curW - remW;
     }
 
     private void drawPauseOverlay(Graphics2D g2, int w, int h) {
         g2.setColor(new Color(0, 0, 0, 185));
         g2.fillRect(0, 0, w, h);
-        g2.setFont(new Font(Font.SERIF, Font.BOLD, 32));
+        int pauseFontSize = Math.max(32, (int) Math.round(36 * Math.min(w / 960.0, h / 540.0)));
+        g2.setFont(new Font(Font.SERIF, Font.BOLD, pauseFontSize));
         g2.setColor(Color.WHITE);
         String pStr = "GI-PAUSE";
-        int pw = g2.getFontMetrics().stringWidth(pStr);
-        g2.drawString(pStr, (w - pw) / 2, h / 2);
+        FontMetrics fm = g2.getFontMetrics();
+        int pw = fm.stringWidth(pStr);
+        int py = (h + fm.getAscent() - fm.getDescent()) / 2;
+        g2.drawString(pStr, (w - pw) / 2, py);
     }
 }

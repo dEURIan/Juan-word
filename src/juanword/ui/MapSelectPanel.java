@@ -43,6 +43,7 @@ public final class MapSelectPanel extends JPanel {
     private Landmark hovered = null;
     private Rectangle backButtonBounds = new Rectangle(36, 20, 110, 32);
     private Rectangle settingsButtonBounds = new Rectangle(890, 20, 34, 34);
+    private Rectangle fightGudoButtonBounds = new Rectangle(0, 0, 0, 0);
 
     // Map travel horizontal slide animation
     private boolean isTransitioning = false;
@@ -124,25 +125,25 @@ public final class MapSelectPanel extends JPanel {
         int stageW = Math.min(w, (int) (h * 16.0 / 9.0));
         int stageOffset = (w - stageW) / 2;
 
-        // Map 1: Blue Building
-        int bbH = (int) (h * 0.44);
-        int bbW = (int) (stageW * 0.28);
-        int bbX = stageOffset + (int) (stageW * 0.025);
-        int bbY = h - bbH - (int) (18 * S);
+        // Map 1: Blue Building (positioned on the right, scaled bigger)
+        int bbH = (int) (h * 0.52);
+        int bbW = (int) (stageW * 0.35);
+        int bbX = stageOffset + stageW - bbW + (int) (15 * S);
+        int bbY = h - bbH - (int) (16 * S);
         if (landmarks.size() > 0) landmarks.get(0).setBounds(new Rectangle(bbX, bbY, bbW, bbH));
 
-        // Map 2: Davao Museum
-        int dmW = (int) (stageW * 0.32);
-        int dmH = (int) (h * 0.46);
-        int dmX = stageOffset + (stageW - dmW) / 2 - (int) (10 * S);
-        int dmY = h - dmH - (int) (18 * S);
+        // Map 2: Davao Museum (positioned closer to the Blue Building)
+        int dmW = (int) (stageW * 0.38);
+        int dmH = (int) (h * 0.55);
+        int dmX = stageOffset + (stageW - dmW) / 2 + (int) (35 * S);
+        int dmY = h - dmH - (int) (16 * S);
         if (landmarks.size() > 1) landmarks.get(1).setBounds(new Rectangle(dmX, dmY, dmW, dmH));
 
-        // Map 3: San Pedro Cathedral
-        int spH = (int) (h * 0.48);
-        int spW = (int) (stageW * 0.30);
-        int spX = stageOffset + stageW - spW + (int) (50 * S);
-        int spY = h - spH - (int) (18 * S);
+        // Map 3: San Pedro Cathedral (positioned on the left, scaled bigger)
+        int spH = (int) (h * 0.52);
+        int spW = (int) (stageW * 0.38);
+        int spX = stageOffset + (int) (stageW * 0.015);
+        int spY = h - spH - (int) (16 * S);
         if (landmarks.size() > 2) landmarks.get(2).setBounds(new Rectangle(spX, spY, spW, spH));
 
         // Map 4: Mount Apo
@@ -150,6 +151,22 @@ public final class MapSelectPanel extends JPanel {
 
         backButtonBounds = new Rectangle((int) (w * 0.035), (int) (h * 0.038), (int) (125 * S), (int) (34 * S));
         settingsButtonBounds = new Rectangle(w - (int) (64 * S), (int) (h * 0.038), (int) (34 * S), (int) (34 * S));
+
+        Player p = host.getActivePlayer();
+        boolean gudoUnlocked = (p != null && (p.hasDefeated("BOSS_PORTER") || p.hasDefeated("GUDO")));
+        if (gudoUnlocked) {
+            int fgW = (int) (160 * S);
+            int fgH = (int) (32 * S);
+            int fgX = (w - fgW) / 2;
+            int fgY = (int) (60 * S);
+            fightGudoButtonBounds = new Rectangle(fgX, fgY, fgW, fgH);
+        } else {
+            fightGudoButtonBounds = new Rectangle(0, 0, 0, 0);
+        }
+    }
+
+    public Rectangle getFightGudoButtonBounds() {
+        return new Rectangle(fightGudoButtonBounds);
     }
 
     private void onMouseMoved(MouseEvent e) {
@@ -175,11 +192,12 @@ public final class MapSelectPanel extends JPanel {
 
         boolean overBack = backButtonBounds.contains(mousePoint);
         boolean overSettings = settingsButtonBounds.contains(mousePoint);
-        if (overBack || overSettings) {
+        boolean overFightGudo = fightGudoButtonBounds.width > 0 && fightGudoButtonBounds.contains(mousePoint);
+        if (overBack || overSettings || overFightGudo) {
             hovered = null;
         }
 
-        setCursor((hovered != null || overBack || overSettings) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+        setCursor((hovered != null || overBack || overSettings || overFightGudo) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
 
         if (hovered != previouslyHovered) {
             repaint();
@@ -188,6 +206,10 @@ public final class MapSelectPanel extends JPanel {
 
     private void onMouseClicked(MouseEvent e) {
         if (isTransitioning) return;
+        if (fightGudoButtonBounds.width > 0 && fightGudoButtonBounds.contains(e.getPoint())) {
+            launchBattle(4, 4);
+            return;
+        }
         if (backButtonBounds.contains(e.getPoint())) {
             stop();
             host.showScreen(Screen.START);
@@ -238,12 +260,16 @@ public final class MapSelectPanel extends JPanel {
     }
 
     private void launchBattle(int mapIndex) {
+        launchBattle(mapIndex, 1);
+    }
+
+    private void launchBattle(int mapIndex, int stageIndex) {
         stop();
         Player p = host.getActivePlayer();
         BattleSession session = new BattleSessionBuilder()
             .withPlayer(p)
             .onMap(mapIndex)
-            .atStage(1)
+            .atStage(stageIndex)
             .build();
         host.startBattle(session);
     }
@@ -337,6 +363,10 @@ public final class MapSelectPanel extends JPanel {
     }
 
     private void drawHud(Graphics2D g2, int w, int h) {
+        double scaleX = w / 960.0;
+        double scaleY = h / 540.0;
+        double S = Math.min(scaleX, scaleY);
+
         // Back Button in Dark Navy Pill with Gold Border
         g2.setColor(new Color(15, 25, 45, 230));
         g2.fillRoundRect(backButtonBounds.x, backButtonBounds.y, backButtonBounds.width, backButtonBounds.height, 10, 10);
@@ -344,15 +374,22 @@ public final class MapSelectPanel extends JPanel {
         g2.setStroke(new BasicStroke(1.5f));
         g2.drawRoundRect(backButtonBounds.x, backButtonBounds.y, backButtonBounds.width, backButtonBounds.height, 10, 10);
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-        g2.drawString("← Balik (Back)", backButtonBounds.x + 16, backButtonBounds.y + 21);
+        int backFontSize = Math.max(12, (int) Math.round(13 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, backFontSize));
+        FontMetrics fmBack = g2.getFontMetrics();
+        String backText = "← Balik (Back)";
+        int bx = backButtonBounds.x + (backButtonBounds.width - fmBack.stringWidth(backText)) / 2;
+        int by = backButtonBounds.y + (backButtonBounds.height + fmBack.getAscent() - fmBack.getDescent()) / 2;
+        g2.drawString(backText, bx, by);
 
         // Screen Title in Dark Navy Pill with Gold Border
         String title = "PILIA ANG MAPA • MAP SELECT";
-        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
-        int titleTextW = g2.getFontMetrics().stringWidth(title);
-        int titleBoxW = titleTextW + 36;
-        int titleBoxH = 34;
+        int titleFontSize = Math.max(13, (int) Math.round(14 * S));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, titleFontSize));
+        FontMetrics fmTitle = g2.getFontMetrics();
+        int titleTextW = fmTitle.stringWidth(title);
+        int titleBoxW = titleTextW + (int) Math.round(36 * S);
+        int titleBoxH = Math.max(34, (int) Math.round(34 * S));
         int titleBoxX = (w - titleBoxW) / 2;
         int titleBoxY = backButtonBounds.y;
 
@@ -363,23 +400,52 @@ public final class MapSelectPanel extends JPanel {
         g2.drawRoundRect(titleBoxX, titleBoxY, titleBoxW, titleBoxH, 10, 10);
 
         g2.setColor(GOLD);
-        g2.drawString(title, titleBoxX + 18, titleBoxY + 21);
+        int tx = titleBoxX + (titleBoxW - titleTextW) / 2;
+        int ty = titleBoxY + (titleBoxH + fmTitle.getAscent() - fmTitle.getDescent()) / 2;
+        g2.drawString(title, tx, ty);
+
+        // "Fight Gudo" Boss Challenge Button (visible only when unlocked)
+        if (fightGudoButtonBounds.width > 0) {
+            boolean isHovered = (mousePoint != null && fightGudoButtonBounds.contains(mousePoint));
+            Color bgCol = isHovered ? new Color(130, 25, 30, 245) : new Color(65, 15, 20, 235);
+            Color borderCol = isHovered ? new Color(255, 240, 150) : GOLD;
+
+            g2.setColor(bgCol);
+            g2.fillRoundRect(fightGudoButtonBounds.x, fightGudoButtonBounds.y, fightGudoButtonBounds.width, fightGudoButtonBounds.height, 8, 8);
+            g2.setColor(borderCol);
+            g2.setStroke(new BasicStroke(isHovered ? 2.2f : 1.6f));
+            g2.drawRoundRect(fightGudoButtonBounds.x, fightGudoButtonBounds.y, fightGudoButtonBounds.width, fightGudoButtonBounds.height, 8, 8);
+
+            g2.setColor(Color.WHITE);
+            int gudoFontSize = Math.max(13, (int) Math.round(14 * S));
+            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, gudoFontSize));
+            String gudoText = "⚔ Fight Gudo";
+            FontMetrics gfm = g2.getFontMetrics();
+            int gtw = gfm.stringWidth(gudoText);
+            int gtx = fightGudoButtonBounds.x + (fightGudoButtonBounds.width - gtw) / 2;
+            int gty = fightGudoButtonBounds.y + (fightGudoButtonBounds.height + gfm.getAscent() - gfm.getDescent()) / 2;
+            g2.drawString(gudoText, gtx, gty);
+        }
 
         // Player Info Card in Top Right
         Player p = host.getActivePlayer();
         if (p != null) {
             String info = p.getPlayerName() + "  |  Score: " + p.getScore();
-            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-            int iw = g2.getFontMetrics().stringWidth(info);
-            int pBoxW = iw + 28;
-            int pBoxX = settingsButtonBounds.x - pBoxW - 12;
+            int infoFontSize = Math.max(12, (int) Math.round(13 * S));
+            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, infoFontSize));
+            FontMetrics fmInfo = g2.getFontMetrics();
+            int iw = fmInfo.stringWidth(info);
+            int pBoxW = iw + (int) Math.round(28 * S);
+            int pBoxX = settingsButtonBounds.x - pBoxW - (int) Math.round(12 * S);
             g2.setColor(new Color(15, 25, 45, 230));
             g2.fillRoundRect(pBoxX, titleBoxY, pBoxW, titleBoxH, 10, 10);
             g2.setColor(GOLD);
             g2.setStroke(new BasicStroke(1.2f));
             g2.drawRoundRect(pBoxX, titleBoxY, pBoxW, titleBoxH, 10, 10);
             g2.setColor(Color.WHITE);
-            g2.drawString(info, pBoxX + 14, titleBoxY + 21);
+            int pix = pBoxX + (pBoxW - iw) / 2;
+            int piy = titleBoxY + (titleBoxH + fmInfo.getAscent() - fmInfo.getDescent()) / 2;
+            g2.drawString(info, pix, piy);
         }
 
         // Settings Cog Button
@@ -389,7 +455,7 @@ public final class MapSelectPanel extends JPanel {
         g2.setStroke(new BasicStroke(1.2f));
         g2.drawRoundRect(settingsButtonBounds.x, settingsButtonBounds.y, settingsButtonBounds.width, settingsButtonBounds.height, 8, 8);
         if (settingsIcon != null) {
-            int iconPad = Math.max(4, (settingsButtonBounds.width - 20) / 2);
+            int iconPad = Math.max(4, (settingsButtonBounds.width - (int) Math.round(20 * S)) / 2);
             int iconSize = settingsButtonBounds.width - iconPad * 2;
             g2.drawImage(settingsIcon, settingsButtonBounds.x + iconPad, settingsButtonBounds.y + iconPad, iconSize, iconSize, null);
         }
@@ -403,18 +469,23 @@ public final class MapSelectPanel extends JPanel {
                 banner += "  - 🔒 NAKASERA";
             }
 
-            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
-            int bw = g2.getFontMetrics().stringWidth(banner) + 36;
-            int bx = (w - bw) / 2;
-            int by = h - 55;
+            int cardFontSize = Math.max(13, (int) Math.round(14 * S));
+            g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, cardFontSize));
+            FontMetrics fmCard = g2.getFontMetrics();
+            int cardW = fmCard.stringWidth(banner) + (int) Math.round(36 * S);
+            int cardH = Math.max(34, (int) Math.round(34 * S));
+            int cardX = (w - cardW) / 2;
+            int cardY = h - (int) Math.round(58 * S);
 
             g2.setColor(new Color(15, 25, 45, 230));
-            g2.fillRoundRect(bx, by, bw, 32, 10, 10);
+            g2.fillRoundRect(cardX, cardY, cardW, cardH, 10, 10);
             g2.setColor(hovered.isLocked() ? new Color(220, 60, 60) : GOLD);
             g2.setStroke(new BasicStroke(1.5f));
-            g2.drawRoundRect(bx, by, bw, 32, 10, 10);
+            g2.drawRoundRect(cardX, cardY, cardW, cardH, 10, 10);
             g2.setColor(Color.WHITE);
-            g2.drawString(banner, bx + 18, by + 21);
+            int cx = cardX + (cardW - fmCard.stringWidth(banner)) / 2;
+            int cy = cardY + (cardH + fmCard.getAscent() - fmCard.getDescent()) / 2;
+            g2.drawString(banner, cx, cy);
         }
     }
 }
