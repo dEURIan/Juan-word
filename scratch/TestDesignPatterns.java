@@ -1,8 +1,33 @@
-import juanword.*;
-import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
-import java.util.concurrent.*;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import juanword.data.DataManager;
+import juanword.enemy.AltarBoyEnemy;
+import juanword.enemy.AlviolaBossEnemy;
+import juanword.enemy.DizonBossEnemy;
+import juanword.enemy.Enemy;
+import juanword.enemy.EnemyFactory;
+import juanword.enemy.GuardEnemy;
+import juanword.enemy.JanitorBossEnemy;
+import juanword.enemy.KarabawEnemy;
+import juanword.enemy.LolaEnemy;
+import juanword.enemy.MaleStudentEnemy;
+import juanword.enemy.MonkeyEnemy;
+import juanword.enemy.PaintingEnemy;
+import juanword.enemy.PorterBossEnemy;
+import juanword.model.BattleContext;
+import juanword.model.BattleSession;
+import juanword.model.BattleSessionBuilder;
+import juanword.model.DifficultySetting;
+import juanword.model.Player;
+import juanword.tile.GoldTileDecorator;
+import juanword.tile.HealingTileDecorator;
+import juanword.tile.StandardTileComponent;
+import juanword.tile.TileComponent;
 
 public class TestDesignPatterns {
     public static void main(String[] args) throws Exception {
@@ -26,10 +51,10 @@ public class TestDesignPatterns {
         DataManager instance2 = DataManager.getInstance();
         assert instance1 == instance2 : "DataManager.getInstance() must return the same instance";
 
-        // Multithreaded concurrent access test
         int threadCount = 8;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(1);
+        @SuppressWarnings("unchecked")
         AtomicReference<DataManager>[] results = new AtomicReference[threadCount];
 
         for (int i = 0; i < threadCount; i++) {
@@ -50,149 +75,143 @@ public class TestDesignPatterns {
         executor.awaitTermination(2, TimeUnit.SECONDS);
 
         for (int i = 0; i < threadCount; i++) {
-            assert results[i].get() == instance1 : "Thread " + i + " must get the exact same Singleton instance";
+            assert results[i].get() == instance1 : "Concurrent thread " + i + " got a different DataManager instance!";
         }
 
-        System.out.println("  ✓ Singleton: DataManager double-checked locking returns single shared instance across threads.");
+        System.out.println("  ✓ DataManager successfully verified as a thread-safe Singleton (double-checked locking).");
     }
 
     private static void testPattern2FactoryMethod() {
-        System.out.println("\n--- Testing Pattern 2: Factory Method (EnemyFactory -> Enemy) ---");
+        System.out.println("\n--- Testing Pattern 2: Factory Method (EnemyFactory) ---");
 
-        // Stage 1: Dizon
-        Enemy enemy1 = EnemyFactory.createEnemy(1, BattlePanel.DifficultySetting.SAYON);
-        assert enemy1 instanceof DizonEnemy : "Stage 1 must create DizonEnemy";
-        assert "DIZON".equals(enemy1.getName()) : "Stage 1 enemy name must be DIZON";
-        assert enemy1.getMaxHp() == Math.max(30, (int) Math.round(70 * 0.75)) : "Sayon Dizon HP scaling mismatch";
-        System.out.println("  ✓ Stage 1 Enemy created via EnemyFactory: " + enemy1.getTitle() + " (HP: " + enemy1.getMaxHp() + ")");
+        // Map 1 Enemies
+        Enemy e11 = EnemyFactory.createEnemy(1, 1, DifficultySetting.SAYON);
+        assert e11 instanceof GuardEnemy : "Map 1 Stage 1 must be GuardEnemy";
+        Enemy e12 = EnemyFactory.createEnemy(1, 2, DifficultySetting.SAYON);
+        assert e12 instanceof MaleStudentEnemy : "Map 1 Stage 2 must be MaleStudentEnemy";
+        Enemy e13 = EnemyFactory.createEnemy(1, 3, DifficultySetting.SAYON);
+        assert e13 instanceof DizonBossEnemy : "Map 1 Stage 3 must be DizonBossEnemy";
+        assert e13.isBoss() : "Dizon must be marked as boss";
 
-        // Stage 2: Alviola
-        Enemy enemy2 = EnemyFactory.createEnemy(2, BattlePanel.DifficultySetting.SAKTO);
-        assert enemy2 instanceof AlviolaEnemy : "Stage 2 must create AlviolaEnemy";
-        assert "ALVIOLA".equals(enemy2.getName()) : "Stage 2 enemy name must be ALVIOLA";
-        assert enemy2.getMaxHp() == 95 : "Sakto Alviola HP should be base 95";
-        assert enemy2.getAtk() == 13 : "Sakto Alviola ATK should be base 13";
-        System.out.println("  ✓ Stage 2 Enemy created via EnemyFactory: " + enemy2.getTitle() + " (HP: " + enemy2.getMaxHp() + ")");
+        // Map 2 Enemies
+        Enemy e21 = EnemyFactory.createEnemy(2, 1, DifficultySetting.SAKTO);
+        assert e21 instanceof PaintingEnemy : "Map 2 Stage 1 must be PaintingEnemy";
+        Enemy e22 = EnemyFactory.createEnemy(2, 2, DifficultySetting.SAKTO);
+        assert e22 instanceof PaintingEnemy : "Map 2 Stage 2 must be PaintingEnemy";
+        Enemy e23 = EnemyFactory.createEnemy(2, 3, DifficultySetting.SAKTO);
+        assert e23 instanceof JanitorBossEnemy : "Map 2 Stage 3 must be JanitorBossEnemy";
 
-        // Stage 3: Rola (Boss)
-        Enemy enemy3 = EnemyFactory.createEnemy(3, BattlePanel.DifficultySetting.LISOD);
-        assert enemy3 instanceof RolaBossEnemy : "Stage 3 must create RolaBossEnemy";
-        assert "ROLA".equals(enemy3.getName()) : "Stage 3 enemy name must be ROLA";
-        assert enemy3.getMaxHp() == (int) Math.round(125 * 1.30) : "Lisod Rola HP scaling mismatch";
-        assert enemy3.getAtk() == (int) Math.round(16 * 1.40) : "Lisod Rola ATK scaling mismatch";
-        System.out.println("  ✓ Stage 3 Boss created via EnemyFactory: " + enemy3.getTitle() + " (HP: " + enemy3.getMaxHp() + ")");
+        // Map 3 Enemies
+        Enemy e31 = EnemyFactory.createEnemy(3, 1, DifficultySetting.LISOD);
+        assert e31 instanceof LolaEnemy : "Map 3 Stage 1 must be LolaEnemy";
+        Enemy e32 = EnemyFactory.createEnemy(3, 2, DifficultySetting.LISOD);
+        assert e32 instanceof AltarBoyEnemy : "Map 3 Stage 2 must be AltarBoyEnemy";
+        Enemy e33 = EnemyFactory.createEnemy(3, 3, DifficultySetting.LISOD);
+        assert e33 instanceof AlviolaBossEnemy : "Map 3 Stage 3 must be AlviolaBossEnemy";
 
-        // Polymorphic damage and rendering
-        enemy1.takeDamage(25);
-        assert enemy1.getCurHp() == enemy1.getMaxHp() - 25 : "Enemy takeDamage failed";
+        // Map 4 Enemies
+        Enemy e41 = EnemyFactory.createEnemy(4, 1, DifficultySetting.EXTREME);
+        assert e41 instanceof MonkeyEnemy : "Map 4 Stage 1 must be MonkeyEnemy";
+        Enemy e42 = EnemyFactory.createEnemy(4, 2, DifficultySetting.EXTREME);
+        assert e42 instanceof KarabawEnemy : "Map 4 Stage 2 must be KarabawEnemy";
+        Enemy e43 = EnemyFactory.createEnemy(4, 3, DifficultySetting.EXTREME);
+        assert e43 instanceof PorterBossEnemy : "Map 4 Stage 3 must be PorterBossEnemy";
+        assert e43.isBoss() : "Porter must be marked as boss";
 
-        BufferedImage img = new BufferedImage(150, 150, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        enemy1.render(g2, 10, 10, 110, 85, false, 0);
-        enemy2.render(g2, 10, 10, 110, 85, true, -10);
-        enemy3.render(g2, 10, 10, 110, 85, false, 0);
-        g2.dispose();
-        System.out.println("  ✓ Polymorphic Enemy.render() executed without errors across all 3 enemy types.");
+        assert EnemyFactory.mapCount() == 4 : "Must have 4 maps";
+        assert EnemyFactory.stagesPerMap() == 3 : "Must have 3 stages per map";
+
+        System.out.println("  ✓ EnemyFactory successfully instantiates all 11 concrete enemies across 4 maps.");
     }
 
     private static void testPattern3Builder() {
-        System.out.println("\n--- Testing Pattern 3: Builder (BattleSessionBuilder -> BattleSession) ---");
+        System.out.println("\n--- Testing Pattern 3: Builder (BattleSessionBuilder) ---");
 
-        Player player = new Player("P999", "LapuLapu");
-        player.currentHealth = 85;
-        player.savedTiles = "A:1;B:2;C:3";
-        player.savedEnemyHealth = 40;
+        Player player = new Player(999, "LapuLapu");
 
         BattleSession session = new BattleSessionBuilder()
-                .player(player)
-                .mapName("San Pedro Cathedral")
-                .stageNum(2)
-                .difficulty("Lisod")
-                .asResume(true)
-                .savedTiles(player.savedTiles)
-                .savedEnemyHealth(player.savedEnemyHealth)
-                .build();
+            .withPlayer(player)
+            .onMap(3)
+            .atStage(2)
+            .withSavedHealth(85, 90)
+            .withRemainingTimer(18)
+            .build();
 
-        assert session != null : "BattleSession must not be null";
-        assert session.getPlayer() == player : "Player reference mismatch in session";
-        assert "San Pedro Cathedral".equals(session.getMapName()) : "MapName mismatch";
-        assert session.getStageNum() == 2 : "StageNum mismatch";
-        assert session.getDifficulty() == BattlePanel.DifficultySetting.LISOD : "Difficulty mismatch";
-        assert session.isResume() : "isResume mismatch";
-        assert "A:1;B:2;C:3".equals(session.getSavedTiles()) : "savedTiles mismatch";
-        assert session.getSavedEnemyHealth() == 40 : "savedEnemyHealth mismatch";
+        assert session != null : "Built session must not be null";
+        assert session.getPlayer() == player : "Player reference must match";
+        assert session.getMapIndex() == 3 : "Map index must be 3";
+        assert session.getStageIndex() == 2 : "Stage index must be 2";
+        assert session.getDifficulty() == DifficultySetting.LISOD : "Difficulty must be LISOD";
+        assert session.getPlayerHp() == 85 : "Saved player HP must be 85";
+        assert session.getEnemy().getCurrentHp() == 90 : "Saved enemy HP must be 90";
+        assert session.getTurnSeconds() == 18 : "Saved turn seconds must be 18";
+        assert session.getEnemy() instanceof AltarBoyEnemy : "Enemy must be AltarBoyEnemy";
 
-        System.out.println("  ✓ BattleSession constructed via BattleSessionBuilder: " + session);
-
-        // Test with BattlePanel
-        JuanWord app = new JuanWord();
-        BattlePanel panel = new BattlePanel(app, DataManager.getInstance());
-        panel.setupBattle(session);
-
-        assert panel.getCurrentEnemy() instanceof AlviolaEnemy : "Panel should have loaded Alviola for stage 2";
-        assert panel.getCurrentEnemy().getCurHp() == 40 : "Panel should have restored saved enemy HP 40";
-        DataManager.getInstance().deletePlayer("P999");
-        System.out.println("  ✓ BattlePanel.setupBattle(BattleSession) successfully consumed Builder product.");
+        System.out.println("  ✓ BattleSessionBuilder successfully constructs tailored BattleSession.");
     }
 
     private static void testPattern4Decorator() {
-        System.out.println("\n--- Testing Pattern 4: Decorator (TileDecorator, GoldTileDecorator, HealingTileDecorator) ---");
+        System.out.println("\n--- Testing Pattern 4: Decorator (Tile Decorators) ---");
 
-        // 1. Standard Component
-        TileComponent std = new StandardTileComponent('A', 2);
-        assert std.getLetter() == 'a' : "Standard letter mismatch";
-        assert std.getPoints() == 2 : "Standard points mismatch";
-        assert "STANDARD".equals(std.getEffectName()) : "Standard effect name mismatch";
-        System.out.println("  ✓ Concrete Component: StandardTileComponent ('a', 2 pts)");
+        TileComponent std = new StandardTileComponent('A');
+        assert std.getLetter() == 'A' : "Letter mismatch";
+        int basePoints = std.getPoints();
+        assert "STD".equals(std.getModifierCode()) : "Modifier code must be STD";
 
-        // 2. Gold Tile Decorator (2x Points)
+        // Gold decorator
         TileComponent gold = new GoldTileDecorator(std);
-        assert gold.getLetter() == 'a' : "Gold decorated letter must match wrapped letter";
-        assert gold.getBasePoints() == 2 : "Gold base points must match wrapped base points";
-        assert gold.getPoints() == 4 : "Gold decorated points must be 2x wrapped points (4 vs " + gold.getPoints() + ")";
-        assert "GOLD".equals(gold.getEffectName()) : "Gold effect name mismatch";
-        System.out.println("  ✓ Concrete Decorator 1: GoldTileDecorator doubles points to " + gold.getPoints() + " pts");
+        assert gold.getLetter() == 'A' : "Letter should remain unchanged";
+        assert gold.getPoints() == basePoints * 2 : "Gold tile must double points";
+        assert "GLD".equals(gold.getModifierCode()) : "Modifier code must be GLD";
 
-        // 3. Healing Tile Decorator (+8 HP)
+        // Healing decorator
         TileComponent heal = new HealingTileDecorator(std);
-        assert heal.getLetter() == 'a' : "Healing decorated letter must match wrapped letter";
-        assert heal.getPoints() == 2 : "Healing decorated points should remain 2";
-        assert "HEAL".equals(heal.getEffectName()) : "Healing effect name mismatch";
-        System.out.println("  ✓ Concrete Decorator 2: HealingTileDecorator configured (+8 HP)");
+        assert heal.getLetter() == 'A' : "Letter should remain unchanged";
+        assert heal.getPoints() == basePoints : "Healing tile retains standard points";
+        assert "HEL".equals(heal.getModifierCode()) : "Modifier code must be HEL";
 
-        // 4. Test onWordSubmitted effect with BattlePanel
-        JuanWord app = new JuanWord();
-        BattlePanel panel = new BattlePanel(app, DataManager.getInstance());
-        Player player = new Player("P_TEST_DEC", "TestDec");
-        player.currentHealth = 50; // Damaged Juan
-        player.maxHealth = 100;
-        panel.setupBattle(player, "San Pedro Cathedral", 1, "Sakto");
+        // Functional effects
+        Player player = new Player(998, "TestDec");
+        player.setMaxHp(100);
+        BattleSession session = new BattleSessionBuilder()
+            .withPlayer(player)
+            .onMap(1)
+            .atStage(1)
+            .withSavedHealth(50, 30)
+            .build();
 
-        heal.onWordSubmitted(player, panel);
-        // Player's HP should increase from 50 to 58 (+8 HP)
-        System.out.println("  ✓ HealingTileDecorator.onWordSubmitted healed Player to " + player.currentHealth + " HP");
+        BattleContext ctx = new BattleContext(session, "A", null);
 
-        // 5. Test tile serialization and restoration with Decorator tags
-        String testTiles = "A:2:GOLD;B:1:HEAL;C:1:STANDARD;D:2:STANDARD;"
-                         + "E:1:STANDARD;F:4:STANDARD;G:2:STANDARD;H:4:STANDARD;"
-                         + "I:1:STANDARD;J:8:STANDARD;K:5:STANDARD;L:1:STANDARD;"
-                         + "M:3:STANDARD;N:1:STANDARD;O:1:STANDARD;P:3:STANDARD";
+        // Gold effect adds score
+        int scoreBefore = player.getScore();
+        gold.onWordSubmitted(ctx);
+        assert player.getScore() > scoreBefore : "Gold tile must award score";
 
-        boolean restored = panel.restoreTiles(testTiles);
-        assert restored : "restoreTiles must return true for valid 16-tile serialized string";
+        // Healing effect adds HP
+        int hpBefore = session.getPlayerHp();
+        heal.onWordSubmitted(ctx);
+        assert session.getPlayerHp() == hpBefore + 8 : "Healing tile must heal +8 HP";
 
-        String serializedBack = panel.serializeTiles();
-        assert serializedBack.contains("GOLD") : "Serialized tiles must preserve GOLD decorator tag";
-        assert serializedBack.contains("HEAL") : "Serialized tiles must preserve HEAL decorator tag";
-        System.out.println("  ✓ Tile serialization/restoration roundtrip preserved Decorator tags: " + serializedBack.substring(0, 30) + "...");
-
-        // Verify badge rendering doesn't crash
-        BufferedImage img = new BufferedImage(60, 60, BufferedImage.TYPE_INT_ARGB);
+        // Verify badge and overlay rendering does not crash
+        BufferedImage img = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
-        gold.renderDecoratorBadge(g2, 0, 0, 50, 50);
-        heal.renderDecoratorBadge(g2, 0, 0, 50, 50);
+        std.renderTileOverlay(g2, 0, 0, 64);
+        gold.renderTileOverlay(g2, 0, 0, 64);
+        heal.renderTileOverlay(g2, 0, 0, 64);
+        gold.renderBadge(g2, 0, 0, 64);
+        heal.renderBadge(g2, 0, 0, 64);
         g2.dispose();
-        DataManager.getInstance().deletePlayer("P_TEST_DEC");
-        System.out.println("  ✓ Decorator badge rendering (Gold star, Healing heart) verified successfully.");
+
+        // Distinct decorator tile colors and border colors
+        assert std.getTileColor() != null : "Standard tile must have a tile color";
+        assert gold.getTileColor() != null && !gold.getTileColor().equals(std.getTileColor()) : "Gold tile must have distinct tile color";
+        assert heal.getTileColor() != null && !heal.getTileColor().equals(std.getTileColor()) : "Healing tile must have distinct tile color";
+        assert !gold.getTileColor().equals(heal.getTileColor()) : "Gold and Healing tile colors must be distinct";
+
+        assert std.getBorderColor() != null : "Standard tile must have a border color";
+        assert gold.getBorderColor() != null && !gold.getBorderColor().equals(std.getBorderColor()) : "Gold tile must have distinct border color";
+        assert heal.getBorderColor() != null && !heal.getBorderColor().equals(std.getBorderColor()) : "Healing tile must have distinct border color";
+
+        System.out.println("  ✓ Tile decorators (Standard, Gold, Healing) behave correctly with dynamic effects and distinct colors.");
     }
 }

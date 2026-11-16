@@ -1,3 +1,5 @@
+package scratch;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -9,10 +11,11 @@ import juanword.Player;
 public class TestMapBannerAndLockVisuals {
     public static void main(String[] args) throws Exception {
         JuanWord app = new JuanWord();
-        Player juan = new Player("Juan");
+        Player juan = new Player("P001", "Juan");
         juan.unlockedMapIndex = 1; // Only Blue Building unlocked
+        app.setCurrentPlayer(juan);
         
-        MapSelectPanel panel = new MapSelectPanel(app, juan, () -> {});
+        MapSelectPanel panel = new MapSelectPanel(app);
         panel.setSize(960, 540);
         panel.doLayout();
         

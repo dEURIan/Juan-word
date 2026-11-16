@@ -1,15 +1,14 @@
-import juanword.JuanWord;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import juanword.ui.ImageLoader;
 
 public class TestLoadLetterAssets {
     public static void main(String[] args) {
-        JuanWord app = new JuanWord();
         for (char c = 'A'; c <= 'Z'; c++) {
-            Image img = app.loadGameImage("letters/" + c + ".png");
+            BufferedImage img = ImageLoader.load("letters/" + c + ".png");
             assert img != null : "Could not load letter " + c;
-            assert img.getWidth(null) > 0 : "Letter " + c + " has invalid width: " + img.getWidth(null);
+            assert img.getWidth() > 0 : "Letter " + c + " has invalid width: " + img.getWidth();
         }
-        System.out.println("✓ All 26 letters (A-Z) loaded successfully via app.loadGameImage!");
+        System.out.println("✓ All 26 letters (A-Z) loaded successfully via ImageLoader.load!");
         System.exit(0);
     }
 }

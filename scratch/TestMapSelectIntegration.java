@@ -1,147 +1,94 @@
-import juanword.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.lang.reflect.Field;
-import javax.imageio.ImageIO;
+import java.awt.Point;
+import java.awt.Rectangle;
+import juanword.JuanWord;
+import juanword.data.DataManager;
+import juanword.model.DifficultySetting;
+import juanword.model.Player;
+import juanword.ui.Landmark;
+import juanword.ui.MapSelectPanel;
 
 public class TestMapSelectIntegration {
     public static void main(String[] args) throws Exception {
         System.out.println("=== Testing 4-Map Architecture & Map Select Integration ===");
 
-        // 1. Verify Player Juan Data & Progression Model
-        DataManager dm = DataManager.getInstance();
-        Player loadedJuan = dm.loadPlayer("P001");
-        if (loadedJuan == null) {
-            loadedJuan = new Player("P001", "Juan");
-            loadedJuan.unlockedMapIndex = 1;
-            dm.savePlayer(loadedJuan);
-        }
-        final Player juan = loadedJuan;
-        assert juan.unlockedMapIndex == 1 : "Juan must only have Blue Building unlocked (unlockedMapIndex == 1), found: " + juan.unlockedMapIndex;
-        assert juan.isMapUnlocked(1) : "Map 1 (Blue Building) must be unlocked";
-        assert !juan.isMapUnlocked(2) : "Map 2 (Davao Museum) must be locked for Juan";
-        assert !juan.isMapUnlocked(3) : "Map 3 (San Pedro Cathedral) must be locked for Juan";
-        assert !juan.isMapUnlocked(4) : "Map 4 (Mt Apo) must be locked for Juan";
-        System.out.println("  ✓ Player Juan data verified: only Blue Building is unlocked (unlockedMapIndex = 1).");
+        // 1. Verify Player Progression Model
+        Player juan = new Player(1, "Juan");
+        assert juan.getUnlockedMap() == 1 : "Juan must only have Map 1 unlocked initially";
 
         // 2. Verify Predefined Difficulties
-        assert "Sayon".equalsIgnoreCase(Player.getPredefinedDifficultyForMap("Blue Building")) : "Blue Building must be Sayon (Easy)";
-        assert "Sakto".equalsIgnoreCase(Player.getPredefinedDifficultyForMap("Davao Museum")) : "Davao Museum must be Sakto (Medium)";
-        assert "Lisod".equalsIgnoreCase(Player.getPredefinedDifficultyForMap("San Pedro Cathedral")) : "San Pedro must be Lisod (Hard)";
-        assert "Extreme".equalsIgnoreCase(Player.getPredefinedDifficultyForMap("Mt Apo")) : "Mt Apo must be Extreme";
-        System.out.println("  ✓ Predefined difficulties verified: Easy (Blue Building), Medium (Davao Museum), Hard (San Pedro), Extreme (Mt Apo).");
+        assert DifficultySetting.forMap(1) == DifficultySetting.SAYON : "Map 1 must be Sayon";
+        assert DifficultySetting.forMap(2) == DifficultySetting.SAKTO : "Map 2 must be Sakto";
+        assert DifficultySetting.forMap(3) == DifficultySetting.LISOD : "Map 3 must be Lisod";
+        assert DifficultySetting.forMap(4) == DifficultySetting.EXTREME : "Map 4 must be Extreme";
+        System.out.println("  ✓ Predefined difficulties verified: Sayon, Sakto, Lisod, Extreme.");
 
         // 3. Verify Map Progression Unlock Logic
-        Player testProg = new Player("P_PROG", "ProgTester");
-        testProg.unlockedMapIndex = 1;
-        assert testProg.isMapUnlocked("Blue Building");
-        assert !testProg.isMapUnlocked("Davao Museum");
+        Player testProg = new Player(99, "ProgTester");
+        assert testProg.getUnlockedMap() == 1;
 
-        testProg.unlockNextMap(2);
-        assert testProg.isMapUnlocked("Davao Museum");
-        assert !testProg.isMapUnlocked("San Pedro");
+        testProg.unlockMap(2);
+        assert testProg.getUnlockedMap() == 2;
 
-        testProg.unlockNextMap(3);
-        assert testProg.isMapUnlocked("San Pedro Cathedral");
-        assert !testProg.isMapUnlocked("Mt Apo");
+        testProg.unlockMap(3);
+        assert testProg.getUnlockedMap() == 3;
 
-        testProg.unlockNextMap(4);
-        assert testProg.isMapUnlocked("Mt Apo");
-        System.out.println("  ✓ Map unlock progression verified across all 4 stages.");
+        testProg.unlockMap(4);
+        assert testProg.getUnlockedMap() == 4;
 
-        // 4. GUI & Staging Tests
-        SwingUtilities.invokeAndWait(() -> {
-            try {
-                JuanWord game = new JuanWord();
-                game.setCurrentPlayer(juan);
-                game.setSize(960, 540);
-                game.doLayout();
+        testProg.unlockMap(5);
+        assert testProg.getUnlockedMap() == 4;
+        System.out.println("  ✓ Map progression unlocks step-by-step up to Mount Apo.");
 
-                MapSelectPanel mapPanel = game.mapSelectPanel;
-                assert mapPanel != null : "mapSelectPanel must not be null";
+        // 4. Verify Landmark Model and Hit-Testing
+        Landmark lm = new Landmark(1, "Ateneo Blue Building", "Blue Building.png", new Rectangle(40, 120, 200, 260));
+        assert lm.contains(new Point(100, 150)) : "Point (100, 150) should be inside Landmark bounds";
+        assert !lm.contains(new Point(10, 10)) : "Point (10, 10) should be outside Landmark bounds";
 
-                mapPanel.setSize(960, 540);
-                mapPanel.doLayout();
+        lm.updateScale(true); // hovered
+        assert lm.getScale() > 1.0f : "Hovered landmark should scale above 1.0";
 
-                // Animation Initiation
-                mapPanel.startEntranceAnimation();
-                System.out.println("  ✓ Entrance animation started successfully.");
+        lm.setLocked(true);
+        assert lm.isLocked() : "Landmark should be locked";
 
-                Field animField = MapSelectPanel.class.getDeclaredField("animProgress");
-                animField.setAccessible(true);
+        // 5. Verify Mount Apo (Map 4) Hit-Testing and Summit Bounds
+        Landmark apo = new Landmark(4, "Mount Apo", "mtapo.png", new Rectangle(0, 0, 960, 540));
+        assert apo.getMapIndex() == 4 : "Mount Apo must be mapIndex 4";
+        assert apo.contains(new Point(480, 160)) : "Summit Point (480, 160) should be inside Mount Apo";
+        assert !apo.contains(new Point(100, 20)) : "Sky Point (100, 20) should be outside Mount Apo (y < 0.08 * h)";
+        assert !apo.contains(new Point(100, 480)) : "Ground Point (100, 480) should be outside Mount Apo (y > 0.72 * h)";
 
-                // Frame at animProgress = 0.5 (rising)
-                animField.setFloat(mapPanel, 0.5f);
-                BufferedImage imgHalf = new BufferedImage(960, 540, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D gHalf = imgHalf.createGraphics();
-                mapPanel.paint(gHalf);
-                gHalf.dispose();
-                ImageIO.write(imgHalf, "png", new File("scratch/map_anim_progress_50.png"));
-                System.out.println("  ✓ Rendered frame at animProgress = 0.5 (rising up from bottom).");
+        apo.updateScale(true);
+        assert apo.getScale() > 1.0f : "Hovered Mount Apo should scale above 1.0";
 
-                // Frame at animProgress = 1.0 (settled)
-                animField.setFloat(mapPanel, 1.0f);
-                BufferedImage imgFull = new BufferedImage(960, 540, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D gFull = imgFull.createGraphics();
-                mapPanel.paint(gFull);
-                gFull.dispose();
-                ImageIO.write(imgFull, "png", new File("scratch/map_anim_progress_100.png"));
-                System.out.println("  ✓ Rendered resting map select screen with locked silhouettes.");
+        // 6. Verify MapSelectPanel Hit-Testing Precedence (Foreground Landmarks over Mount Apo)
+        JuanWord app = new JuanWord();
+        app.setActivePlayer(juan);
+        MapSelectPanel panel = new MapSelectPanel(app);
+        panel.setSize(960, 540);
+        panel.refresh();
 
-                Field hoveredField = MapSelectPanel.class.getDeclaredField("hoveredLandmark");
-                hoveredField.setAccessible(true);
+        // Mouse over Blue Building (e.g. 100, 350): Blue Building takes precedence over Mount Apo
+        java.awt.event.MouseEvent meBB = new java.awt.event.MouseEvent(
+            panel, java.awt.event.MouseEvent.MOUSE_MOVED,
+            System.currentTimeMillis(), 0, 100, 350, 0, false
+        );
+        for (java.awt.event.MouseMotionListener mml : panel.getMouseMotionListeners()) {
+            mml.mouseMoved(meBB);
+        }
+        assert panel.getCursor().getType() == java.awt.Cursor.HAND_CURSOR : "Cursor over landmark should be HAND_CURSOR";
 
-                // Test Hover on Blue Building (Map 0, Left Foreground: x ~ 140, y ~ 420)
-                MouseEvent hoverBB = new MouseEvent(mapPanel, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 140, 420, 0, false);
-                mapPanel.getMouseMotionListeners()[0].mouseMoved(hoverBB);
-                int hovered = hoveredField.getInt(mapPanel);
-                assert hovered == MapSelectPanel.LANDMARK_BLUE_BUILDING : "Hovered landmark must be Blue Building (0), got: " + hovered;
-                System.out.println("  ✓ Hover on Blue Building (index 0) detected with pixel-perfect hit-test.");
+        // Mouse over Mount Apo summit (480, 160) where no building exists: Mount Apo hovered
+        java.awt.event.MouseEvent meApo = new java.awt.event.MouseEvent(
+            panel, java.awt.event.MouseEvent.MOUSE_MOVED,
+            System.currentTimeMillis(), 0, 480, 160, 0, false
+        );
+        for (java.awt.event.MouseMotionListener mml : panel.getMouseMotionListeners()) {
+            mml.mouseMoved(meApo);
+        }
+        assert panel.getCursor().getType() == java.awt.Cursor.HAND_CURSOR : "Cursor over Mount Apo summit should be HAND_CURSOR";
 
-                // Render hover Blue Building preview
-                BufferedImage imgHoverBB = new BufferedImage(960, 540, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D gBB = imgHoverBB.createGraphics();
-                mapPanel.paint(gBB);
-                gBB.dispose();
-                ImageIO.write(imgHoverBB, "png", new File("scratch/hover_blue_building_preview.png"));
-
-                // Test Hover on Davao Museum (Map 1, Center Foreground: x ~ 460, y ~ 420)
-                MouseEvent hoverDM = new MouseEvent(mapPanel, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 460, 420, 0, false);
-                mapPanel.getMouseMotionListeners()[0].mouseMoved(hoverDM);
-                hovered = hoveredField.getInt(mapPanel);
-                assert hovered == MapSelectPanel.LANDMARK_DURIAN_MUSEUM : "Hovered landmark must be Davao Museum (1), got: " + hovered;
-                System.out.println("  ✓ Hover on Davao Museum (index 1) detected with pixel-perfect hit-test.");
-
-                // Render hover Davao Museum preview
-                BufferedImage imgHoverDM = new BufferedImage(960, 540, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D gDM = imgHoverDM.createGraphics();
-                mapPanel.paint(gDM);
-                gDM.dispose();
-                ImageIO.write(imgHoverDM, "png", new File("scratch/hover_locked_museum_preview.png"));
-
-                // Test Hover on San Pedro Cathedral (Map 2, Right Foreground: x ~ 800, y ~ 420)
-                MouseEvent hoverSP = new MouseEvent(mapPanel, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 800, 420, 0, false);
-                mapPanel.getMouseMotionListeners()[0].mouseMoved(hoverSP);
-                hovered = hoveredField.getInt(mapPanel);
-                assert hovered == MapSelectPanel.LANDMARK_SAN_PEDRO : "Hovered landmark must be San Pedro (2), got: " + hovered;
-                System.out.println("  ✓ Hover on San Pedro Cathedral (index 2) detected with pixel-perfect hit-test.");
-
-                // Test Hover on Mt Apo (Map 3, Towering Background Summit: x ~ 480, y ~ 160)
-                MouseEvent hoverApo = new MouseEvent(mapPanel, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 480, 160, 0, false);
-                mapPanel.getMouseMotionListeners()[0].mouseMoved(hoverApo);
-                hovered = hoveredField.getInt(mapPanel);
-                assert hovered == MapSelectPanel.LANDMARK_MT_APO : "Hovered landmark must be Mt Apo (3), got: " + hovered;
-                System.out.println("  ✓ Hover on Mt Apo (index 3) detected with pixel-perfect hit-test.");
-
-                System.out.println("=== ALL 4-MAP INTEGRATION & STAGING TESTS PASSED! ===");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        });
+        System.out.println("  ✓ Landmark hit-testing, Mount Apo summit, and hover scaling verified.");
+        System.out.println("=== All Map Select Integration Tests Passed! ===");
         System.exit(0);
     }
 }

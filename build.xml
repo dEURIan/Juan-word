@@ -70,4 +70,19 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="-post-compile">
+        <!-- Package organized assets into build/classes/assets for JAR packaging -->
+        <copy todir="${build.classes.dir}/assets">
+            <fileset dir="assets"/>
+        </copy>
+        <!-- Also copy into build/classes/juanword for backward compatibility -->
+        <copy todir="${build.classes.dir}/juanword" failonerror="false">
+            <fileset dir="assets/sprites" erroronmissingdir="false"/>
+            <fileset dir="assets/maps" erroronmissingdir="false"/>
+            <fileset dir="assets/ui" erroronmissingdir="false"/>
+        </copy>
+        <copy todir="${build.classes.dir}/juanword/letters" failonerror="false">
+            <fileset dir="assets/letters" erroronmissingdir="false"/>
+        </copy>
+    </target>
 </project>

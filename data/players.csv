@@ -1,3 +1,5 @@
-playerId,playerName,currentStage,currentRound,score,experience,coins,currentHealth,maxHealth,lastSaved,savedTiles,savedDifficulty,savedEnemyHealth,savedMap,unlockedSayonStage,unlockedSaktoStage,unlockedLisodStage,unlockedMapIndex
-P001,Juan,1,0,0,0,0,100,100,2026-11-15 22:30,,Sayon,-1,Blue Building,1,1,1,1
-P002,Gudo,2,1,280,80,60,95,100,2026-10-30 18:40,K:2:STANDARD;A:1:STANDARD;R:3:STANDARD;S:2:STANDARD;R:3:STANDARD;S:2:STANDARD;R:3:STANDARD;S:2:STANDARD;S:2:STANDARD;U:1:STANDARD;S:2:STANDARD;T:2:STANDARD;I:1:STANDARD;K:2:HEAL;P:6:GOLD;A:1:STANDARD,Lisod,74,San Pedro Cathedral,2,2,2,3
+player_id,player_name,score,max_hp,unlocked_map,defeated_enemies,has_active_battle,active_map,active_stage,active_player_hp,active_enemy_hp,active_timer_sec,serialized_grid
+1,Juan,0,100,1,,false,1,1,100,0,0,
+2,Gudo,280,100,3,GUARD;MALE_STUDENT;BOSS_DIZON,true,3,1,95,74,25,K:STD;A:STD;R:STD;S:STD;R:STD;S:STD;R:STD;S:STD;S:STD;U:STD;S:STD;T:STD;I:STD;K:HEL;P:GLD;A:STD
+3,Cardo,10549,100,4,GUARD;MALE_STUDENT;BOSS_DIZON;PAINTING_1;PAINTING_2;BOSS_JANITOR;LOLA;ALTAR_BOY;BOSS_ALVIOLA;MONKEY;KARABAW;BOSS_PORTER,true,2,2,51,83,0,U:STD;U:STD;P:STD;I:STD;B:GLD;T:STD;U:STD;L:STD;P:HEL;A:STD;Y:STD;A:GLD;U:STD;T:STD;G:STD;T:STD
+4,Vlad,190,100,1,GUARD,true,1,2,90,45,0,A:STD;U:STD;K:STD;I:STD;A:STD;A:GLD;I:STD;A:STD;B:STD;U:STD;I:GLD;S:STD;G:STD;A:STD;S:GLD;I:STD

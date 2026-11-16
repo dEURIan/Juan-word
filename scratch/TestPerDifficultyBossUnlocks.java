@@ -1,190 +1,90 @@
-import juanword.*;
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
-import java.nio.file.Files;
-import java.util.List;
+import juanword.data.DataManager;
+import juanword.enemy.Enemy;
+import juanword.enemy.EnemyFactory;
+import juanword.model.DifficultySetting;
+import juanword.model.Player;
 
 public class TestPerDifficultyBossUnlocks {
 
     public static void main(String[] args) throws Exception {
-        System.out.println("=== RUNNING TEST SUITE: PER-DIFFICULTY BOSS UNLOCKS ===");
+        System.out.println("=== RUNNING TEST SUITE: MAP PROGRESSION & BOSS UNLOCKS ===");
 
         testDefaultUnlocks();
-        testUnlockBossOnSpecificDifficulty();
+        testUnlockBossOnSpecificMap();
         testUnlockPersistenceAcrossSaveAndReload();
-        testReplayingStage1DoesNotRelockBoss();
-        testDynamicUIStageCardRefresh();
-        testBackwardCompatibilityOldCsv();
+        testFourDifficulties();
 
-        System.out.println("\n=== ALL PER-DIFFICULTY BOSS UNLOCK TESTS PASSED! ===");
+        System.out.println("\n=== ALL MAP & BOSS UNLOCK TESTS PASSED! ===");
         System.exit(0);
     }
 
     private static void testDefaultUnlocks() {
         System.out.println("\n--- 1. Testing Default Unlocks (Fresh Player) ---");
-        Player p = new Player("P_TEST_FRESH", "TestFresh");
+        Player p = new Player(999, "TestFresh");
 
-        // By default, Stage 1 (Dizon) is unlocked for all difficulties
-        assert p.getMaxUnlockedStage("Sayon") == 1 : "Sayon should default to Stage 1";
-        assert p.getMaxUnlockedStage("Sakto") == 1 : "Sakto should default to Stage 1";
-        assert p.getMaxUnlockedStage("Lisod") == 1 : "Lisod should default to Stage 1";
+        assert p.getUnlockedMap() == 1 : "Fresh player must start at Map 1";
+        assert !p.hasDefeated("BOSS_DIZON") : "Boss Dizon should not be defeated yet";
+        assert !p.hasDefeated("BOSS_JANITOR") : "Boss Janitor should not be defeated yet";
 
-        // Boss (Stage 3 Rola) should NOT be unlocked on any difficulty yet
-        assert !p.isBossUnlocked("Sayon") : "Boss should not be unlocked on Sayon";
-        assert !p.isBossUnlocked("Sakto") : "Boss should not be unlocked on Sakto";
-        assert !p.isBossUnlocked("Lisod") : "Boss should not be unlocked on Lisod";
-
-        System.out.println("  ✓ Default state: Stage 1 unlocked, Boss locked for Sayon, Sakto, and Lisod.");
+        System.out.println("  ✓ Default state: Map 1 unlocked, all bosses undefeated.");
     }
 
-    private static void testUnlockBossOnSpecificDifficulty() {
-        System.out.println("\n--- 2. Testing Boss Unlock on Specific Difficulty (Lisod) ---");
-        Player p = new Player("P_TEST_LISOD", "TestLisodMaster");
+    private static void testUnlockBossOnSpecificMap() {
+        System.out.println("\n--- 2. Testing Unlocking Subsequent Maps ---");
+        Player p = new Player(999, "TestUnlock");
 
-        // Defeat Stage 1 (Dizon) on Lisod
-        p.recordStageUnlock("Lisod", 2);
-        assert p.getMaxUnlockedStage("Lisod") == 2 : "Lisod should now be at Stage 2";
-        assert p.getMaxUnlockedStage("Sayon") == 1 : "Sayon should still be at Stage 1";
-        assert p.getMaxUnlockedStage("Sakto") == 1 : "Sakto should still be at Stage 1";
-        assert !p.isBossUnlocked("Lisod") : "Boss not unlocked yet at Stage 2";
+        // Defeating Map 1 Boss unlocks Map 2
+        p.recordDefeat("BOSS_DIZON");
+        p.unlockMap(2);
+        assert p.getUnlockedMap() == 2 : "Defeating Map 1 Boss should unlock Map 2";
+        assert p.hasDefeated("BOSS_DIZON") : "Boss Dizon must be recorded as defeated";
 
-        // Defeat Stage 2 (Alviola) on Lisod -> Boss Rola unlocked!
-        p.recordStageUnlock("Lisod", 3);
-        assert p.getMaxUnlockedStage("Lisod") == 3 : "Lisod should now have Stage 3 unlocked";
-        assert p.isBossUnlocked("Lisod") : "Boss Rola must now be unlocked for Lisod!";
+        // Defeating Map 2 Boss unlocks Map 3
+        p.recordDefeat("BOSS_JANITOR");
+        p.unlockMap(3);
+        assert p.getUnlockedMap() == 3 : "Defeating Map 2 Boss should unlock Map 3";
 
-        // Ensure other difficulties remain locked
-        assert p.getMaxUnlockedStage("Sayon") == 1 : "Sayon must remain at Stage 1";
-        assert p.getMaxUnlockedStage("Sakto") == 1 : "Sakto must remain at Stage 1";
-        assert !p.isBossUnlocked("Sayon") : "Boss must remain locked for Sayon";
-        assert !p.isBossUnlocked("Sakto") : "Boss must remain locked for Sakto";
+        // Defeating Map 3 Boss unlocks Map 4
+        p.recordDefeat("BOSS_ALVIOLA");
+        p.unlockMap(4);
+        assert p.getUnlockedMap() == 4 : "Defeating Map 3 Boss should unlock Map 4";
 
-        System.out.println("  ✓ Boss Rola unlocked exclusively for Lisod, while Sayon & Sakto stay locked.");
+        // Cannot unlock beyond Map 4
+        p.unlockMap(5);
+        assert p.getUnlockedMap() == 4 : "Cannot unlock map beyond 4";
+
+        System.out.println("  ✓ Map unlock progression successfully tested up to Map 4.");
     }
 
     private static void testUnlockPersistenceAcrossSaveAndReload() {
-        System.out.println("\n--- 3. Testing Boss Unlock Persistence Across Save & Reload ---");
-        DataManager dm = DataManager.getInstance();
+        System.out.println("\n--- 3. Testing Unlock Persistence Across CSV Serialization ---");
+        Player p = new Player(888, "TestPersist");
+        p.unlockMap(3);
+        p.recordDefeat("BOSS_DIZON");
+        p.recordDefeat("BOSS_JANITOR");
 
-        String testId = "P_TEST_PERSIST";
-        Player p = new Player(testId, "PersistPlayer");
-        p.recordStageUnlock("Lisod", 3); // Unlock boss on Lisod
-        p.recordStageUnlock("Sayon", 2); // Unlock stage 2 on Sayon
-        // Sakto remains at stage 1
-        dm.savePlayer(p);
+        String[] row = p.toCsvRow();
+        Player loaded = Player.fromCsvRow(row);
 
-        // Reload from disk
-        Player loaded = dm.loadPlayer(testId);
-        assert loaded != null : "Saved player should be loadable";
-        assert loaded.getMaxUnlockedStage("Lisod") == 3 : "Loaded player must preserve Lisod Stage 3 (Boss)";
-        assert loaded.isBossUnlocked("Lisod") : "Loaded player must have Boss unlocked on Lisod";
-        assert loaded.getMaxUnlockedStage("Sayon") == 2 : "Loaded player must preserve Sayon Stage 2";
-        assert !loaded.isBossUnlocked("Sayon") : "Loaded player must keep Boss locked on Sayon";
-        assert loaded.getMaxUnlockedStage("Sakto") == 1 : "Loaded player must preserve Sakto Stage 1";
-        assert !loaded.isBossUnlocked("Sakto") : "Loaded player must keep Boss locked on Sakto";
+        assert loaded.getUnlockedMap() == 3 : "Loaded player should have Map 3 unlocked";
+        assert loaded.hasDefeated("BOSS_DIZON") : "Loaded player should remember defeating Boss Dizon";
+        assert loaded.hasDefeated("BOSS_JANITOR") : "Loaded player should remember defeating Boss Janitor";
 
-        // Clean up test player
-        dm.deletePlayer(testId);
-        System.out.println("  ✓ Per-difficulty boss unlock persisted and restored accurately from CSV.");
+        System.out.println("  ✓ Player progression correctly persisted and restored.");
     }
 
-    private static void testReplayingStage1DoesNotRelockBoss() {
-        System.out.println("\n--- 4. Testing Replay: Replaying Stage 1 Never Re-locks Boss ---");
-        Player p = new Player("P_TEST_REPLAY", "ReplayPlayer");
-        p.recordStageUnlock("Lisod", 3); // Unlocks boss
-        assert p.isBossUnlocked("Lisod") : "Boss initially unlocked on Lisod";
+    private static void testFourDifficulties() {
+        System.out.println("\n--- 4. Testing Difficulty Mapping Across 4 Maps ---");
+        assert DifficultySetting.forMap(1) == DifficultySetting.SAYON : "Map 1 must be SAYON";
+        assert DifficultySetting.forMap(2) == DifficultySetting.SAKTO : "Map 2 must be SAKTO";
+        assert DifficultySetting.forMap(3) == DifficultySetting.LISOD : "Map 3 must be LISOD";
+        assert DifficultySetting.forMap(4) == DifficultySetting.EXTREME : "Map 4 must be EXTREME";
 
-        // Replaying Stage 1 on Lisod:
-        p.currentStage = 1;
-        p.currentRound = 1;
-        p.recordStageUnlock("Lisod", 1); // Should not downgrade!
-        assert p.getMaxUnlockedStage("Lisod") == 3 : "Replaying Stage 1 must not downgrade unlocked stage";
-        assert p.isBossUnlocked("Lisod") : "Boss Rola must remain unlocked after replaying Stage 1";
+        assert !DifficultySetting.SAYON.isTimed() : "Sayon is untimed";
+        assert !DifficultySetting.SAKTO.isTimed() : "Sakto is untimed";
+        assert DifficultySetting.LISOD.isTimed() : "Lisod is timed (25s)";
+        assert DifficultySetting.EXTREME.isTimed() : "Extreme is timed (20s)";
 
-        System.out.println("  ✓ Replaying Stage 1 preserves boss unlock permanently.");
-    }
-
-    private static void testDynamicUIStageCardRefresh() throws Exception {
-        System.out.println("\n--- 5. Testing Dynamic UI Stage Card Refresh on Difficulty Switch ---");
-        SwingUtilities.invokeAndWait(() -> {
-            try {
-                JuanWord app = new JuanWord();
-                Player p = new Player("P_TEST_UI", "UIPlayer");
-                p.recordStageUnlock("Lisod", 3); // Boss unlocked on Lisod
-                // Sayon has only Stage 1 unlocked
-
-                JPanel content = app.createSanPedroStagesContent(p, () -> {}, (stage, diff) -> {});
-                assert content != null : "Content panel must not be null";
-
-                // Locate center panel which contains diffRow and stagesList
-                BorderLayout bl = (BorderLayout) content.getLayout();
-                JPanel centerPanel = (JPanel) bl.getLayoutComponent(BorderLayout.CENTER);
-                BorderLayout cbl = (BorderLayout) centerPanel.getLayout();
-
-                JPanel diffRow = (JPanel) cbl.getLayoutComponent(BorderLayout.NORTH);
-                JPanel stagesList = (JPanel) cbl.getLayoutComponent(BorderLayout.CENTER);
-
-                // Find difficulty buttons: "Sayon", "Sakto", "Lisod"
-                FlatGameButton sayonBtn = null;
-                FlatGameButton lisodBtn = null;
-                for (Component comp : diffRow.getComponents()) {
-                    if (comp instanceof FlatGameButton) {
-                        FlatGameButton b = (FlatGameButton) comp;
-                        if (b.getText().contains("Sayon")) sayonBtn = b;
-                        if (b.getText().contains("Lisod")) lisodBtn = b;
-                    }
-                }
-                assert sayonBtn != null : "Sayon button must exist";
-                assert lisodBtn != null : "Lisod button must exist";
-
-                // Click "Sayon"
-                sayonBtn.doClick();
-                // Check Stage 3 card in stagesList: on Sayon, Stage 3 (Rola) should be LOCKED
-                Component[] cards = stagesList.getComponents();
-                assert cards.length == 3 : "There must be 3 stage cards";
-                JPanel stage3CardSayon = (JPanel) cards[2];
-                BorderLayout s3Layout = (BorderLayout) stage3CardSayon.getLayout();
-                FlatGameButton stage3BtnSayon = (FlatGameButton) s3Layout.getLayoutComponent(BorderLayout.EAST);
-                assert !stage3BtnSayon.isEnabled() : "On Sayon, Stage 3 (Boss) must be locked";
-                assert stage3BtnSayon.getText().contains("Lock") : "Stage 3 button on Sayon must show Lock";
-
-                // Click "Lisod"
-                lisodBtn.doClick();
-                // Check Stage 3 card in stagesList: on Lisod, Stage 3 (Rola) should be UNLOCKED!
-                cards = stagesList.getComponents();
-                JPanel stage3CardLisod = (JPanel) cards[2];
-                BorderLayout s3LayoutLisod = (BorderLayout) stage3CardLisod.getLayout();
-                FlatGameButton stage3BtnLisod = (FlatGameButton) s3LayoutLisod.getLayoutComponent(BorderLayout.EAST);
-                assert stage3BtnLisod.isEnabled() : "On Lisod, Stage 3 (Boss) must be UNLOCKED";
-                assert stage3BtnLisod.getText().contains("Sukla") : "Stage 3 button on Lisod must show Sukla ▶";
-
-                // Click back to "Sayon"
-                sayonBtn.doClick();
-                cards = stagesList.getComponents();
-                JPanel stage3CardSayonAgain = (JPanel) cards[2];
-                FlatGameButton stage3BtnSayonAgain = (FlatGameButton) ((BorderLayout) stage3CardSayonAgain.getLayout()).getLayoutComponent(BorderLayout.EAST);
-                assert !stage3BtnSayonAgain.isEnabled() : "Switching back to Sayon must re-lock Stage 3";
-
-                System.out.println("  ✓ Stage cards dynamically toggle between locked and unlocked based on selected difficulty!");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private static void testBackwardCompatibilityOldCsv() {
-        System.out.println("\n--- 6. Testing Backward Compatibility with Old CSV Lines ---");
-        // Old CSV without the 3 new trailing unlock columns
-        String oldCsvLine = "P999,OldPlayer,2,1,100,20,10,90,100,2026-10-30 12:00,A:1:STANDARD,Sakto,50,San Pedro Cathedral";
-        Player p = Player.fromCsv(oldCsvLine);
-        assert p != null : "Old CSV line must parse successfully";
-        assert p.currentStage == 2 : "currentStage should be 2";
-        // Backward-compatible fallback sets all unlocks to at least currentStage (2)
-        assert p.getMaxUnlockedStage("Sayon") >= 2 : "Fallback should initialize Sayon to at least currentStage";
-        assert p.getMaxUnlockedStage("Sakto") >= 2 : "Fallback should initialize Sakto to at least currentStage";
-        assert p.getMaxUnlockedStage("Lisod") >= 2 : "Fallback should initialize Lisod to at least currentStage";
-
-        System.out.println("  ✓ Legacy CSV records parsed with seamless backward-compatible defaults.");
+        System.out.println("  ✓ All 4 difficulties match campaign specifications.");
     }
 }
