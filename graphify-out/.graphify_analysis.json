@@ -1,103 +1,205 @@
 {
   "communities": {
     "0": [
-      "awt",
-      "bufferedimage",
-      "file",
-      "imageio",
-      "scratch_asciibottomright",
-      "scratch_checkbboxes",
-      "scratch_checkcomppixels",
-      "scratch_checkfacedirection",
-      "scratch_checkgudoattack",
-      "scratch_checklockrender",
-      "scratch_checkotherenemies",
-      "scratch_checkspriteorientation",
-      "scratch_checksprites",
-      "scratch_comparebanners",
-      "scratch_comparelockoptions",
-      "scratch_comparepreview",
-      "scratch_createcollage",
-      "scratch_cropalphabet",
-      "scratch_cropcheck",
-      "scratch_cropdurianmuseum",
-      "scratch_cropexactlocks",
-      "scratch_diffimages",
-      "scratch_findenemybounds",
-      "scratch_findexactmatch",
-      "scratch_findyellowpixels",
-      "scratch_fixmacaquetransparency",
-      "scratch_inspectalphabet",
-      "scratch_inspectbluebuilding",
-      "scratch_inspectbounds",
-      "scratch_inspectbuttonassets",
-      "scratch_inspectcroporiginal",
-      "scratch_inspectdurian",
-      "scratch_inspectframecenter",
-      "scratch_inspectgudoimages",
-      "scratch_inspectimage",
-      "scratch_inspectlayers",
-      "scratch_inspectmapassets",
-      "scratch_inspectmenucomposite",
-      "scratch_inspectmockuplayout",
-      "scratch_inspectpreviewtitle",
-      "scratch_inspecttilecontent",
-      "scratch_inspecttitlebounds",
-      "scratch_inspecttitlepage",
-      "scratch_makecomparison",
-      "scratch_makemaptransitioncomparison",
-      "scratch_measureborder",
-      "scratch_measuremockuplandmarks",
-      "scratch_prototypejuananimation",
-      "scratch_prototypemapscreen",
-      "scratch_prototypetileandbgfix",
-      "scratch_renderbuttoncollage",
-      "scratch_rendercharacterspritestrip",
-      "scratch_rendercloseup",
-      "scratch_renderfullbattlewithnewjuan",
-      "scratch_rendergudocomparison",
-      "scratch_renderjuanandgudopreview",
-      "scratch_rendermapiconscomparison",
-      "scratch_rendernewlayoutpreview",
-      "scratch_renderspritescheck",
-      "scratch_testbannerandlock",
-      "scratch_testbuttonsizevisuals",
-      "scratch_testclipbypass",
-      "scratch_testcombinelayers",
-      "scratch_testcropdurian",
-      "scratch_testexpandandbattlecomposite",
-      "scratch_testhittestperformance",
-      "scratch_testlandmarkcropping",
-      "scratch_testlayoutoptions",
-      "scratch_testlettercheck",
-      "scratch_testlettertilerenderer",
-      "scratch_testlockrender",
-      "scratch_testlockscreenrender",
-      "scratch_testmapcompositematch",
-      "scratch_testmaplayoutpreview",
-      "scratch_testmenucomposition",
-      "scratch_testnewmaparrangement",
-      "scratch_testperfectcomposition",
-      "scratch_testrobustlayoutscaling",
-      "scratch_testscreenbanners",
-      "scratch_testsilhouette",
-      "scratch_testtitle",
-      "scratch_verifycompositeactual",
-      "scratch_verifynoyellowcircle"
-    ],
-    "1": [
       "affinetransform",
       "alphacomposite",
+      "atomicreference",
+      "attackeffect",
+      "basicstroke",
+      "battlepanel",
+      "battlesession",
+      "battlesessionbuilder",
+      "biconsumer",
+      "borderfactory",
+      "borderlayout",
+      "buttonmodel",
+      "color",
+      "component",
       "composite",
+      "concurrenthashmap",
+      "cursor",
+      "datamanager",
+      "defaultlistcellrenderer",
+      "defaultlistmodel",
+      "difficultysetting",
+      "dimension",
+      "enemy",
+      "enemyanimator",
+      "enemyfactory",
+      "executors",
+      "executorservice",
+      "flowlayout",
+      "font",
+      "fontmetrics",
+      "graphics2d",
+      "inputstream",
+      "java_awt_event_actionevent",
+      "java_awt_event_mouseevent",
+      "javax_swing_timer",
+      "jdialog",
+      "jlabel",
+      "jlist",
+      "joptionpane",
+      "jscrollpane",
+      "juanword_model_battlesession",
+      "landmark",
+      "list",
+      "listselectionmodel",
+      "mapselectpanel",
+      "mouseadapter",
+      "mouseevent",
+      "player",
+      "playeranimator",
+      "polygon",
+      "rectangle",
+      "renderinghints",
+      "scratch_capturegudonerfandanimation",
+      "scratch_checkexactcomponentbounds",
+      "scratch_createenemiescollage",
+      "scratch_measurelandmarks",
+      "scratch_printlandmarkdrawrects",
+      "scratch_renderallenemiesinbattle",
+      "scratch_rendercardoscreenshots",
+      "scratch_rendercharacteranimationshowcase",
+      "scratch_renderdesigncheck",
+      "scratch_renderdialogandlitattack",
+      "scratch_rendergudoshowcase",
+      "scratch_rendergudounlockedscreens",
+      "scratch_renderlatestscreenshots",
+      "scratch_renderspritescalingshowcase",
+      "scratch_testbiggericons",
+      "scratch_testbluebuildingprogression",
+      "scratch_testbordercontainment",
+      "scratch_testcardoprofile",
+      "scratch_testdesignpatterns",
+      "scratch_testenemydeathandentranceanimation",
+      "scratch_testfourstageprogression",
+      "scratch_testgudounlockedprofile",
+      "scratch_testjuanattackanimation",
+      "scratch_testjuanattackanimation_testjuanattackanimation",
+      "scratch_testlatestchanges",
+      "scratch_testloadallenemysprites",
+      "scratch_testmapprogressionandtransition",
+      "scratch_testmapselectintegration",
+      "scratch_testmultisavefiles",
+      "scratch_testperdifficultybossunlocks",
+      "scratch_testregressions",
+      "scratch_teststartmenufullscreenscaling",
+      "scratch_testtextcontainmentinboxes",
+      "scratch_testtextscaling",
+      "set",
+      "shape",
+      "src_juanword_enemy_altarboyenemy",
+      "src_juanword_enemy_alviolabossenemy",
+      "src_juanword_enemy_dizonbossenemy",
+      "src_juanword_enemy_enemy",
+      "src_juanword_enemy_guardenemy",
+      "src_juanword_enemy_lolaenemy",
+      "src_juanword_enemy_malestudentenemy",
+      "src_juanword_model_attacktype",
+      "src_juanword_model_battlecontext",
+      "src_juanword_model_battlesessionbuilder",
+      "src_juanword_tile_goldtiledecorator",
+      "src_juanword_tile_healingtiledecorator",
+      "src_juanword_tile_tilegridgenerator",
+      "src_juanword_ui_attackeffect",
+      "src_juanword_ui_battlepanel",
+      "src_juanword_ui_enemyanimator",
+      "src_juanword_ui_floatingtext",
+      "src_juanword_ui_imageloader",
+      "src_juanword_ui_landmark",
+      "src_juanword_ui_mapselectpanel",
+      "src_juanword_ui_playeranimator",
+      "src_juanword_ui_startpanel"
+    ],
+    "1": [
+      "floatingtext",
+      "java_awt_point",
+      "juanword_enemy_enemy",
+      "juanword_juanword",
+      "juanword_model_battleoutcome",
+      "juanword_tile_tilecomponent",
+      "scratch_testdesignpatterns_testdesignpatterns_testpattern3builder",
+      "scratch_testmultisavefiles_testmultisavefiles",
+      "scratch_testmultisavefiles_testmultisavefiles_main",
+      "src_juanword_data_datamanager_datamanager_deserializegrid",
+      "src_juanword_data_datamanager_datamanager_deserializetile",
+      "src_juanword_data_datamanager_datamanager_saveactivebattle",
+      "src_juanword_juanword_juanword_returntomap",
+      "src_juanword_model_battlecontext_battlecontext_addturnseconds",
+      "src_juanword_model_battlecontext_battlecontext_healplayer",
+      "src_juanword_model_battlesession",
+      "src_juanword_model_battlesession_battlesession",
+      "src_juanword_model_battlesession_battlesession_battlesession",
+      "src_juanword_model_battlesession_battlesession_getdifficulty",
+      "src_juanword_model_battlesession_battlesession_getenemy",
+      "src_juanword_model_battlesession_battlesession_getgrid",
+      "src_juanword_model_battlesession_battlesession_getmapindex",
+      "src_juanword_model_battlesession_battlesession_getplayer",
+      "src_juanword_model_battlesession_battlesession_getplayerhp",
+      "src_juanword_model_battlesession_battlesession_getstageindex",
+      "src_juanword_model_battlesession_battlesession_getturnseconds",
+      "src_juanword_model_battlesession_battlesession_isbossstage",
+      "src_juanword_model_battlesession_battlesession_isfinalboss",
+      "src_juanword_model_battlesession_battlesession_setplayerhp",
+      "src_juanword_model_battlesession_battlesession_setturnseconds",
+      "src_juanword_tile_tilegridgenerator_tilegridgenerator",
+      "src_juanword_tile_tilegridgenerator_tilegridgenerator_applymodifier",
+      "src_juanword_tile_tilegridgenerator_tilegridgenerator_generatefresh4x4",
+      "src_juanword_tile_tilegridgenerator_tilegridgenerator_generatetile",
+      "src_juanword_tile_tilegridgenerator_tilegridgenerator_refill",
+      "src_juanword_tile_tilegridgenerator_tilegridgenerator_tilegridgenerator",
+      "src_juanword_ui_battlepanel_battlepanel",
+      "src_juanword_ui_battlepanel_battlepanel_battlepanel",
+      "src_juanword_ui_battlepanel_battlepanel_begin",
+      "src_juanword_ui_battlepanel_battlepanel_calculatedamageslicewidth",
+      "src_juanword_ui_battlepanel_battlepanel_calculatepreviewremaininghp",
+      "src_juanword_ui_battlepanel_battlepanel_computedamage",
+      "src_juanword_ui_battlepanel_battlepanel_drawindigenousframe",
+      "src_juanword_ui_battlepanel_battlepanel_drawpauseoverlay",
+      "src_juanword_ui_battlepanel_battlepanel_drawtopheaderbar",
+      "src_juanword_ui_battlepanel_battlepanel_enemyturn",
+      "src_juanword_ui_battlepanel_battlepanel_evaluateoutcome",
+      "src_juanword_ui_battlepanel_battlepanel_findtransparentinterior",
+      "src_juanword_ui_battlepanel_battlepanel_getenemyanimator",
+      "src_juanword_ui_battlepanel_battlepanel_getenemycenter",
+      "src_juanword_ui_battlepanel_battlepanel_getplayeranimator",
+      "src_juanword_ui_battlepanel_battlepanel_getplayercenter",
+      "src_juanword_ui_battlepanel_battlepanel_getselecteddamagepreview",
+      "src_juanword_ui_battlepanel_battlepanel_getselectedword",
+      "src_juanword_ui_battlepanel_battlepanel_getsession",
+      "src_juanword_ui_battlepanel_battlepanel_handleinvalidword",
+      "src_juanword_ui_battlepanel_battlepanel_isbattleactive",
+      "src_juanword_ui_battlepanel_battlepanel_onclear",
+      "src_juanword_ui_battlepanel_battlepanel_ondefeat",
+      "src_juanword_ui_battlepanel_battlepanel_onenemyimpact",
+      "src_juanword_ui_battlepanel_battlepanel_onmouseclicked",
+      "src_juanword_ui_battlepanel_battlepanel_onmousemoved",
+      "src_juanword_ui_battlepanel_battlepanel_onplayerimpact",
+      "src_juanword_ui_battlepanel_battlepanel_onsubmit",
+      "src_juanword_ui_battlepanel_battlepanel_ontileclicked",
+      "src_juanword_ui_battlepanel_battlepanel_onturntimerexpired",
+      "src_juanword_ui_battlepanel_battlepanel_onvictory",
+      "src_juanword_ui_battlepanel_battlepanel_paintcomponent",
+      "src_juanword_ui_battlepanel_battlepanel_pausegame",
+      "src_juanword_ui_battlepanel_battlepanel_playenemyattack",
+      "src_juanword_ui_battlepanel_battlepanel_playplayerattack",
+      "src_juanword_ui_battlepanel_battlepanel_recalculatelayout",
+      "src_juanword_ui_battlepanel_battlepanel_refillconsumedtiles",
+      "src_juanword_ui_battlepanel_battlepanel_rendercachedbackground",
+      "src_juanword_ui_battlepanel_battlepanel_resolvevalidword",
+      "src_juanword_ui_battlepanel_battlepanel_resumegame",
+      "src_juanword_ui_battlepanel_battlepanel_savemidbattle",
+      "src_juanword_ui_battlepanel_battlepanel_spawnfloatingtext",
+      "src_juanword_ui_battlepanel_battlepanel_submitword",
+      "src_juanword_ui_battlepanel_java_override"
+    ],
+    "2": [
       "java_awt_color",
       "java_awt_graphics2d",
       "juanword_model_battlecontext",
-      "polygon",
-      "renderinghints",
       "scratch_testdesignpatterns_testdesignpatterns_testpattern4decorator",
-      "scratch_testenemydeathandentranceanimation",
-      "src_juanword_model_battlesession_battlesession_getplayerhp",
-      "src_juanword_tile_goldtiledecorator",
+      "src_juanword_model_battlecontext_battlecontext_getplayer",
       "src_juanword_tile_goldtiledecorator_goldtiledecorator",
       "src_juanword_tile_goldtiledecorator_goldtiledecorator_getbordercolor",
       "src_juanword_tile_goldtiledecorator_goldtiledecorator_getmodifiercode",
@@ -108,7 +210,6 @@
       "src_juanword_tile_goldtiledecorator_goldtiledecorator_renderbadge",
       "src_juanword_tile_goldtiledecorator_goldtiledecorator_rendertileoverlay",
       "src_juanword_tile_goldtiledecorator_java_override",
-      "src_juanword_tile_healingtiledecorator",
       "src_juanword_tile_healingtiledecorator_healingtiledecorator",
       "src_juanword_tile_healingtiledecorator_healingtiledecorator_getbordercolor",
       "src_juanword_tile_healingtiledecorator_healingtiledecorator_getmodifiercode",
@@ -152,22 +253,20 @@
       "src_juanword_tile_tiledecorator_tiledecorator_renderbadge",
       "src_juanword_tile_tiledecorator_tiledecorator_rendertileoverlay",
       "src_juanword_tile_tiledecorator_tiledecorator_tiledecorator",
-      "src_juanword_ui_attackeffect",
       "src_juanword_ui_battlepanel_battlepanel_drawarenacard",
       "src_juanword_ui_battlepanel_battlepanel_drawbottomlettergridandbuttons",
       "src_juanword_ui_battlepanel_battlepanel_drawenemyhpbarwithpreview",
       "src_juanword_ui_battlepanel_battlepanel_drawflathpbar",
       "src_juanword_ui_battlepanel_battlepanel_drawflatyellowbutton",
-      "src_juanword_ui_enemyanimator",
-      "src_juanword_ui_floatingtext",
+      "src_juanword_ui_battlepanel_battlepanel_fillpanelbox",
       "src_juanword_ui_floatingtext_floatingtext",
       "src_juanword_ui_floatingtext_floatingtext_floatingtext",
       "src_juanword_ui_floatingtext_floatingtext_isexpired",
       "src_juanword_ui_floatingtext_floatingtext_paint",
       "src_juanword_ui_floatingtext_floatingtext_update",
-      "src_juanword_ui_playeranimator"
+      "src_juanword_ui_playeranimator_playeranimator_getshadowscale"
     ],
-    "2": [
+    "3": [
       "archive_for_skeleton_additional_classes_battlepanel_battlepanel",
       "archive_for_skeleton_additional_classes_battlepanel_battlepanel_backspace",
       "archive_for_skeleton_additional_classes_battlepanel_battlepanel_battlepanel",
@@ -189,19 +288,6 @@
       "archive_for_skeleton_additional_classes_bestiarypanel_bestiarypanel",
       "archive_for_skeleton_additional_classes_bestiarypanel_bestiarypanel_bestiarypanel",
       "archive_for_skeleton_additional_classes_bestiarypanel_bestiarypanel_loadcreatures",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_addhighscore",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_datamanager",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_ensurefile",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_getallplayers",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_gettopscores",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_loadlatestplayer",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_loadplayer",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_nextplayerid",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_parse",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_readlines",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_saveplayer",
-      "archive_for_skeleton_additional_classes_datamanager_datamanager_writelines",
       "archive_for_skeleton_additional_classes_juanwordapp_java_color",
       "archive_for_skeleton_additional_classes_juanwordapp_java_jbutton",
       "archive_for_skeleton_additional_classes_juanwordapp_java_jlabel",
@@ -224,13 +310,6 @@
       "archive_for_skeleton_additional_classes_mainmenupanel_mainmenupanel_mainmenupanel",
       "archive_for_skeleton_additional_classes_mainmenupanel_mainmenupanel_paintcomponent",
       "archive_for_skeleton_additional_classes_mainmenupanel_mainmenupanel_refresh",
-      "archive_for_skeleton_additional_classes_player",
-      "archive_for_skeleton_additional_classes_player_java_override",
-      "archive_for_skeleton_additional_classes_player_player",
-      "archive_for_skeleton_additional_classes_player_player_fromcsv",
-      "archive_for_skeleton_additional_classes_player_player_player",
-      "archive_for_skeleton_additional_classes_player_player_tocsv",
-      "archive_for_skeleton_additional_classes_player_player_tostring",
       "archive_for_skeleton_additional_classes_resultpanel_java_jbutton",
       "archive_for_skeleton_additional_classes_resultpanel_java_jlabel",
       "archive_for_skeleton_additional_classes_resultpanel_resultpanel",
@@ -243,147 +322,27 @@
       "archive_for_skeleton_additional_classes_worldmappanel_worldmappanel_refresh",
       "archive_for_skeleton_additional_classes_worldmappanel_worldmappanel_worldmappanel",
       "cardlayout",
+      "icon",
       "jpanel",
       "jprogressbar",
-      "jtextfield"
-    ],
-    "3": [
-      "countdownlatch",
-      "java_awt_image_bufferedimage",
-      "scratch_cropalphabet_cropalphabet",
-      "scratch_cropalphabet_cropalphabet_getexactbbox",
-      "scratch_cropalphabet_cropalphabet_main",
-      "scratch_inspectalphabet_inspectalphabet",
-      "scratch_inspectalphabet_inspectalphabet_getnonemptybounds",
-      "scratch_inspectalphabet_inspectalphabet_main",
-      "scratch_inspectlandmarksprites",
-      "scratch_inspectlandmarksprites_inspectlandmarksprites",
-      "scratch_inspectlandmarksprites_inspectlandmarksprites_main",
-      "scratch_inspectlandmarksprites_inspectlandmarksprites_printcolorstats",
-      "scratch_inspectmaincharsprites",
-      "scratch_inspectmaincharsprites_inspectmaincharsprites",
-      "scratch_inspectmaincharsprites_inspectmaincharsprites_main",
-      "scratch_prototypemapscreen_java_graphics2d",
-      "scratch_prototypemapscreen_java_image",
-      "scratch_prototypemapscreen_prototypemapscreen",
-      "scratch_prototypemapscreen_prototypemapscreen_drawheaderbar",
-      "scratch_prototypemapscreen_prototypemapscreen_drawlandmark",
-      "scratch_prototypemapscreen_prototypemapscreen_main",
-      "scratch_prototypemapscreen_prototypemapscreen_renderscene",
-      "scratch_testaporenderoptions_testaporenderoptions",
-      "scratch_testaporenderoptions_testaporenderoptions_drawlock",
-      "scratch_testaporenderoptions_testaporenderoptions_main",
-      "scratch_testfullscreenandresponsivescaling",
-      "scratch_testfullscreenandresponsivescaling_java_jcomponent",
-      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling",
-      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_createsidebysidecollage",
-      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_main",
-      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_rendercomponent",
-      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_saveimage",
-      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_validatetreelayout",
-      "scratch_testlettertilerenderer_testlettertilerenderer",
-      "scratch_testlettertilerenderer_testlettertilerenderer_drawtile",
-      "scratch_testlettertilerenderer_testlettertilerenderer_main",
-      "scratch_testloadallenemysprites_testloadallenemysprites",
-      "scratch_testloadallenemysprites_testloadallenemysprites_main",
-      "scratch_testloadletterassets_testloadletterassets",
-      "scratch_testloadletterassets_testloadletterassets_main",
-      "scratch_testmaplayoutpreview_java_color",
-      "scratch_testmaplayoutpreview_java_graphics2d",
-      "scratch_testmaplayoutpreview_java_image",
-      "scratch_testmaplayoutpreview_testmaplayoutpreview",
-      "scratch_testmaplayoutpreview_testmaplayoutpreview_createsilhouette",
-      "scratch_testmaplayoutpreview_testmaplayoutpreview_drawbuilding",
-      "scratch_testmaplayoutpreview_testmaplayoutpreview_drawheaderandbadge",
-      "scratch_testmaplayoutpreview_testmaplayoutpreview_main",
-      "scratch_testmaplayoutpreview_testmaplayoutpreview_rendermapscreen",
-      "scratch_testnewmaparrangement_java_color",
-      "scratch_testnewmaparrangement_testnewmaparrangement",
-      "scratch_testnewmaparrangement_testnewmaparrangement_createsilhouette",
-      "scratch_testnewmaparrangement_testnewmaparrangement_main",
-      "src_juanword_ui_imageloader_imageloader",
-      "src_juanword_ui_imageloader_imageloader_createplaceholder",
-      "src_juanword_ui_imageloader_imageloader_createsilhouette",
-      "src_juanword_ui_imageloader_imageloader_imageloader",
-      "src_juanword_ui_imageloader_imageloader_isplaceholder",
-      "src_juanword_ui_imageloader_imageloader_load",
-      "src_juanword_ui_imageloader_imageloader_loadlettertile",
-      "src_juanword_ui_imageloader_imageloader_scale",
-      "src_juanword_ui_landmark_landmark_landmark",
-      "timeunit"
+      "jtextfield",
+      "scratch_testiconprototype_java_graphics",
+      "scratch_testiconprototype_java_jbutton",
+      "scratch_testiconprototype_java_override",
+      "scratch_testiconprototype_testiconprototype",
+      "scratch_testiconprototype_testiconprototype_geticonheight",
+      "scratch_testiconprototype_testiconprototype_geticonwidth",
+      "scratch_testiconprototype_testiconprototype_main",
+      "scratch_testiconprototype_testiconprototype_painticon",
+      "scratch_testiconprototype_testiconprototype_testiconprototype"
     ],
     "4": [
-      "battlepanel",
-      "battlesession",
-      "battlesessionbuilder",
-      "borderfactory",
-      "borderlayout",
-      "component",
-      "datamanager",
-      "defaultlistcellrenderer",
-      "defaultlistmodel",
-      "dimension",
-      "flowlayout",
-      "font",
-      "graphics2d",
-      "jbutton",
-      "jdialog",
-      "jlabel",
-      "jlist",
-      "jscrollpane",
-      "juanword",
-      "landmark",
-      "listselectionmodel",
-      "mapselectpanel",
-      "player",
-      "point",
-      "rectangle",
-      "scratch_capturegudonerfandanimation",
-      "scratch_checkexactcomponentbounds",
-      "scratch_measurelandmarks",
-      "scratch_printlandmarkdrawrects",
-      "scratch_renderallenemiesinbattle",
-      "scratch_rendercardoscreenshots",
-      "scratch_rendercharacteranimationshowcase",
-      "scratch_renderdesigncheck",
-      "scratch_renderdialogandlitattack",
-      "scratch_rendergudoshowcase",
-      "scratch_rendergudounlockedscreens",
-      "scratch_renderlatestscreenshots",
-      "scratch_renderspritescalingshowcase",
-      "scratch_renderstartmenuartifacts",
-      "scratch_testaporenderoptions",
-      "scratch_testbiggericons",
-      "scratch_testbordercontainment",
-      "scratch_testcardoprofile",
-      "scratch_testentrancevisual",
-      "scratch_testentrancevisual_testentrancevisual",
-      "scratch_testentrancevisual_testentrancevisual_main",
-      "scratch_testgudounlockedprofile",
-      "scratch_testjuanattackanimation",
-      "scratch_testjuanspritesizes",
-      "scratch_testjuanspritesizes_testjuanspritesizes",
-      "scratch_testjuanspritesizes_testjuanspritesizes_main",
-      "scratch_testlatestchanges",
-      "scratch_testmapbannerandlockvisuals",
-      "scratch_testmapbannerandlockvisuals_testmapbannerandlockvisuals",
-      "scratch_testmapbannerandlockvisuals_testmapbannerandlockvisuals_main",
-      "scratch_testmapselectintegration",
-      "scratch_testmultisavefiles",
-      "scratch_testperdifficultybossunlocks",
-      "scratch_testtextcontainmentinboxes",
-      "scratch_testtextscaling",
-      "src_juanword_model_attacktype",
-      "src_juanword_ui_startpanel"
-    ],
-    "5": [
       "juanword_model_attacktype",
       "scratch_capturegudonerfandanimation_capturegudonerfandanimation",
       "scratch_capturegudonerfandanimation_capturegudonerfandanimation_main",
       "scratch_testenemydamagepreviewanddeltatime_testenemydamagepreviewanddeltatime_testanimatordeltatimeprogression",
       "scratch_testenemydeathandentranceanimation_testenemydeathandentranceanimation",
       "scratch_testenemydeathandentranceanimation_testenemydeathandentranceanimation_main",
-      "scratch_testjuanattackanimation_testjuanattackanimation",
       "scratch_testjuanattackanimation_testjuanattackanimation_main",
       "scratch_testlatestchanges_testlatestchanges",
       "scratch_testlatestchanges_testlatestchanges_main",
@@ -424,59 +383,62 @@
       "src_juanword_ui_playeranimator_playeranimator_getdrawoffsetx",
       "src_juanword_ui_playeranimator_playeranimator_getdrawoffsety",
       "src_juanword_ui_playeranimator_playeranimator_getidleelapsedms",
-      "src_juanword_ui_playeranimator_playeranimator_getshadowscale",
       "src_juanword_ui_playeranimator_playeranimator_isattacking",
       "src_juanword_ui_playeranimator_playeranimator_paint",
       "src_juanword_ui_playeranimator_playeranimator_playeranimator",
       "src_juanword_ui_playeranimator_playeranimator_startattack",
+      "src_juanword_ui_playeranimator_playeranimator_triggerhit",
       "src_juanword_ui_playeranimator_playeranimator_update"
     ],
-    "6": [
-      "biconsumer",
-      "java_nio_charset_charset",
-      "juanword_model_player",
-      "letterspec",
-      "src_juanword_data_csvutil_csvutil",
-      "src_juanword_data_csvutil_csvutil_csvutil",
-      "src_juanword_data_csvutil_csvutil_escape",
-      "src_juanword_data_csvutil_csvutil_parseline",
-      "src_juanword_data_csvutil_csvutil_readall",
-      "src_juanword_data_csvutil_csvutil_writeatomic",
-      "src_juanword_data_datamanager_datamanager",
-      "src_juanword_data_datamanager_datamanager_buildweightedpool",
-      "src_juanword_data_datamanager_datamanager_clearactivebattle",
-      "src_juanword_data_datamanager_datamanager_createplayer",
-      "src_juanword_data_datamanager_datamanager_datamanager",
-      "src_juanword_data_datamanager_datamanager_deleteplayer",
-      "src_juanword_data_datamanager_datamanager_deserializegrid",
-      "src_juanword_data_datamanager_datamanager_deserializetile",
-      "src_juanword_data_datamanager_datamanager_drawrandomletter",
-      "src_juanword_data_datamanager_datamanager_getallplayers",
-      "src_juanword_data_datamanager_datamanager_getdictionarysize",
-      "src_juanword_data_datamanager_datamanager_getinstance",
-      "src_juanword_data_datamanager_datamanager_getletterspec",
-      "src_juanword_data_datamanager_datamanager_getpointsfor",
-      "src_juanword_data_datamanager_datamanager_isvalidcebuanoword",
-      "src_juanword_data_datamanager_datamanager_loadallcsvresources",
-      "src_juanword_data_datamanager_datamanager_loaddictionary",
-      "src_juanword_data_datamanager_datamanager_loadenemyspecs",
-      "src_juanword_data_datamanager_datamanager_loadletterspecs",
-      "src_juanword_data_datamanager_datamanager_loadplayers",
-      "src_juanword_data_datamanager_datamanager_saveactivebattle",
-      "src_juanword_data_datamanager_datamanager_saveplayer",
-      "src_juanword_data_datamanager_datamanager_saveplayers",
-      "src_juanword_data_datamanager_datamanager_serializegrid",
-      "src_juanword_model_battlecontext",
-      "src_juanword_model_battlesessionbuilder",
-      "src_juanword_tile_tilegridgenerator",
-      "src_juanword_tile_tilegridgenerator_tilegridgenerator",
-      "src_juanword_tile_tilegridgenerator_tilegridgenerator_applymodifier",
-      "src_juanword_tile_tilegridgenerator_tilegridgenerator_generatefresh4x4",
-      "src_juanword_tile_tilegridgenerator_tilegridgenerator_generatetile",
-      "src_juanword_tile_tilegridgenerator_tilegridgenerator_refill",
-      "src_juanword_tile_tilegridgenerator_tilegridgenerator_tilegridgenerator"
+    "5": [
+      "java_awt_cardlayout",
+      "javax_swing_jframe",
+      "javax_swing_jpanel",
+      "juanword_ui_battlepanel",
+      "juanword_ui_mapselectpanel",
+      "juanword_ui_startpanel",
+      "point",
+      "scratch_renderspritescalingshowcase_renderspritescalingshowcase",
+      "scratch_renderspritescalingshowcase_renderspritescalingshowcase_main",
+      "scratch_testaporenderoptions_testaporenderoptions",
+      "scratch_testaporenderoptions_testaporenderoptions_drawlock",
+      "scratch_testaporenderoptions_testaporenderoptions_main",
+      "scratch_testfullscreenandresponsivescaling_java_jcomponent",
+      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling",
+      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_createsidebysidecollage",
+      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_main",
+      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_rendercomponent",
+      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_saveimage",
+      "scratch_testfullscreenandresponsivescaling_testfullscreenandresponsivescaling_validatetreelayout",
+      "scratch_testloadallenemysprites_testloadallenemysprites",
+      "scratch_testloadallenemysprites_testloadallenemysprites_main",
+      "scratch_testloadletterassets",
+      "scratch_testloadletterassets_testloadletterassets",
+      "scratch_testloadletterassets_testloadletterassets_main",
+      "src_juanword_juanword",
+      "src_juanword_juanword_juanword",
+      "src_juanword_juanword_juanword_applypopuptheme",
+      "src_juanword_juanword_juanword_installclosinghook",
+      "src_juanword_juanword_juanword_isfullscreen",
+      "src_juanword_juanword_juanword_juanword",
+      "src_juanword_juanword_juanword_main",
+      "src_juanword_juanword_juanword_setfullscreen",
+      "src_juanword_juanword_juanword_togglefullscreen",
+      "src_juanword_ui_imageloader_imageloader",
+      "src_juanword_ui_imageloader_imageloader_createplaceholder",
+      "src_juanword_ui_imageloader_imageloader_createsilhouette",
+      "src_juanword_ui_imageloader_imageloader_imageloader",
+      "src_juanword_ui_imageloader_imageloader_isplaceholder",
+      "src_juanword_ui_imageloader_imageloader_load",
+      "src_juanword_ui_imageloader_imageloader_loadlettertile",
+      "src_juanword_ui_imageloader_imageloader_scale",
+      "src_juanword_ui_imageloader_imageloader_scaledcached",
+      "src_juanword_ui_landmark_landmark_landmark",
+      "toolkit",
+      "windowadapter",
+      "windowevent"
     ],
-    "7": [
+    "6": [
       "src_juanword_model_player_player",
       "src_juanword_model_player_player_addscore",
       "src_juanword_model_player_player_clearactivebattle",
@@ -514,58 +476,88 @@
       "src_juanword_model_player_player_tocsvrow",
       "src_juanword_model_player_player_unlockmap"
     ],
+    "7": [
+      "scratch_measurelandmarks_measurelandmarks",
+      "scratch_measurelandmarks_measurelandmarks_main",
+      "scratch_printlandmarkdrawrects_printlandmarkdrawrects",
+      "scratch_printlandmarkdrawrects_printlandmarkdrawrects_main",
+      "scratch_rendercardoscreenshots_rendercardoscreenshots",
+      "scratch_rendercardoscreenshots_rendercardoscreenshots_main",
+      "scratch_renderdesigncheck_renderdesigncheck",
+      "scratch_renderdesigncheck_renderdesigncheck_main",
+      "scratch_rendergudoshowcase_rendergudoshowcase",
+      "scratch_rendergudoshowcase_rendergudoshowcase_main",
+      "scratch_rendergudounlockedscreens_rendergudounlockedscreens",
+      "scratch_rendergudounlockedscreens_rendergudounlockedscreens_main",
+      "scratch_renderlatestscreenshots_renderlatestscreenshots",
+      "scratch_renderlatestscreenshots_renderlatestscreenshots_main",
+      "scratch_testbiggericons_testbiggericons",
+      "scratch_testbiggericons_testbiggericons_main",
+      "scratch_testcardoprofile_testcardoprofile",
+      "scratch_testcardoprofile_testcardoprofile_main",
+      "scratch_testgudounlockedprofile_testgudounlockedprofile",
+      "scratch_testgudounlockedprofile_testgudounlockedprofile_main",
+      "scratch_testtextscaling_testtextscaling",
+      "scratch_testtextscaling_testtextscaling_main",
+      "src_juanword_juanword_juanword_setactiveplayer",
+      "src_juanword_ui_landmark_landmark_getbounds",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_getfightgudobuttonbounds",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_getlandmarks",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_refresh"
+    ],
     "8": [
-      "src_juanword_enemy_alviolabossenemy",
-      "src_juanword_enemy_alviolabossenemy_alviolabossenemy",
-      "src_juanword_enemy_alviolabossenemy_alviolabossenemy_alviolabossenemy",
-      "src_juanword_enemy_alviolabossenemy_alviolabossenemy_onenemyturn",
-      "src_juanword_enemy_alviolabossenemy_java_override",
-      "src_juanword_enemy_dizonbossenemy_dizonbossenemy_onenemyturn",
-      "src_juanword_enemy_dizonbossenemy_java_override",
-      "src_juanword_enemy_enemy_enemy_onenemyturn",
-      "src_juanword_enemy_janitorbossenemy",
-      "src_juanword_enemy_janitorbossenemy_janitorbossenemy",
-      "src_juanword_enemy_janitorbossenemy_janitorbossenemy_janitorbossenemy",
-      "src_juanword_enemy_janitorbossenemy_janitorbossenemy_onenemyturn",
-      "src_juanword_enemy_janitorbossenemy_java_override",
-      "src_juanword_enemy_porterbossenemy_java_override",
-      "src_juanword_enemy_porterbossenemy_porterbossenemy_onenemyturn",
-      "src_juanword_model_battlecontext_battlecontext",
-      "src_juanword_model_battlecontext_battlecontext_battlecontext",
-      "src_juanword_model_battlecontext_battlecontext_damageenemy",
-      "src_juanword_model_battlecontext_battlecontext_damageplayer",
-      "src_juanword_model_battlecontext_battlecontext_getenemy",
-      "src_juanword_model_battlecontext_battlecontext_getsubmittedword",
-      "src_juanword_model_battlecontext_battlecontext_healenemy",
-      "src_juanword_model_battlecontext_battlecontext_healplayer",
-      "src_juanword_model_battlecontext_battlecontext_scramblegrid",
-      "src_juanword_model_battlesession_battlesession_getenemy",
-      "src_juanword_model_battlesession_battlesession_setplayerhp"
+      "countdownlatch",
+      "imageio",
+      "java_awt_image_bufferedimage",
+      "scratch_captureallmapstates",
+      "scratch_captureallmapstates_captureallmapstates",
+      "scratch_captureallmapstates_captureallmapstates_main",
+      "scratch_createcollage",
+      "scratch_createcollage_createcollage",
+      "scratch_createcollage_createcollage_main",
+      "scratch_cropalphabet",
+      "scratch_inspectalphabet",
+      "scratch_inspectlandmarksprites",
+      "scratch_inspectlandmarksprites_inspectlandmarksprites",
+      "scratch_inspectlandmarksprites_inspectlandmarksprites_main",
+      "scratch_inspectlandmarksprites_inspectlandmarksprites_printcolorstats",
+      "scratch_inspectmaincharsprites",
+      "scratch_inspectmaincharsprites_inspectmaincharsprites",
+      "scratch_inspectmaincharsprites_inspectmaincharsprites_main",
+      "scratch_prototypeenemytransition",
+      "scratch_prototypemapscreen",
+      "scratch_testfullscreenandresponsivescaling",
+      "scratch_testlettertilerenderer",
+      "scratch_testmapexpandandtilecentering",
+      "scratch_testmaplayoutpreview",
+      "scratch_testnewmaparrangement",
+      "timeunit"
     ],
     "9": [
-      "attackeffect",
-      "enemyanimator",
-      "floatingtext",
-      "juanword_juanword",
-      "juanword_model_battleoutcome",
-      "playeranimator",
-      "src_juanword_ui_battlepanel_battlepanel",
-      "src_juanword_ui_battlepanel_battlepanel_battlepanel",
-      "src_juanword_ui_battlepanel_battlepanel_calculatedamageslicewidth",
-      "src_juanword_ui_battlepanel_battlepanel_calculatepreviewremaininghp",
-      "src_juanword_ui_battlepanel_battlepanel_drawindigenousframe",
-      "src_juanword_ui_battlepanel_battlepanel_drawpauseoverlay",
-      "src_juanword_ui_battlepanel_battlepanel_enemyturn",
-      "src_juanword_ui_battlepanel_battlepanel_evaluateoutcome",
-      "src_juanword_ui_battlepanel_battlepanel_getenemyanimator",
-      "src_juanword_ui_battlepanel_battlepanel_getplayeranimator",
-      "src_juanword_ui_battlepanel_battlepanel_onmousemoved",
-      "src_juanword_ui_battlepanel_battlepanel_onturntimerexpired",
-      "src_juanword_ui_battlepanel_battlepanel_paintcomponent",
-      "src_juanword_ui_battlepanel_battlepanel_pausegame",
-      "src_juanword_ui_battlepanel_battlepanel_playenemyattack",
-      "src_juanword_ui_battlepanel_battlepanel_rendercachedbackground",
-      "src_juanword_ui_battlepanel_battlepanel_resumegame"
+      "graphics",
+      "image",
+      "jbutton",
+      "override",
+      "scratch_prototypejuananimation_heroanimstate",
+      "scratch_prototypejuananimation_heroanimstate_attack",
+      "scratch_prototypejuananimation_heroanimstate_idle",
+      "scratch_prototypejuananimation_heroanimstate_pre_attack",
+      "scratch_prototypejuananimation_prototypejuananimation",
+      "scratch_prototypejuananimation_prototypejuananimation_main",
+      "scratch_prototypejuananimation_testjuanavatarpanel",
+      "scratch_prototypejuananimation_testjuanavatarpanel_getanimstate",
+      "scratch_prototypejuananimation_testjuanavatarpanel_paintcomponent",
+      "scratch_prototypejuananimation_testjuanavatarpanel_setmanualstate",
+      "scratch_prototypejuananimation_testjuanavatarpanel_testjuanavatarpanel",
+      "scratch_prototypejuananimation_testjuanavatarpanel_triggerattack",
+      "scratch_prototypejuananimation_testjuanavatarpanel_triggerhit",
+      "scratch_renderfullbattlewithnewjuan_renderfullbattlewithnewjuan",
+      "scratch_renderfullbattlewithnewjuan_renderfullbattlewithnewjuan_main",
+      "scratch_testpaintchildrenmenu_testpaintchildrenmenu",
+      "scratch_testpaintchildrenmenu_testpaintchildrenmenu_drawmenubutton",
+      "scratch_testpaintchildrenmenu_testpaintchildrenmenu_main",
+      "scratch_testpaintchildrenmenu_testpaintchildrenmenu_paintchildren",
+      "scratch_testpaintchildrenmenu_testpaintchildrenmenu_testpaintchildrenmenu"
     ],
     "10": [
       "scratch_checkexactcomponentbounds_checkexactcomponentbounds",
@@ -592,170 +584,167 @@
       "src_juanword_model_difficultysetting_difficultysetting_getturntimeseconds"
     ],
     "11": [
-      "difficultysetting",
-      "juanword_enemy_enemy",
-      "juanword_tile_tilecomponent",
+      "src_juanword_enemy_dizonbossenemy_dizonbossenemy",
+      "src_juanword_enemy_dizonbossenemy_dizonbossenemy_dizonbossenemy",
+      "src_juanword_enemy_dizonbossenemy_dizonbossenemy_onenemyturn",
+      "src_juanword_enemy_dizonbossenemy_java_override",
+      "src_juanword_enemy_janitorbossenemy",
+      "src_juanword_enemy_janitorbossenemy_janitorbossenemy",
+      "src_juanword_enemy_janitorbossenemy_janitorbossenemy_janitorbossenemy",
+      "src_juanword_enemy_janitorbossenemy_janitorbossenemy_onenemyturn",
+      "src_juanword_enemy_janitorbossenemy_java_override",
+      "src_juanword_enemy_monkeyenemy_java_override",
+      "src_juanword_enemy_monkeyenemy_monkeyenemy_onenemyturn",
+      "src_juanword_enemy_porterbossenemy_java_override",
+      "src_juanword_enemy_porterbossenemy_porterbossenemy_onenemyturn",
+      "src_juanword_model_battlecontext_battlecontext",
+      "src_juanword_model_battlecontext_battlecontext_battlecontext",
+      "src_juanword_model_battlecontext_battlecontext_damageenemy",
+      "src_juanword_model_battlecontext_battlecontext_getenemy",
+      "src_juanword_model_battlecontext_battlecontext_getgrid",
+      "src_juanword_model_battlecontext_battlecontext_getsubmittedword",
+      "src_juanword_model_battlecontext_battlecontext_healenemy",
+      "src_juanword_model_battlecontext_battlecontext_scramblegrid"
+    ],
+    "12": [
+      "archive_for_skeleton_additional_classes_datamanager_datamanager",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_addhighscore",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_datamanager",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_ensurefile",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_getallplayers",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_gettopscores",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_loadlatestplayer",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_loadplayer",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_nextplayerid",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_parse",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_readlines",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_saveplayer",
+      "archive_for_skeleton_additional_classes_datamanager_datamanager_writelines",
+      "archive_for_skeleton_additional_classes_player",
+      "archive_for_skeleton_additional_classes_player_java_override",
+      "archive_for_skeleton_additional_classes_player_player",
+      "archive_for_skeleton_additional_classes_player_player_fromcsv",
+      "archive_for_skeleton_additional_classes_player_player_player",
+      "archive_for_skeleton_additional_classes_player_player_tocsv",
+      "archive_for_skeleton_additional_classes_player_player_tostring"
+    ],
+    "13": [
+      "archive_for_skeleton_additional_classes_juanwordapp",
+      "archive_for_skeleton_additional_classes_mainmenupanel",
+      "archive_for_skeleton_additional_classes_resultpanel",
+      "archive_for_skeleton_additional_classes_settingspanel",
+      "archive_for_skeleton_additional_classes_worldmappanel",
+      "awt",
+      "event",
+      "scratch_testiconprototype",
+      "scratch_testinteractivemapscreen",
+      "scratch_testinteractivemapscreen_testinteractivemapscreen",
+      "scratch_testinteractivemapscreen_testinteractivemapscreen_main",
+      "scratch_testmenubuttonbehavior",
+      "scratch_testmenubuttonbehavior_testmenubuttonbehavior",
+      "scratch_testmenubuttonbehavior_testmenubuttonbehavior_main",
+      "scratch_testmenuinteractiverepaint",
+      "scratch_testmenuinteractiverepaint_testmenuinteractiverepaint",
+      "scratch_testmenuinteractiverepaint_testmenuinteractiverepaint_main",
+      "scratch_testpaintchildrenmenu",
+      "swing"
+    ],
+    "14": [
+      "enemyspec",
+      "letterspec",
+      "src_juanword_data_csvutil_csvutil_readall",
+      "src_juanword_data_datamanager_datamanager",
+      "src_juanword_data_datamanager_datamanager_buildweightedpool",
+      "src_juanword_data_datamanager_datamanager_datamanager",
+      "src_juanword_data_datamanager_datamanager_drawrandomletter",
+      "src_juanword_data_datamanager_datamanager_getdictionarysize",
+      "src_juanword_data_datamanager_datamanager_getenemyspecbyid",
+      "src_juanword_data_datamanager_datamanager_getinstance",
+      "src_juanword_data_datamanager_datamanager_getletterspec",
+      "src_juanword_data_datamanager_datamanager_getpointsfor",
+      "src_juanword_data_datamanager_datamanager_isvalidcebuanoword",
+      "src_juanword_data_datamanager_datamanager_loadallcsvresources",
+      "src_juanword_data_datamanager_datamanager_loaddictionary",
+      "src_juanword_data_datamanager_datamanager_loadenemyspecs",
+      "src_juanword_data_datamanager_datamanager_loadletterspecs",
+      "src_juanword_data_datamanager_datamanager_loadplayers",
+      "src_juanword_data_datamanager_datamanager_serializegrid"
+    ],
+    "15": [
+      "archive_for_skeleton_additional_classes_battlepanel",
+      "arraydeque",
+      "arraylist",
+      "arrays",
+      "collections",
+      "deque",
+      "hashmap",
+      "hashset",
+      "linkedhashmap",
+      "linkedhashset",
+      "map",
+      "random",
+      "scratch_inspectlettertilevisuals",
+      "scratch_inspectlettertilevisuals_inspectlettertilevisuals",
+      "scratch_inspectlettertilevisuals_inspectlettertilevisuals_main",
+      "src_juanword_data_datamanager",
+      "src_juanword_model_player",
+      "standardtilecomponent"
+    ],
+    "16": [
+      "java_awt_rectangle",
+      "scratch_renderstartmenuartifacts_renderstartmenuartifacts",
+      "scratch_renderstartmenuartifacts_renderstartmenuartifacts_main",
+      "scratch_teststartmenufullscreenscaling_teststartmenufullscreenscaling",
+      "scratch_teststartmenufullscreenscaling_teststartmenufullscreenscaling_main",
+      "scratch_teststartmenufullscreenscaling_teststartmenufullscreenscaling_verifyresolution",
+      "scratch_verifymenuvisualsmatch_verifymenuvisualsmatch",
+      "scratch_verifymenuvisualsmatch_verifymenuvisualsmatch_main",
+      "src_juanword_ui_battlepanel_battlepanel_getattackbtnbounds",
+      "src_juanword_ui_battlepanel_battlepanel_getscramblebtnbounds",
+      "src_juanword_ui_landmark_landmark_setbounds",
+      "src_juanword_ui_startpanel_startpanel_getcontinuebtnbounds",
+      "src_juanword_ui_startpanel_startpanel_getexitbtnbounds",
+      "src_juanword_ui_startpanel_startpanel_getnewgamebtnbounds",
+      "src_juanword_ui_startpanel_startpanel_getplayercardbounds",
+      "src_juanword_ui_startpanel_startpanel_getsettingbtnbounds",
+      "src_juanword_ui_startpanel_startpanel_gettitlebounds"
+    ],
+    "17": [
+      "juanword_model_difficultysetting",
+      "scratch_createenemiescollage_createenemiescollage",
+      "scratch_createenemiescollage_createenemiescollage_main",
+      "scratch_testbluebuildingprogression_testbluebuildingprogression",
+      "scratch_testbluebuildingprogression_testbluebuildingprogression_main",
       "scratch_testdesignpatterns_testdesignpatterns",
       "scratch_testdesignpatterns_testdesignpatterns_main",
       "scratch_testdesignpatterns_testdesignpatterns_testpattern1singleton",
-      "scratch_testdesignpatterns_testdesignpatterns_testpattern3builder",
-      "scratch_testmultisavefiles_testmultisavefiles",
-      "scratch_testmultisavefiles_testmultisavefiles_main",
-      "scratch_testregressions",
-      "src_juanword_model_battlecontext_battlecontext_addturnseconds",
-      "src_juanword_model_battlesession",
-      "src_juanword_model_battlesession_battlesession",
-      "src_juanword_model_battlesession_battlesession_battlesession",
-      "src_juanword_model_battlesession_battlesession_getdifficulty",
-      "src_juanword_model_battlesession_battlesession_getmapindex",
-      "src_juanword_model_battlesession_battlesession_getstageindex",
-      "src_juanword_model_battlesession_battlesession_getturnseconds",
-      "src_juanword_model_battlesession_battlesession_setturnseconds",
-      "src_juanword_ui_battlepanel_battlepanel_computedamage",
-      "src_juanword_ui_battlepanel_battlepanel_drawtopheaderbar"
+      "scratch_testdesignpatterns_testdesignpatterns_testpattern2factorymethod",
+      "scratch_testfourstageprogression_testfourstageprogression",
+      "scratch_testfourstageprogression_testfourstageprogression_main",
+      "src_juanword_enemy_enemyfactory",
+      "src_juanword_enemy_enemyfactory_enemyfactory",
+      "src_juanword_enemy_enemyfactory_enemyfactory_createenemy",
+      "src_juanword_enemy_enemyfactory_enemyfactory_enemyfactory",
+      "src_juanword_enemy_enemyfactory_enemyfactory_mapcount",
+      "src_juanword_enemy_enemyfactory_enemyfactory_stagespermap"
     ],
-    "12": [
-      "scratch_rendercardoscreenshots_rendercardoscreenshots",
-      "scratch_rendercardoscreenshots_rendercardoscreenshots_main",
-      "scratch_testcardoprofile_testcardoprofile",
-      "scratch_testcardoprofile_testcardoprofile_main",
-      "scratch_testgudounlockedprofile_testgudounlockedprofile",
-      "scratch_testgudounlockedprofile_testgudounlockedprofile_main",
+    "18": [
+      "java_awt_graphics",
+      "javax_swing_jbutton",
       "src_juanword_juanword_juanword_getactiveplayer",
-      "src_juanword_ui_mapselectpanel_java_override",
-      "src_juanword_ui_mapselectpanel_mapselectpanel",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_drawsummitlock",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_getfightgudobuttonbounds",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_initlandmarks",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_launchbattle",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_mapselectpanel",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_onmouseclicked",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_paintcomponent",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_recalculatelayout",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_refresh",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_stop",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_tick",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_triggertraveltransition"
-    ],
-    "13": [
-      "scratch_renderdesigncheck_renderdesigncheck",
-      "scratch_renderdesigncheck_renderdesigncheck_main",
-      "scratch_rendergudoshowcase_rendergudoshowcase",
-      "scratch_rendergudoshowcase_rendergudoshowcase_main",
-      "scratch_rendergudounlockedscreens_rendergudounlockedscreens",
-      "scratch_rendergudounlockedscreens_rendergudounlockedscreens_main",
-      "scratch_renderlatestscreenshots_renderlatestscreenshots",
-      "scratch_renderlatestscreenshots_renderlatestscreenshots_main",
-      "scratch_teststartmenufullscreenscaling_teststartmenufullscreenscaling_main",
-      "scratch_testtextscaling_testtextscaling",
-      "scratch_testtextscaling_testtextscaling_main",
-      "src_juanword_juanword_juanword_resumebattle",
-      "src_juanword_juanword_juanword_setactiveplayer",
-      "src_juanword_juanword_juanword_showscreen",
-      "src_juanword_juanword_juanword_startbattle",
+      "src_juanword_ui_startpanel_startpanel",
+      "src_juanword_ui_startpanel_startpanel_createmenubutton",
+      "src_juanword_ui_startpanel_startpanel_createthemedbutton",
+      "src_juanword_ui_startpanel_startpanel_drawmenubutton",
       "src_juanword_ui_startpanel_startpanel_oncontinue",
       "src_juanword_ui_startpanel_startpanel_onnewprofile",
       "src_juanword_ui_startpanel_startpanel_onquit",
+      "src_juanword_ui_startpanel_startpanel_paintchildren",
+      "src_juanword_ui_startpanel_startpanel_paintcomponent",
+      "src_juanword_ui_startpanel_startpanel_recalculatelayout",
       "src_juanword_ui_startpanel_startpanel_refreshprofiles",
       "src_juanword_ui_startpanel_startpanel_showprofileselectiondialog",
       "src_juanword_ui_startpanel_startpanel_startpanel"
-    ],
-    "14": [
-      "java_awt_cardlayout",
-      "javax_swing_jframe",
-      "juanword_ui_mapselectpanel",
-      "juanword_ui_startpanel",
-      "scratch_renderspritescalingshowcase_renderspritescalingshowcase",
-      "scratch_renderspritescalingshowcase_renderspritescalingshowcase_main",
-      "scratch_teststartmenufullscreenscaling",
-      "scratch_teststartmenufullscreenscaling_teststartmenufullscreenscaling",
-      "src_juanword_juanword",
-      "src_juanword_juanword_juanword",
-      "src_juanword_juanword_juanword_installclosinghook",
-      "src_juanword_juanword_juanword_isfullscreen",
-      "src_juanword_juanword_juanword_juanword",
-      "src_juanword_juanword_juanword_main",
-      "src_juanword_juanword_juanword_setfullscreen",
-      "src_juanword_juanword_juanword_togglefullscreen",
-      "toolkit",
-      "windowadapter",
-      "windowevent"
-    ],
-    "15": [
-      "atomicreference",
-      "enemyspec",
-      "executors",
-      "executorservice",
-      "scratch_testbluebuildingprogression",
-      "scratch_testbluebuildingprogression_testbluebuildingprogression",
-      "scratch_testbluebuildingprogression_testbluebuildingprogression_main",
-      "scratch_testdesignpatterns",
-      "src_juanword_data_datamanager_datamanager_getenemyspecbyid",
-      "src_juanword_enemy_dizonbossenemy",
-      "src_juanword_enemy_dizonbossenemy_dizonbossenemy",
-      "src_juanword_enemy_dizonbossenemy_dizonbossenemy_dizonbossenemy",
-      "src_juanword_enemy_enemy",
-      "src_juanword_enemy_malestudentenemy",
-      "src_juanword_enemy_malestudentenemy_java_override",
-      "src_juanword_enemy_malestudentenemy_malestudentenemy",
-      "src_juanword_enemy_malestudentenemy_malestudentenemy_malestudentenemy",
-      "src_juanword_enemy_malestudentenemy_malestudentenemy_onenemyturn"
-    ],
-    "16": [
-      "scratch_testmapselectintegration_testmapselectintegration",
-      "scratch_testmapselectintegration_testmapselectintegration_main",
-      "src_juanword_model_battlesessionbuilder_battlesessionbuilder_onmap",
-      "src_juanword_model_difficultysetting_difficultysetting_formap",
-      "src_juanword_model_difficultysetting_difficultysetting_getdisplayname",
-      "src_juanword_ui_landmark_landmark",
-      "src_juanword_ui_landmark_landmark_contains",
-      "src_juanword_ui_landmark_landmark_getmapindex",
-      "src_juanword_ui_landmark_landmark_getname",
-      "src_juanword_ui_landmark_landmark_getscale",
-      "src_juanword_ui_landmark_landmark_islocked",
-      "src_juanword_ui_landmark_landmark_paint",
-      "src_juanword_ui_landmark_landmark_setbounds",
-      "src_juanword_ui_landmark_landmark_setlocked",
-      "src_juanword_ui_landmark_landmark_updatescale",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_drawhud",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_onmousemoved"
-    ],
-    "17": [
-      "src_juanword_enemy_guardenemy",
-      "src_juanword_enemy_guardenemy_guardenemy",
-      "src_juanword_enemy_guardenemy_guardenemy_guardenemy",
-      "src_juanword_enemy_guardenemy_guardenemy_onenemyturn",
-      "src_juanword_enemy_guardenemy_java_override",
-      "src_juanword_enemy_porterbossenemy",
-      "src_juanword_enemy_porterbossenemy_porterbossenemy",
-      "src_juanword_enemy_porterbossenemy_porterbossenemy_porterbossenemy",
-      "src_juanword_model_difficultysetting",
-      "src_juanword_model_difficultysetting_difficultysetting",
-      "src_juanword_model_difficultysetting_difficultysetting_difficultysetting",
-      "src_juanword_model_difficultysetting_difficultysetting_extreme",
-      "src_juanword_model_difficultysetting_difficultysetting_getmapindex",
-      "src_juanword_model_difficultysetting_difficultysetting_istimed",
-      "src_juanword_model_difficultysetting_difficultysetting_lisod",
-      "src_juanword_model_difficultysetting_difficultysetting_sakto",
-      "src_juanword_model_difficultysetting_difficultysetting_sayon"
-    ],
-    "18": [
-      "basicstroke",
-      "cursor",
-      "fontmetrics",
-      "java_awt_event_actionevent",
-      "java_awt_event_mouseevent",
-      "java_awt_graphics",
-      "java_awt_point",
-      "javax_swing_jpanel",
-      "javax_swing_timer",
-      "joptionpane",
-      "mouseadapter",
-      "screen",
-      "shape",
-      "src_juanword_ui_battlepanel",
-      "src_juanword_ui_landmark",
-      "src_juanword_ui_mapselectpanel"
     ],
     "19": [
       "archive_for_skeleton_additional_classes_bestiarypanel",
@@ -775,57 +764,6 @@
       "util"
     ],
     "20": [
-      "enemy",
-      "juanword_model_difficultysetting",
-      "scratch_createenemiescollage_createenemiescollage",
-      "scratch_createenemiescollage_createenemiescollage_main",
-      "scratch_testdesignpatterns_testdesignpatterns_testpattern2factorymethod",
-      "src_juanword_enemy_enemyfactory",
-      "src_juanword_enemy_enemyfactory_enemyfactory",
-      "src_juanword_enemy_enemyfactory_enemyfactory_createenemy",
-      "src_juanword_enemy_enemyfactory_enemyfactory_enemyfactory",
-      "src_juanword_enemy_enemyfactory_enemyfactory_mapcount",
-      "src_juanword_enemy_enemyfactory_enemyfactory_stagespermap",
-      "src_juanword_enemy_enemyfactory_gudobossenemy",
-      "src_juanword_enemy_enemyfactory_gudobossenemy_getattackspritepath",
-      "src_juanword_enemy_enemyfactory_gudobossenemy_gudobossenemy",
-      "src_juanword_enemy_enemyfactory_java_override"
-    ],
-    "21": [
-      "image",
-      "scratch_prototypejuananimation_heroanimstate",
-      "scratch_prototypejuananimation_heroanimstate_attack",
-      "scratch_prototypejuananimation_heroanimstate_idle",
-      "scratch_prototypejuananimation_heroanimstate_pre_attack",
-      "scratch_prototypejuananimation_prototypejuananimation",
-      "scratch_prototypejuananimation_prototypejuananimation_main",
-      "scratch_prototypejuananimation_testjuanavatarpanel",
-      "scratch_prototypejuananimation_testjuanavatarpanel_getanimstate",
-      "scratch_prototypejuananimation_testjuanavatarpanel_setmanualstate",
-      "scratch_prototypejuananimation_testjuanavatarpanel_testjuanavatarpanel",
-      "scratch_prototypejuananimation_testjuanavatarpanel_triggerattack",
-      "scratch_prototypejuananimation_testjuanavatarpanel_triggerhit",
-      "scratch_renderfullbattlewithnewjuan_renderfullbattlewithnewjuan",
-      "scratch_renderfullbattlewithnewjuan_renderfullbattlewithnewjuan_main"
-    ],
-    "22": [
-      "java_awt_rectangle",
-      "scratch_renderstartmenuartifacts_renderstartmenuartifacts",
-      "scratch_renderstartmenuartifacts_renderstartmenuartifacts_main",
-      "scratch_teststartmenufullscreenscaling_teststartmenufullscreenscaling_verifyresolution",
-      "src_juanword_ui_battlepanel_battlepanel_getattackbtnbounds",
-      "src_juanword_ui_battlepanel_battlepanel_getscramblebtnbounds",
-      "src_juanword_ui_startpanel_startpanel",
-      "src_juanword_ui_startpanel_startpanel_getcontinuebtnbounds",
-      "src_juanword_ui_startpanel_startpanel_getexitbtnbounds",
-      "src_juanword_ui_startpanel_startpanel_getnewgamebtnbounds",
-      "src_juanword_ui_startpanel_startpanel_getplayercardbounds",
-      "src_juanword_ui_startpanel_startpanel_getsettingbtnbounds",
-      "src_juanword_ui_startpanel_startpanel_gettitlebounds",
-      "src_juanword_ui_startpanel_startpanel_paintcomponent",
-      "src_juanword_ui_startpanel_startpanel_recalculatelayout"
-    ],
-    "23": [
       "src_juanword_enemy_enemy_enemy",
       "src_juanword_enemy_enemy_enemy_enemy",
       "src_juanword_enemy_enemy_enemy_getattackspritepath",
@@ -842,54 +780,69 @@
       "src_juanword_enemy_enemy_enemy_takedamage",
       "src_juanword_model_difficultysetting_difficultysetting_getstatscale"
     ],
+    "21": [
+      "src_juanword_enemy_monkeyenemy",
+      "src_juanword_enemy_monkeyenemy_monkeyenemy",
+      "src_juanword_enemy_monkeyenemy_monkeyenemy_monkeyenemy",
+      "src_juanword_enemy_porterbossenemy",
+      "src_juanword_enemy_porterbossenemy_porterbossenemy",
+      "src_juanword_enemy_porterbossenemy_porterbossenemy_porterbossenemy",
+      "src_juanword_model_difficultysetting",
+      "src_juanword_model_difficultysetting_difficultysetting",
+      "src_juanword_model_difficultysetting_difficultysetting_difficultysetting",
+      "src_juanword_model_difficultysetting_difficultysetting_extreme",
+      "src_juanword_model_difficultysetting_difficultysetting_getmapindex",
+      "src_juanword_model_difficultysetting_difficultysetting_istimed",
+      "src_juanword_model_difficultysetting_difficultysetting_lisod",
+      "src_juanword_model_difficultysetting_difficultysetting_sakto",
+      "src_juanword_model_difficultysetting_difficultysetting_sayon"
+    ],
+    "22": [
+      "juanword",
+      "scratch_checkmapoverlap",
+      "scratch_checkmapoverlap_checkmapoverlap",
+      "scratch_checkmapoverlap_checkmapoverlap_main",
+      "scratch_testaporenderoptions",
+      "scratch_testdialogpreview",
+      "scratch_testdialogpreview_testdialogpreview",
+      "scratch_testdialogpreview_testdialogpreview_main",
+      "scratch_testlayoutoptions",
+      "scratch_testspritehitandtransitions",
+      "scratch_testspritehitandtransitions_testspritehitandtransitions",
+      "scratch_testspritehitandtransitions_testspritehitandtransitions_main",
+      "scratch_verifymenuvisualsmatch"
+    ],
+    "23": [
+      "scratch_testmapselectintegration_testmapselectintegration",
+      "scratch_testmapselectintegration_testmapselectintegration_main",
+      "src_juanword_model_difficultysetting_difficultysetting_getdisplayname",
+      "src_juanword_ui_landmark_landmark",
+      "src_juanword_ui_landmark_landmark_contains",
+      "src_juanword_ui_landmark_landmark_getmapindex",
+      "src_juanword_ui_landmark_landmark_getname",
+      "src_juanword_ui_landmark_landmark_getscale",
+      "src_juanword_ui_landmark_landmark_islocked",
+      "src_juanword_ui_landmark_landmark_paint",
+      "src_juanword_ui_landmark_landmark_setlocked",
+      "src_juanword_ui_landmark_landmark_updatescale",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_drawhud"
+    ],
     "24": [
-      "arrays",
-      "collections",
-      "hashmap",
-      "hashset",
-      "linkedhashmap",
-      "linkedhashset",
-      "map",
-      "scratch_inspectlettertilevisuals",
-      "scratch_inspectlettertilevisuals_inspectlettertilevisuals",
-      "scratch_inspectlettertilevisuals_inspectlettertilevisuals_main",
-      "set",
-      "src_juanword_data_datamanager",
-      "src_juanword_model_player",
-      "standardtilecomponent"
+      "screen",
+      "src_juanword_juanword_juanword_resumebattle",
+      "src_juanword_juanword_juanword_showscreen",
+      "src_juanword_juanword_juanword_startbattle",
+      "src_juanword_screen",
+      "src_juanword_screen_screen",
+      "src_juanword_screen_screen_battle",
+      "src_juanword_screen_screen_cardname",
+      "src_juanword_screen_screen_map_select",
+      "src_juanword_screen_screen_start",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_launchbattle",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_onmouseclicked",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_stop"
     ],
     "25": [
-      "src_juanword_model_battlecontext_battlecontext_getgrid",
-      "src_juanword_model_battlesession_battlesession_getgrid",
-      "src_juanword_ui_battlepanel_battlepanel_getenemycenter",
-      "src_juanword_ui_battlepanel_battlepanel_getplayercenter",
-      "src_juanword_ui_battlepanel_battlepanel_getselecteddamagepreview",
-      "src_juanword_ui_battlepanel_battlepanel_getselectedword",
-      "src_juanword_ui_battlepanel_battlepanel_handleinvalidword",
-      "src_juanword_ui_battlepanel_battlepanel_onenemyimpact",
-      "src_juanword_ui_battlepanel_battlepanel_onplayerimpact",
-      "src_juanword_ui_battlepanel_battlepanel_onsubmit",
-      "src_juanword_ui_battlepanel_battlepanel_refillconsumedtiles",
-      "src_juanword_ui_battlepanel_battlepanel_resolvevalidword",
-      "src_juanword_ui_battlepanel_battlepanel_spawnfloatingtext",
-      "src_juanword_ui_battlepanel_battlepanel_submitword"
-    ],
-    "26": [
-      "scratch_testfourstageprogression",
-      "scratch_testfourstageprogression_testfourstageprogression",
-      "scratch_testfourstageprogression_testfourstageprogression_main",
-      "src_juanword_enemy_altarboyenemy",
-      "src_juanword_enemy_altarboyenemy_altarboyenemy",
-      "src_juanword_enemy_altarboyenemy_altarboyenemy_altarboyenemy",
-      "src_juanword_enemy_altarboyenemy_altarboyenemy_onenemyturn",
-      "src_juanword_enemy_altarboyenemy_java_override",
-      "src_juanword_enemy_lolaenemy",
-      "src_juanword_enemy_lolaenemy_java_override",
-      "src_juanword_enemy_lolaenemy_lolaenemy",
-      "src_juanword_enemy_lolaenemy_lolaenemy_lolaenemy",
-      "src_juanword_enemy_lolaenemy_lolaenemy_onenemyturn"
-    ],
-    "27": [
       "container",
       "java_awt_component",
       "jframe",
@@ -903,61 +856,69 @@
       "scratch_testmapexpandandtilecentering_testmapexpandandtilecentering_main",
       "scratch_testmapexpandandtilecentering_testmapexpandandtilecentering_validatehierarchy"
     ],
+    "26": [
+      "field",
+      "scratch_capturebattlepreview",
+      "scratch_capturebattlepreview_capturebattlepreview",
+      "scratch_capturebattlepreview_capturebattlepreview_main",
+      "scratch_renderfullbattlewithnewjuan",
+      "scratch_renderfullscreens",
+      "scratch_renderfullscreens_renderfullscreens",
+      "scratch_renderfullscreens_renderfullscreens_main",
+      "scratch_testbuttonsizevisuals",
+      "scratch_testexpandandbattlecomposite",
+      "scratch_testexpandandbattlecomposite_testexpandandbattlecomposite",
+      "scratch_testexpandandbattlecomposite_testexpandandbattlecomposite_main"
+    ],
+    "27": [
+      "src_juanword_enemy_alviolabossenemy_alviolabossenemy",
+      "src_juanword_enemy_alviolabossenemy_alviolabossenemy_alviolabossenemy",
+      "src_juanword_enemy_alviolabossenemy_alviolabossenemy_onenemyturn",
+      "src_juanword_enemy_alviolabossenemy_java_override",
+      "src_juanword_enemy_enemy_enemy_onenemyturn",
+      "src_juanword_enemy_karabawenemy",
+      "src_juanword_enemy_karabawenemy_java_override",
+      "src_juanword_enemy_karabawenemy_karabawenemy",
+      "src_juanword_enemy_karabawenemy_karabawenemy_karabawenemy",
+      "src_juanword_enemy_karabawenemy_karabawenemy_onenemyturn",
+      "src_juanword_model_battlecontext_battlecontext_damageplayer"
+    ],
     "28": [
-      "archive_for_skeleton_additional_classes_battlepanel",
-      "arraydeque",
-      "arraylist",
-      "deque",
-      "list",
-      "random",
-      "scratch_prototypeenemytransition",
-      "scratch_testdialogpreview",
-      "scratch_testdialogpreview_testdialogpreview",
-      "scratch_testdialogpreview_testdialogpreview_main"
+      "scratch_testmapprogressionandtransition_testmapprogressionandtransition",
+      "scratch_testmapprogressionandtransition_testmapprogressionandtransition_main",
+      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks",
+      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_main",
+      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testdefaultunlocks",
+      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testfourdifficulties",
+      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testunlockbossonspecificmap",
+      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testunlockpersistenceacrosssaveandreload",
+      "src_juanword_model_battlesessionbuilder_battlesessionbuilder_onmap",
+      "src_juanword_model_difficultysetting_difficultysetting_formap"
     ],
     "29": [
-      "juanword_model_battlesession",
-      "src_juanword_model_battlecontext_battlecontext_getplayer",
-      "src_juanword_model_battlesession_battlesession_getplayer",
-      "src_juanword_model_battlesession_battlesession_isbossstage",
-      "src_juanword_model_battlesession_battlesession_isfinalboss",
-      "src_juanword_ui_battlepanel_battlepanel_begin",
-      "src_juanword_ui_battlepanel_battlepanel_getsession",
-      "src_juanword_ui_battlepanel_battlepanel_onvictory",
-      "src_juanword_ui_battlepanel_battlepanel_playplayerattack",
-      "src_juanword_ui_battlepanel_battlepanel_recalculatelayout"
+      "src_juanword_ui_mapselectpanel_java_override",
+      "src_juanword_ui_mapselectpanel_mapselectpanel",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_drawsummitlock",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_initlandmarks",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_mapselectpanel",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_onmousemoved",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_paintcomponent",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_recalculatelayout",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_tick",
+      "src_juanword_ui_mapselectpanel_mapselectpanel_triggertraveltransition"
     ],
     "30": [
-      "archive_for_skeleton_additional_classes_juanwordapp",
-      "archive_for_skeleton_additional_classes_mainmenupanel",
-      "archive_for_skeleton_additional_classes_resultpanel",
-      "archive_for_skeleton_additional_classes_settingspanel",
-      "archive_for_skeleton_additional_classes_worldmappanel",
-      "scratch_testmapexpandandtilecentering",
-      "scratch_testspritehitandtransitions",
-      "swing"
+      "scratch_testmaplayoutpreview_java_color",
+      "scratch_testmaplayoutpreview_java_graphics2d",
+      "scratch_testmaplayoutpreview_java_image",
+      "scratch_testmaplayoutpreview_testmaplayoutpreview",
+      "scratch_testmaplayoutpreview_testmaplayoutpreview_createsilhouette",
+      "scratch_testmaplayoutpreview_testmaplayoutpreview_drawbuilding",
+      "scratch_testmaplayoutpreview_testmaplayoutpreview_drawheaderandbadge",
+      "scratch_testmaplayoutpreview_testmaplayoutpreview_main",
+      "scratch_testmaplayoutpreview_testmaplayoutpreview_rendermapscreen"
     ],
     "31": [
-      "color",
-      "scratch_prototypeenemytransition_defeatparticle",
-      "scratch_prototypeenemytransition_defeatparticle_defeatparticle",
-      "scratch_prototypeenemytransition_defeatparticle_render",
-      "scratch_prototypeenemytransition_defeatparticle_update",
-      "scratch_prototypeenemytransition_prototypeenemytransition",
-      "scratch_prototypeenemytransition_prototypeenemytransition_copy",
-      "scratch_prototypeenemytransition_prototypeenemytransition_main"
-    ],
-    "32": [
-      "graphics",
-      "javax_swing_jbutton",
-      "override",
-      "scratch_prototypejuananimation_testjuanavatarpanel_paintcomponent",
-      "src_juanword_ui_startpanel_imageassetbutton",
-      "src_juanword_ui_startpanel_imageassetbutton_imageassetbutton",
-      "src_juanword_ui_startpanel_imageassetbutton_paintcomponent",
-      "src_juanword_ui_startpanel_startpanel_createthemedbutton"
-    ],
-    "33": [
       "heroanimstate",
       "juanword_battlepanel_juanavatarpanel",
       "scratch_capturejuanattackbattlescreenshots",
@@ -967,27 +928,7 @@
       "scratch_testjuanavatartuning_testjuanavatartuning",
       "scratch_testjuanavatartuning_testjuanavatartuning_main"
     ],
-    "34": [
-      "mouseevent",
-      "scratch_captureallmapstates",
-      "scratch_captureallmapstates_captureallmapstates",
-      "scratch_captureallmapstates_captureallmapstates_main",
-      "scratch_renderbothscreens",
-      "scratch_renderbothscreens_renderbothscreens",
-      "scratch_renderbothscreens_renderbothscreens_main",
-      "swingutilities"
-    ],
-    "35": [
-      "scratch_measurelandmarks_measurelandmarks",
-      "scratch_measurelandmarks_measurelandmarks_main",
-      "scratch_printlandmarkdrawrects_printlandmarkdrawrects",
-      "scratch_printlandmarkdrawrects_printlandmarkdrawrects_main",
-      "scratch_testbiggericons_testbiggericons",
-      "scratch_testbiggericons_testbiggericons_main",
-      "src_juanword_ui_landmark_landmark_getbounds",
-      "src_juanword_ui_mapselectpanel_mapselectpanel_getlandmarks"
-    ],
-    "36": [
+    "32": [
       "scratch_testregressions_testregressions",
       "scratch_testregressions_testregressions_main",
       "scratch_testregressions_testregressions_testcampaignstages",
@@ -997,35 +938,59 @@
       "src_juanword_model_difficultysetting_difficultysetting_getinvalidcounterdamage",
       "src_juanword_model_difficultysetting_difficultysetting_getlengthmultiplier"
     ],
+    "33": [
+      "juanword_model_player",
+      "src_juanword_data_datamanager_datamanager_clearactivebattle",
+      "src_juanword_data_datamanager_datamanager_createplayer",
+      "src_juanword_data_datamanager_datamanager_deleteplayer",
+      "src_juanword_data_datamanager_datamanager_getallplayers",
+      "src_juanword_data_datamanager_datamanager_saveplayer",
+      "src_juanword_data_datamanager_datamanager_saveplayers"
+    ],
+    "34": [
+      "scratch_prototypeenemytransition_defeatparticle",
+      "scratch_prototypeenemytransition_defeatparticle_defeatparticle",
+      "scratch_prototypeenemytransition_defeatparticle_render",
+      "scratch_prototypeenemytransition_defeatparticle_update",
+      "scratch_prototypeenemytransition_prototypeenemytransition",
+      "scratch_prototypeenemytransition_prototypeenemytransition_copy",
+      "scratch_prototypeenemytransition_prototypeenemytransition_main"
+    ],
+    "35": [
+      "scratch_prototypemapscreen_java_graphics2d",
+      "scratch_prototypemapscreen_java_image",
+      "scratch_prototypemapscreen_prototypemapscreen",
+      "scratch_prototypemapscreen_prototypemapscreen_drawheaderbar",
+      "scratch_prototypemapscreen_prototypemapscreen_drawlandmark",
+      "scratch_prototypemapscreen_prototypemapscreen_main",
+      "scratch_prototypemapscreen_prototypemapscreen_renderscene"
+    ],
+    "36": [
+      "scratch_renderbothscreens",
+      "scratch_renderbothscreens_renderbothscreens",
+      "scratch_renderbothscreens_renderbothscreens_main",
+      "scratch_testentrancevisual",
+      "scratch_testentrancevisual_testentrancevisual",
+      "scratch_testentrancevisual_testentrancevisual_main",
+      "swingutilities"
+    ],
     "37": [
-      "src_juanword_juanword_juanword_returntomap",
-      "src_juanword_ui_battlepanel_battlepanel_isbattleactive",
-      "src_juanword_ui_battlepanel_battlepanel_onclear",
-      "src_juanword_ui_battlepanel_battlepanel_ondefeat",
-      "src_juanword_ui_battlepanel_battlepanel_onmouseclicked",
-      "src_juanword_ui_battlepanel_battlepanel_ontileclicked",
-      "src_juanword_ui_battlepanel_battlepanel_savemidbattle",
-      "src_juanword_ui_playeranimator_playeranimator_triggerhit"
+      "bufferedimage",
+      "scratch_asciibottomright",
+      "scratch_asciibottomright_asciibottomright",
+      "scratch_asciibottomright_asciibottomright_main",
+      "scratch_prototypejuananimation",
+      "scratch_renderstartmenuartifacts"
     ],
     "38": [
-      "concurrenthashmap",
-      "enemyfactory",
-      "inputstream",
-      "scratch_createenemiescollage",
-      "scratch_testloadallenemysprites",
-      "scratch_testloadletterassets",
-      "src_juanword_ui_imageloader"
+      "java_nio_charset_charset",
+      "src_juanword_data_csvutil_csvutil",
+      "src_juanword_data_csvutil_csvutil_csvutil",
+      "src_juanword_data_csvutil_csvutil_escape",
+      "src_juanword_data_csvutil_csvutil_parseline",
+      "src_juanword_data_csvutil_csvutil_writeatomic"
     ],
     "39": [
-      "field",
-      "scratch_renderfullscreens",
-      "scratch_renderfullscreens_renderfullscreens",
-      "scratch_renderfullscreens_renderfullscreens_main",
-      "scratch_testbottompanellayout",
-      "scratch_testbottompanellayout_testbottompanellayout",
-      "scratch_testbottompanellayout_testbottompanellayout_main"
-    ],
-    "40": [
       "scratch_testenemydamagepreviewanddeltatime_testenemydamagepreviewanddeltatime",
       "scratch_testenemydamagepreviewanddeltatime_testenemydamagepreviewanddeltatime_main",
       "scratch_testenemydamagepreviewanddeltatime_testenemydamagepreviewanddeltatime_testbattlepaneldamagepreviewintegration",
@@ -1033,68 +998,69 @@
       "scratch_testenemydamagepreviewanddeltatime_testenemydamagepreviewanddeltatime_testdamageslicewidth",
       "scratch_testenemydamagepreviewanddeltatime_testenemydamagepreviewanddeltatime_testhppreviewcalculations"
     ],
+    "40": [
+      "file",
+      "scratch_comparelockoptions",
+      "scratch_comparelockoptions_comparelockoptions",
+      "scratch_comparelockoptions_comparelockoptions_main",
+      "scratch_rendermapiconscomparison"
+    ],
     "41": [
-      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks",
-      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_main",
-      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testdefaultunlocks",
-      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testfourdifficulties",
-      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testunlockbossonspecificmap",
-      "scratch_testperdifficultybossunlocks_testperdifficultybossunlocks_testunlockpersistenceacrosssaveandreload"
-    ],
-    "42": [
-      "src_juanword_screen",
-      "src_juanword_screen_screen",
-      "src_juanword_screen_screen_battle",
-      "src_juanword_screen_screen_cardname",
-      "src_juanword_screen_screen_map_select",
-      "src_juanword_screen_screen_start"
-    ],
-    "43": [
       "method",
       "model",
       "scratch_renderbattledamagepreviewartifacts",
       "scratch_testenemydamagepreviewanddeltatime",
       "ui"
     ],
-    "44": [
-      "src_juanword_enemy_karabawenemy",
-      "src_juanword_enemy_karabawenemy_java_override",
-      "src_juanword_enemy_karabawenemy_karabawenemy",
-      "src_juanword_enemy_karabawenemy_karabawenemy_karabawenemy",
-      "src_juanword_enemy_karabawenemy_karabawenemy_onenemyturn"
-    ],
-    "45": [
-      "src_juanword_enemy_monkeyenemy",
-      "src_juanword_enemy_monkeyenemy_java_override",
-      "src_juanword_enemy_monkeyenemy_monkeyenemy",
-      "src_juanword_enemy_monkeyenemy_monkeyenemy_monkeyenemy",
-      "src_juanword_enemy_monkeyenemy_monkeyenemy_onenemyturn"
-    ],
-    "46": [
+    "42": [
       "src_juanword_enemy_paintingenemy",
       "src_juanword_enemy_paintingenemy_java_override",
       "src_juanword_enemy_paintingenemy_paintingenemy",
       "src_juanword_enemy_paintingenemy_paintingenemy_onenemyturn",
       "src_juanword_enemy_paintingenemy_paintingenemy_paintingenemy"
     ],
-    "47": [
+    "43": [
       "src_juanword_model_battleoutcome",
       "src_juanword_model_battleoutcome_battleoutcome",
       "src_juanword_model_battleoutcome_battleoutcome_defeat",
       "src_juanword_model_battleoutcome_battleoutcome_ongoing",
       "src_juanword_model_battleoutcome_battleoutcome_victory"
     ],
-    "48": [
-      "event",
-      "scratch_testinteractivemapscreen",
-      "scratch_testinteractivemapscreen_testinteractivemapscreen",
-      "scratch_testinteractivemapscreen_testinteractivemapscreen_main"
-    ],
-    "49": [
+    "44": [
       "scratch_rendermapiconscomparison_java_graphics2d",
       "scratch_rendermapiconscomparison_rendermapiconscomparison",
       "scratch_rendermapiconscomparison_rendermapiconscomparison_drawbanner",
       "scratch_rendermapiconscomparison_rendermapiconscomparison_main"
+    ],
+    "45": [
+      "scratch_testnewmaparrangement_java_color",
+      "scratch_testnewmaparrangement_testnewmaparrangement",
+      "scratch_testnewmaparrangement_testnewmaparrangement_createsilhouette",
+      "scratch_testnewmaparrangement_testnewmaparrangement_main"
+    ],
+    "46": [
+      "src_juanword_enemy_altarboyenemy_altarboyenemy",
+      "src_juanword_enemy_altarboyenemy_altarboyenemy_altarboyenemy",
+      "src_juanword_enemy_altarboyenemy_altarboyenemy_onenemyturn",
+      "src_juanword_enemy_altarboyenemy_java_override"
+    ],
+    "47": [
+      "src_juanword_enemy_guardenemy_guardenemy",
+      "src_juanword_enemy_guardenemy_guardenemy_guardenemy",
+      "src_juanword_enemy_guardenemy_guardenemy_onenemyturn",
+      "src_juanword_enemy_guardenemy_java_override"
+    ],
+    "48": [
+      "src_juanword_enemy_lolaenemy_java_override",
+      "src_juanword_enemy_lolaenemy_lolaenemy",
+      "src_juanword_enemy_lolaenemy_lolaenemy_lolaenemy",
+      "src_juanword_enemy_lolaenemy_lolaenemy_onenemyturn"
+    ],
+    "49": [
+      "src_juanword_enemy_malestudentenemy_java_override",
+      "src_juanword_enemy_malestudentenemy_malestudentenemy",
+      "src_juanword_enemy_malestudentenemy_malestudentenemy_malestudentenemy",
+      "src_juanword_enemy_malestudentenemy_malestudentenemy_onenemyturn"
     ],
     "50": [
       "scratch_calculatemaxscale",
@@ -1102,14 +1068,14 @@
       "scratch_calculatemaxscale_calculatemaxscale_main"
     ],
     "51": [
-      "scratch_capturebattlepreview",
-      "scratch_capturebattlepreview_capturebattlepreview",
-      "scratch_capturebattlepreview_capturebattlepreview_main"
-    ],
-    "52": [
       "scratch_capturebattlepreviewwithnewtiles",
       "scratch_capturebattlepreviewwithnewtiles_capturebattlepreviewwithnewtiles",
       "scratch_capturebattlepreviewwithnewtiles_capturebattlepreviewwithnewtiles_main"
+    ],
+    "52": [
+      "scratch_checkbboxes",
+      "scratch_checkbboxes_checkbboxes",
+      "scratch_checkbboxes_checkbboxes_main"
     ],
     "53": [
       "scratch_checkbottompanelheight",
@@ -1122,401 +1088,466 @@
       "scratch_checkcomponentsizes_checkcomponentsizes_main"
     ],
     "55": [
-      "scratch_checkmapoverlap",
-      "scratch_checkmapoverlap_checkmapoverlap",
-      "scratch_checkmapoverlap_checkmapoverlap_main"
+      "scratch_checkcomppixels",
+      "scratch_checkcomppixels_checkcomppixels",
+      "scratch_checkcomppixels_checkcomppixels_main"
     ],
     "56": [
+      "scratch_checkfacedirection",
+      "scratch_checkfacedirection_checkfacedirection",
+      "scratch_checkfacedirection_checkfacedirection_main"
+    ],
+    "57": [
+      "scratch_checkgudoattack",
+      "scratch_checkgudoattack_checkgudoattack",
+      "scratch_checkgudoattack_checkgudoattack_main"
+    ],
+    "58": [
+      "scratch_checklockrender",
+      "scratch_checklockrender_checklockrender",
+      "scratch_checklockrender_checklockrender_main"
+    ],
+    "59": [
+      "scratch_checkotherenemies",
+      "scratch_checkotherenemies_checkotherenemies",
+      "scratch_checkotherenemies_checkotherenemies_main"
+    ],
+    "60": [
+      "scratch_checkspriteorientation",
+      "scratch_checkspriteorientation_checkspriteorientation",
+      "scratch_checkspriteorientation_checkspriteorientation_main"
+    ],
+    "61": [
+      "scratch_checksprites",
+      "scratch_checksprites_checksprites",
+      "scratch_checksprites_checksprites_main"
+    ],
+    "62": [
+      "scratch_comparebanners",
+      "scratch_comparebanners_comparebanners",
+      "scratch_comparebanners_comparebanners_main"
+    ],
+    "63": [
+      "scratch_comparepreview",
+      "scratch_comparepreview_comparepreview",
+      "scratch_comparepreview_comparepreview_main"
+    ],
+    "64": [
+      "scratch_cropalphabet_cropalphabet",
+      "scratch_cropalphabet_cropalphabet_getexactbbox",
+      "scratch_cropalphabet_cropalphabet_main"
+    ],
+    "65": [
+      "scratch_cropcheck",
+      "scratch_cropcheck_cropcheck",
+      "scratch_cropcheck_cropcheck_main"
+    ],
+    "66": [
+      "scratch_cropdurianmuseum",
+      "scratch_cropdurianmuseum_cropdurianmuseum",
+      "scratch_cropdurianmuseum_cropdurianmuseum_main"
+    ],
+    "67": [
+      "scratch_cropexactlocks",
+      "scratch_cropexactlocks_cropexactlocks",
+      "scratch_cropexactlocks_cropexactlocks_main"
+    ],
+    "68": [
+      "scratch_diffimages",
+      "scratch_diffimages_diffimages",
+      "scratch_diffimages_diffimages_main"
+    ],
+    "69": [
+      "scratch_findenemybounds",
+      "scratch_findenemybounds_findenemybounds",
+      "scratch_findenemybounds_findenemybounds_main"
+    ],
+    "70": [
+      "scratch_findexactmatch",
+      "scratch_findexactmatch_findexactmatch",
+      "scratch_findexactmatch_findexactmatch_main"
+    ],
+    "71": [
+      "scratch_findyellowpixels",
+      "scratch_findyellowpixels_findyellowpixels",
+      "scratch_findyellowpixels_findyellowpixels_main"
+    ],
+    "72": [
+      "scratch_fixmacaquetransparency",
+      "scratch_fixmacaquetransparency_fixmacaquetransparency",
+      "scratch_fixmacaquetransparency_fixmacaquetransparency_main"
+    ],
+    "73": [
+      "scratch_inspectalphabet_inspectalphabet",
+      "scratch_inspectalphabet_inspectalphabet_getnonemptybounds",
+      "scratch_inspectalphabet_inspectalphabet_main"
+    ],
+    "74": [
+      "scratch_inspectbluebuilding",
+      "scratch_inspectbluebuilding_inspectbluebuilding",
+      "scratch_inspectbluebuilding_inspectbluebuilding_main"
+    ],
+    "75": [
+      "scratch_inspectbounds",
+      "scratch_inspectbounds_inspectbounds",
+      "scratch_inspectbounds_inspectbounds_main"
+    ],
+    "76": [
+      "scratch_inspectbuttonassets",
+      "scratch_inspectbuttonassets_inspectbuttonassets",
+      "scratch_inspectbuttonassets_inspectbuttonassets_main"
+    ],
+    "77": [
+      "scratch_inspectcroporiginal",
+      "scratch_inspectcroporiginal_inspectcroporiginal",
+      "scratch_inspectcroporiginal_inspectcroporiginal_main"
+    ],
+    "78": [
+      "scratch_inspectdurian",
+      "scratch_inspectdurian_inspectdurian",
+      "scratch_inspectdurian_inspectdurian_main"
+    ],
+    "79": [
+      "scratch_inspectframecenter",
+      "scratch_inspectframecenter_inspectframecenter",
+      "scratch_inspectframecenter_inspectframecenter_main"
+    ],
+    "80": [
+      "scratch_inspectgudoimages",
+      "scratch_inspectgudoimages_inspectgudoimages",
+      "scratch_inspectgudoimages_inspectgudoimages_main"
+    ],
+    "81": [
+      "scratch_inspectimage",
+      "scratch_inspectimage_inspectimage",
+      "scratch_inspectimage_inspectimage_main"
+    ],
+    "82": [
+      "scratch_inspectlayers",
+      "scratch_inspectlayers_inspectlayers",
+      "scratch_inspectlayers_inspectlayers_main"
+    ],
+    "83": [
+      "scratch_inspectmapassets",
+      "scratch_inspectmapassets_inspectmapassets",
+      "scratch_inspectmapassets_inspectmapassets_main"
+    ],
+    "84": [
+      "scratch_inspectmenucomposite",
+      "scratch_inspectmenucomposite_inspectmenucomposite",
+      "scratch_inspectmenucomposite_inspectmenucomposite_main"
+    ],
+    "85": [
+      "scratch_inspectmockuplayout",
+      "scratch_inspectmockuplayout_inspectmockuplayout",
+      "scratch_inspectmockuplayout_inspectmockuplayout_main"
+    ],
+    "86": [
+      "scratch_inspectpreviewtitle",
+      "scratch_inspectpreviewtitle_inspectpreviewtitle",
+      "scratch_inspectpreviewtitle_inspectpreviewtitle_main"
+    ],
+    "87": [
+      "scratch_inspecttilecontent",
+      "scratch_inspecttilecontent_inspecttilecontent",
+      "scratch_inspecttilecontent_inspecttilecontent_main"
+    ],
+    "88": [
+      "scratch_inspecttitlebounds",
+      "scratch_inspecttitlebounds_inspecttitlebounds",
+      "scratch_inspecttitlebounds_inspecttitlebounds_main"
+    ],
+    "89": [
+      "scratch_inspecttitlepage",
+      "scratch_inspecttitlepage_inspecttitlepage",
+      "scratch_inspecttitlepage_inspecttitlepage_main"
+    ],
+    "90": [
+      "scratch_makecomparison",
+      "scratch_makecomparison_makecomparison",
+      "scratch_makecomparison_makecomparison_main"
+    ],
+    "91": [
       "scratch_makemapoverlapcomparison",
       "scratch_makemapoverlapcomparison_makemapoverlapcomparison",
       "scratch_makemapoverlapcomparison_makemapoverlapcomparison_main"
     ],
-    "57": [
+    "92": [
+      "scratch_makemaptransitioncomparison",
+      "scratch_makemaptransitioncomparison_makemaptransitioncomparison",
+      "scratch_makemaptransitioncomparison_makemaptransitioncomparison_main"
+    ],
+    "93": [
+      "scratch_measureborder",
+      "scratch_measureborder_measureborder",
+      "scratch_measureborder_measureborder_main"
+    ],
+    "94": [
       "scratch_measuredizonbox",
       "scratch_measuredizonbox_measuredizonbox",
       "scratch_measuredizonbox_measuredizonbox_main"
     ],
-    "58": [
+    "95": [
+      "scratch_measuremockuplandmarks",
+      "scratch_measuremockuplandmarks_measuremockuplandmarks",
+      "scratch_measuremockuplandmarks_measuremockuplandmarks_main"
+    ],
+    "96": [
       "scratch_previewmenuupdated",
       "scratch_previewmenuupdated_previewmenuupdated",
       "scratch_previewmenuupdated_previewmenuupdated_main"
     ],
-    "59": [
+    "97": [
       "scratch_previewstartscreen",
       "scratch_previewstartscreen_previewstartscreen",
       "scratch_previewstartscreen_previewstartscreen_main"
     ],
-    "60": [
+    "98": [
+      "scratch_prototypetileandbgfix",
+      "scratch_prototypetileandbgfix_prototypetileandbgfix",
+      "scratch_prototypetileandbgfix_prototypetileandbgfix_main"
+    ],
+    "99": [
       "scratch_renderannotatedmapselect",
       "scratch_renderannotatedmapselect_renderannotatedmapselect",
       "scratch_renderannotatedmapselect_renderannotatedmapselect_main"
     ],
-    "61": [
+    "100": [
       "scratch_renderbluebuildingstages",
       "scratch_renderbluebuildingstages_renderbluebuildingstages",
       "scratch_renderbluebuildingstages_renderbluebuildingstages_main"
     ],
-    "62": [
+    "101": [
+      "scratch_renderbuttoncollage",
+      "scratch_renderbuttoncollage_renderbuttoncollage",
+      "scratch_renderbuttoncollage_renderbuttoncollage_main"
+    ],
+    "102": [
       "scratch_rendercharacteranimationshowcase_rendercharacteranimationshowcase",
       "scratch_rendercharacteranimationshowcase_rendercharacteranimationshowcase_drawlabel",
       "scratch_rendercharacteranimationshowcase_rendercharacteranimationshowcase_main"
     ],
-    "63": [
+    "103": [
+      "scratch_rendercharacterspritestrip",
+      "scratch_rendercharacterspritestrip_rendercharacterspritestrip",
+      "scratch_rendercharacterspritestrip_rendercharacterspritestrip_main"
+    ],
+    "104": [
+      "scratch_rendercloseup",
+      "scratch_rendercloseup_rendercloseup",
+      "scratch_rendercloseup_rendercloseup_main"
+    ],
+    "105": [
+      "scratch_rendergudocomparison",
+      "scratch_rendergudocomparison_rendergudocomparison",
+      "scratch_rendergudocomparison_rendergudocomparison_main"
+    ],
+    "106": [
+      "scratch_renderjuanandgudopreview",
+      "scratch_renderjuanandgudopreview_renderjuanandgudopreview",
+      "scratch_renderjuanandgudopreview_renderjuanandgudopreview_main"
+    ],
+    "107": [
+      "scratch_rendernewlayoutpreview",
+      "scratch_rendernewlayoutpreview_rendernewlayoutpreview",
+      "scratch_rendernewlayoutpreview_rendernewlayoutpreview_main"
+    ],
+    "108": [
+      "scratch_renderspritescheck",
+      "scratch_renderspritescheck_renderspritescheck",
+      "scratch_renderspritescheck_renderspritescheck_main"
+    ],
+    "109": [
+      "scratch_testbannerandlock",
+      "scratch_testbannerandlock_testbannerandlock",
+      "scratch_testbannerandlock_testbannerandlock_main"
+    ],
+    "110": [
+      "scratch_testbottompanellayout",
+      "scratch_testbottompanellayout_testbottompanellayout",
+      "scratch_testbottompanellayout_testbottompanellayout_main"
+    ],
+    "111": [
       "scratch_testbuttonsizevisuals_testbuttonsizevisuals",
       "scratch_testbuttonsizevisuals_testbuttonsizevisuals_main",
       "scratch_testbuttonsizevisuals_testbuttonsizevisuals_rendervariation"
     ],
-    "64": [
+    "112": [
+      "scratch_testclipbypass",
+      "scratch_testclipbypass_testclipbypass",
+      "scratch_testclipbypass_testclipbypass_main"
+    ],
+    "113": [
+      "scratch_testcombinelayers",
+      "scratch_testcombinelayers_testcombinelayers",
+      "scratch_testcombinelayers_testcombinelayers_main"
+    ],
+    "114": [
+      "scratch_testcropdurian",
+      "scratch_testcropdurian_testcropdurian",
+      "scratch_testcropdurian_testcropdurian_main"
+    ],
+    "115": [
       "scratch_testenemyvisuals",
       "scratch_testenemyvisuals_testenemyvisuals",
       "scratch_testenemyvisuals_testenemyvisuals_main"
     ],
-    "65": [
+    "116": [
+      "scratch_testhittestperformance",
+      "scratch_testhittestperformance_testhittestperformance",
+      "scratch_testhittestperformance_testhittestperformance_main"
+    ],
+    "117": [
+      "scratch_testjuanspritesizes",
+      "scratch_testjuanspritesizes_testjuanspritesizes",
+      "scratch_testjuanspritesizes_testjuanspritesizes_main"
+    ],
+    "118": [
+      "scratch_testlandmarkcropping",
+      "scratch_testlandmarkcropping_testlandmarkcropping",
+      "scratch_testlandmarkcropping_testlandmarkcropping_main"
+    ],
+    "119": [
       "scratch_testlayoutoptions_testlayoutoptions",
       "scratch_testlayoutoptions_testlayoutoptions_main",
       "scratch_testlayoutoptions_testlayoutoptions_testvariation"
     ],
-    "66": [
-      "scratch_testmapprogressionandtransition",
-      "scratch_testmapprogressionandtransition_testmapprogressionandtransition",
-      "scratch_testmapprogressionandtransition_testmapprogressionandtransition_main"
-    ],
-    "67": [
-      "agents_scripts_load_memory",
-      "agents_scripts_load_memory_sh__entry"
-    ],
-    "68": [
-      "scratch_asciibottomright_asciibottomright",
-      "scratch_asciibottomright_asciibottomright_main"
-    ],
-    "69": [
-      "scratch_checkbboxes_checkbboxes",
-      "scratch_checkbboxes_checkbboxes_main"
-    ],
-    "70": [
-      "scratch_checkcomppixels_checkcomppixels",
-      "scratch_checkcomppixels_checkcomppixels_main"
-    ],
-    "71": [
-      "scratch_checkfacedirection_checkfacedirection",
-      "scratch_checkfacedirection_checkfacedirection_main"
-    ],
-    "72": [
-      "scratch_checkgudoattack_checkgudoattack",
-      "scratch_checkgudoattack_checkgudoattack_main"
-    ],
-    "73": [
-      "scratch_checklockrender_checklockrender",
-      "scratch_checklockrender_checklockrender_main"
-    ],
-    "74": [
-      "scratch_checkotherenemies_checkotherenemies",
-      "scratch_checkotherenemies_checkotherenemies_main"
-    ],
-    "75": [
-      "scratch_checkspriteorientation_checkspriteorientation",
-      "scratch_checkspriteorientation_checkspriteorientation_main"
-    ],
-    "76": [
-      "scratch_checksprites_checksprites",
-      "scratch_checksprites_checksprites_main"
-    ],
-    "77": [
-      "scratch_comparebanners_comparebanners",
-      "scratch_comparebanners_comparebanners_main"
-    ],
-    "78": [
-      "scratch_comparelockoptions_comparelockoptions",
-      "scratch_comparelockoptions_comparelockoptions_main"
-    ],
-    "79": [
-      "scratch_comparepreview_comparepreview",
-      "scratch_comparepreview_comparepreview_main"
-    ],
-    "80": [
-      "scratch_createcollage_createcollage",
-      "scratch_createcollage_createcollage_main"
-    ],
-    "81": [
-      "scratch_cropcheck_cropcheck",
-      "scratch_cropcheck_cropcheck_main"
-    ],
-    "82": [
-      "scratch_cropdurianmuseum_cropdurianmuseum",
-      "scratch_cropdurianmuseum_cropdurianmuseum_main"
-    ],
-    "83": [
-      "scratch_cropexactlocks_cropexactlocks",
-      "scratch_cropexactlocks_cropexactlocks_main"
-    ],
-    "84": [
-      "scratch_diffimages_diffimages",
-      "scratch_diffimages_diffimages_main"
-    ],
-    "85": [
-      "scratch_findenemybounds_findenemybounds",
-      "scratch_findenemybounds_findenemybounds_main"
-    ],
-    "86": [
-      "scratch_findexactmatch_findexactmatch",
-      "scratch_findexactmatch_findexactmatch_main"
-    ],
-    "87": [
-      "scratch_findyellowpixels_findyellowpixels",
-      "scratch_findyellowpixels_findyellowpixels_main"
-    ],
-    "88": [
-      "scratch_fixmacaquetransparency_fixmacaquetransparency",
-      "scratch_fixmacaquetransparency_fixmacaquetransparency_main"
-    ],
-    "89": [
-      "scratch_inspectbluebuilding_inspectbluebuilding",
-      "scratch_inspectbluebuilding_inspectbluebuilding_main"
-    ],
-    "90": [
-      "scratch_inspectbounds_inspectbounds",
-      "scratch_inspectbounds_inspectbounds_main"
-    ],
-    "91": [
-      "scratch_inspectbuttonassets_inspectbuttonassets",
-      "scratch_inspectbuttonassets_inspectbuttonassets_main"
-    ],
-    "92": [
-      "scratch_inspectcroporiginal_inspectcroporiginal",
-      "scratch_inspectcroporiginal_inspectcroporiginal_main"
-    ],
-    "93": [
-      "scratch_inspectdurian_inspectdurian",
-      "scratch_inspectdurian_inspectdurian_main"
-    ],
-    "94": [
-      "scratch_inspectframecenter_inspectframecenter",
-      "scratch_inspectframecenter_inspectframecenter_main"
-    ],
-    "95": [
-      "scratch_inspectgudoimages_inspectgudoimages",
-      "scratch_inspectgudoimages_inspectgudoimages_main"
-    ],
-    "96": [
-      "scratch_inspectimage_inspectimage",
-      "scratch_inspectimage_inspectimage_main"
-    ],
-    "97": [
-      "scratch_inspectlayers_inspectlayers",
-      "scratch_inspectlayers_inspectlayers_main"
-    ],
-    "98": [
-      "scratch_inspectmapassets_inspectmapassets",
-      "scratch_inspectmapassets_inspectmapassets_main"
-    ],
-    "99": [
-      "scratch_inspectmenucomposite_inspectmenucomposite",
-      "scratch_inspectmenucomposite_inspectmenucomposite_main"
-    ],
-    "100": [
-      "scratch_inspectmockuplayout_inspectmockuplayout",
-      "scratch_inspectmockuplayout_inspectmockuplayout_main"
-    ],
-    "101": [
-      "scratch_inspectpreviewtitle_inspectpreviewtitle",
-      "scratch_inspectpreviewtitle_inspectpreviewtitle_main"
-    ],
-    "102": [
-      "scratch_inspecttilecontent_inspecttilecontent",
-      "scratch_inspecttilecontent_inspecttilecontent_main"
-    ],
-    "103": [
-      "scratch_inspecttitlebounds_inspecttitlebounds",
-      "scratch_inspecttitlebounds_inspecttitlebounds_main"
-    ],
-    "104": [
-      "scratch_inspecttitlepage_inspecttitlepage",
-      "scratch_inspecttitlepage_inspecttitlepage_main"
-    ],
-    "105": [
-      "scratch_makecomparison_makecomparison",
-      "scratch_makecomparison_makecomparison_main"
-    ],
-    "106": [
-      "scratch_makemaptransitioncomparison_makemaptransitioncomparison",
-      "scratch_makemaptransitioncomparison_makemaptransitioncomparison_main"
-    ],
-    "107": [
-      "scratch_measureborder_measureborder",
-      "scratch_measureborder_measureborder_main"
-    ],
-    "108": [
-      "scratch_measuremockuplandmarks_measuremockuplandmarks",
-      "scratch_measuremockuplandmarks_measuremockuplandmarks_main"
-    ],
-    "109": [
-      "scratch_prototypetileandbgfix_prototypetileandbgfix",
-      "scratch_prototypetileandbgfix_prototypetileandbgfix_main"
-    ],
-    "110": [
-      "scratch_renderbuttoncollage_renderbuttoncollage",
-      "scratch_renderbuttoncollage_renderbuttoncollage_main"
-    ],
-    "111": [
-      "scratch_rendercharacterspritestrip_rendercharacterspritestrip",
-      "scratch_rendercharacterspritestrip_rendercharacterspritestrip_main"
-    ],
-    "112": [
-      "scratch_rendercloseup_rendercloseup",
-      "scratch_rendercloseup_rendercloseup_main"
-    ],
-    "113": [
-      "scratch_rendergudocomparison_rendergudocomparison",
-      "scratch_rendergudocomparison_rendergudocomparison_main"
-    ],
-    "114": [
-      "scratch_renderjuanandgudopreview_renderjuanandgudopreview",
-      "scratch_renderjuanandgudopreview_renderjuanandgudopreview_main"
-    ],
-    "115": [
-      "scratch_rendernewlayoutpreview_rendernewlayoutpreview",
-      "scratch_rendernewlayoutpreview_rendernewlayoutpreview_main"
-    ],
-    "116": [
-      "scratch_renderspritescheck_renderspritescheck",
-      "scratch_renderspritescheck_renderspritescheck_main"
-    ],
-    "117": [
-      "scratch_testbannerandlock_testbannerandlock",
-      "scratch_testbannerandlock_testbannerandlock_main"
-    ],
-    "118": [
-      "scratch_testclipbypass_testclipbypass",
-      "scratch_testclipbypass_testclipbypass_main"
-    ],
-    "119": [
-      "scratch_testcombinelayers_testcombinelayers",
-      "scratch_testcombinelayers_testcombinelayers_main"
-    ],
     "120": [
-      "scratch_testcropdurian_testcropdurian",
-      "scratch_testcropdurian_testcropdurian_main"
-    ],
-    "121": [
-      "scratch_testexpandandbattlecomposite_testexpandandbattlecomposite",
-      "scratch_testexpandandbattlecomposite_testexpandandbattlecomposite_main"
-    ],
-    "122": [
-      "scratch_testhittestperformance_testhittestperformance",
-      "scratch_testhittestperformance_testhittestperformance_main"
-    ],
-    "123": [
-      "scratch_testlandmarkcropping_testlandmarkcropping",
-      "scratch_testlandmarkcropping_testlandmarkcropping_main"
-    ],
-    "124": [
+      "scratch_testlettercheck",
       "scratch_testlettercheck_testlettercheck",
       "scratch_testlettercheck_testlettercheck_main"
     ],
-    "125": [
+    "121": [
+      "scratch_testlettertilerenderer_testlettertilerenderer",
+      "scratch_testlettertilerenderer_testlettertilerenderer_drawtile",
+      "scratch_testlettertilerenderer_testlettertilerenderer_main"
+    ],
+    "122": [
+      "scratch_testlockrender",
       "scratch_testlockrender_testlockrender",
       "scratch_testlockrender_testlockrender_main"
     ],
-    "126": [
+    "123": [
+      "scratch_testlockscreenrender",
       "scratch_testlockscreenrender_testlockscreenrender",
       "scratch_testlockscreenrender_testlockscreenrender_main"
     ],
-    "127": [
+    "124": [
+      "scratch_testmapbannerandlockvisuals",
+      "scratch_testmapbannerandlockvisuals_testmapbannerandlockvisuals",
+      "scratch_testmapbannerandlockvisuals_testmapbannerandlockvisuals_main"
+    ],
+    "125": [
+      "scratch_testmapcompositematch",
       "scratch_testmapcompositematch_testmapcompositematch",
       "scratch_testmapcompositematch_testmapcompositematch_main"
     ],
-    "128": [
+    "126": [
+      "scratch_testmenucomposition",
       "scratch_testmenucomposition_testmenucomposition",
       "scratch_testmenucomposition_testmenucomposition_main"
     ],
-    "129": [
+    "127": [
+      "scratch_testperfectcomposition",
       "scratch_testperfectcomposition_testperfectcomposition",
       "scratch_testperfectcomposition_testperfectcomposition_main"
     ],
-    "130": [
+    "128": [
+      "scratch_testrobustlayoutscaling",
       "scratch_testrobustlayoutscaling_testrobustlayoutscaling",
       "scratch_testrobustlayoutscaling_testrobustlayoutscaling_main"
     ],
-    "131": [
+    "129": [
+      "scratch_testscreenbanners",
       "scratch_testscreenbanners_testscreenbanners",
       "scratch_testscreenbanners_testscreenbanners_main"
     ],
-    "132": [
+    "130": [
+      "scratch_testsilhouette",
       "scratch_testsilhouette_testsilhouette",
       "scratch_testsilhouette_testsilhouette_main"
     ],
-    "133": [
-      "scratch_testspritehitandtransitions_testspritehitandtransitions",
-      "scratch_testspritehitandtransitions_testspritehitandtransitions_main"
-    ],
-    "134": [
+    "131": [
+      "scratch_testtitle",
       "scratch_testtitle_testtitle",
       "scratch_testtitle_testtitle_main"
     ],
-    "135": [
+    "132": [
+      "scratch_verifycompositeactual",
       "scratch_verifycompositeactual_verifycompositeactual",
       "scratch_verifycompositeactual_verifycompositeactual_main"
     ],
-    "136": [
+    "133": [
+      "scratch_verifynoyellowcircle",
       "scratch_verifynoyellowcircle_verifynoyellowcircle",
       "scratch_verifynoyellowcircle_verifynoyellowcircle_main"
     ],
-    "137": [
+    "134": [
+      "agents_scripts_load_memory",
+      "agents_scripts_load_memory_sh__entry"
+    ],
+    "135": [
       "src_juanword_data_enemyspec",
       "src_juanword_data_enemyspec_enemyspec"
     ],
-    "138": [
+    "136": [
       "src_juanword_data_letterspec",
       "src_juanword_data_letterspec_letterspec"
     ],
-    "139": [
+    "137": [
       "src_juanword_model_player_java_override",
       "src_juanword_model_player_player_tostring"
     ],
-    "140": [
+    "138": [
       "add"
     ],
-    "141": [
+    "139": [
       "atomicboolean"
     ],
-    "142": [
+    "140": [
       "atomicinteger"
     ],
-    "143": [
+    "141": [
       "concurrent"
     ],
-    "144": [
+    "142": [
       "gridbagconstraints"
     ],
-    "145": [
+    "143": [
       "gridbaglayout"
     ],
-    "146": [
+    "144": [
       "imageassetbutton"
     ],
-    "147": [
+    "145": [
       "insets"
     ],
-    "148": [
+    "146": [
       "java_awt_container"
     ],
-    "149": [
+    "147": [
       "javax_swing_defaultlistmodel"
     ],
-    "150": [
+    "148": [
       "javax_swing_jlist"
     ],
-    "151": [
+    "149": [
       "juanword_screen"
     ],
-    "152": [
-      "juanword_ui_battlepanel"
-    ],
-    "153": [
+    "150": [
       "juanword_ui_landmark"
     ],
-    "154": [
+    "151": [
       "return"
+    ],
+    "152": [
+      "scratch_testpaintchildrenmenu_java_graphics"
+    ],
+    "153": [
+      "scratch_testpaintchildrenmenu_java_jbutton"
+    ],
+    "154": [
+      "scratch_testpaintchildrenmenu_java_override"
     ],
     "155": [
       "src_juanword_battlepanel_java_color"
@@ -1558,123 +1589,123 @@
       "src_juanword_dizonenemy_java_override"
     ],
     "168": [
-      "src_juanword_enemyfactory_java_difficultysetting"
+      "src_juanword_enemy_enemyfactory_java_override"
     ],
     "169": [
-      "src_juanword_juanword_java_cardlayout"
+      "src_juanword_enemyfactory_java_difficultysetting"
     ],
     "170": [
-      "src_juanword_juanword_java_datamanager"
+      "src_juanword_juanword_java_cardlayout"
     ],
     "171": [
-      "src_juanword_juanword_java_graphics"
+      "src_juanword_juanword_java_datamanager"
     ],
     "172": [
-      "src_juanword_juanword_java_image"
+      "src_juanword_juanword_java_graphics"
     ],
     "173": [
-      "src_juanword_juanword_java_jbutton"
+      "src_juanword_juanword_java_image"
     ],
     "174": [
-      "src_juanword_juanword_java_jlabel"
+      "src_juanword_juanword_java_jbutton"
     ],
     "175": [
-      "src_juanword_juanword_java_jpanel"
+      "src_juanword_juanword_java_jlabel"
     ],
     "176": [
-      "src_juanword_juanword_java_override"
+      "src_juanword_juanword_java_jpanel"
     ],
     "177": [
-      "src_juanword_juanword_java_player"
+      "src_juanword_juanword_java_override"
     ],
     "178": [
-      "src_juanword_juanword_java_rectangle"
+      "src_juanword_juanword_java_player"
     ],
     "179": [
-      "src_juanword_mapselectpanel_java_color"
+      "src_juanword_juanword_java_rectangle"
     ],
     "180": [
-      "src_juanword_mapselectpanel_java_graphics"
+      "src_juanword_mapselectpanel_java_color"
     ],
     "181": [
-      "src_juanword_mapselectpanel_java_graphics2d"
+      "src_juanword_mapselectpanel_java_graphics"
     ],
     "182": [
-      "src_juanword_mapselectpanel_java_image"
+      "src_juanword_mapselectpanel_java_graphics2d"
     ],
     "183": [
-      "src_juanword_mapselectpanel_java_juanword"
+      "src_juanword_mapselectpanel_java_image"
     ],
     "184": [
-      "src_juanword_mapselectpanel_java_override"
+      "src_juanword_mapselectpanel_java_juanword"
     ],
     "185": [
-      "src_juanword_mapselectpanel_java_rectangle"
+      "src_juanword_mapselectpanel_java_override"
     ],
     "186": [
-      "src_juanword_mapselectpanel_java_timer"
+      "src_juanword_mapselectpanel_java_rectangle"
     ],
     "187": [
-      "src_juanword_tiledecorator_java_override"
+      "src_juanword_mapselectpanel_java_timer"
     ],
     "188": [
-      "src_juanword_ui_battlepanel_java_override"
+      "src_juanword_tiledecorator_java_override"
     ],
     "189": [
       "src_juanword_ui_startpanel_java_override"
     ]
   },
   "cohesion": {
-    "0": 0.07934175727299442,
-    "1": 0.0629746835443038,
-    "2": 0.052614052614052616,
-    "3": 0.051203277009728626,
-    "4": 0.10576414595452142,
-    "5": 0.08272859216255443,
-    "6": 0.08748615725359911,
-    "7": 0.05714285714285714,
-    "8": 0.1076923076923077,
-    "9": 0.1225296442687747,
+    "0": 0.05521267723102585,
+    "1": 0.061708860759493674,
+    "2": 0.06915113871635611,
+    "3": 0.05926251097453907,
+    "4": 0.08823529411764706,
+    "5": 0.06763285024154589,
+    "6": 0.05714285714285714,
+    "7": 0.1168091168091168,
+    "8": 0.12615384615384614,
+    "9": 0.11956521739130435,
     "10": 0.09956709956709957,
-    "11": 0.19047619047619047,
-    "12": 0.15714285714285714,
-    "13": 0.1523809523809524,
-    "14": 0.15789473684210525,
+    "11": 0.11428571428571428,
+    "12": 0.17894736842105263,
+    "13": 0.18128654970760233,
+    "14": 0.18128654970760233,
     "15": 0.12418300653594772,
-    "16": 0.17647058823529413,
-    "17": 0.1323529411764706,
-    "18": 0.21666666666666667,
+    "16": 0.18382352941176472,
+    "17": 0.15441176470588236,
+    "18": 0.30833333333333335,
     "19": 0.17142857142857143,
-    "20": 0.19047619047619047,
-    "21": 0.19047619047619047,
-    "22": 0.2857142857142857,
-    "23": 0.13333333333333333,
-    "24": 0.16483516483516483,
-    "25": 0.24175824175824176,
-    "26": 0.15384615384615385,
-    "27": 0.24242424242424243,
-    "28": 0.2222222222222222,
-    "29": 0.2222222222222222,
-    "30": 0.25,
-    "31": 0.35714285714285715,
-    "32": 0.25,
-    "33": 0.25,
-    "34": 0.25,
-    "35": 0.32142857142857145,
-    "36": 0.39285714285714285,
-    "37": 0.2857142857142857,
-    "38": 0.3333333333333333,
-    "39": 0.2857142857142857,
-    "40": 0.6,
-    "41": 0.6,
-    "42": 0.3333333333333333,
-    "43": 0.5,
-    "44": 0.4,
-    "45": 0.4,
-    "46": 0.4,
-    "47": 0.4,
+    "20": 0.13333333333333333,
+    "21": 0.1523809523809524,
+    "22": 0.15384615384615385,
+    "23": 0.24358974358974358,
+    "24": 0.20512820512820512,
+    "25": 0.24242424242424243,
+    "26": 0.16666666666666666,
+    "27": 0.18181818181818182,
+    "28": 0.28888888888888886,
+    "29": 0.26666666666666666,
+    "30": 0.3611111111111111,
+    "31": 0.25,
+    "32": 0.39285714285714285,
+    "33": 0.38095238095238093,
+    "34": 0.38095238095238093,
+    "35": 0.47619047619047616,
+    "36": 0.2857142857142857,
+    "37": 0.3333333333333333,
+    "38": 0.4,
+    "39": 0.6,
+    "40": 0.4,
+    "41": 0.5,
+    "42": 0.4,
+    "43": 0.4,
+    "44": 0.6666666666666666,
+    "45": 0.6666666666666666,
+    "46": 0.5,
+    "47": 0.5,
     "48": 0.5,
-    "49": 0.6666666666666666,
+    "49": 0.5,
     "50": 0.6666666666666666,
     "51": 0.6666666666666666,
     "52": 0.6666666666666666,
@@ -1687,78 +1718,78 @@
     "59": 0.6666666666666666,
     "60": 0.6666666666666666,
     "61": 0.6666666666666666,
-    "62": 1.0,
-    "63": 1.0,
-    "64": 0.6666666666666666,
-    "65": 1.0,
+    "62": 0.6666666666666666,
+    "63": 0.6666666666666666,
+    "64": 1.0,
+    "65": 0.6666666666666666,
     "66": 0.6666666666666666,
-    "67": 1.0,
-    "68": 1.0,
-    "69": 1.0,
-    "70": 1.0,
-    "71": 1.0,
-    "72": 1.0,
+    "67": 0.6666666666666666,
+    "68": 0.6666666666666666,
+    "69": 0.6666666666666666,
+    "70": 0.6666666666666666,
+    "71": 0.6666666666666666,
+    "72": 0.6666666666666666,
     "73": 1.0,
-    "74": 1.0,
-    "75": 1.0,
-    "76": 1.0,
-    "77": 1.0,
-    "78": 1.0,
-    "79": 1.0,
-    "80": 1.0,
-    "81": 1.0,
-    "82": 1.0,
-    "83": 1.0,
-    "84": 1.0,
-    "85": 1.0,
-    "86": 1.0,
-    "87": 1.0,
-    "88": 1.0,
-    "89": 1.0,
-    "90": 1.0,
-    "91": 1.0,
-    "92": 1.0,
-    "93": 1.0,
-    "94": 1.0,
-    "95": 1.0,
-    "96": 1.0,
-    "97": 1.0,
-    "98": 1.0,
-    "99": 1.0,
-    "100": 1.0,
-    "101": 1.0,
+    "74": 0.6666666666666666,
+    "75": 0.6666666666666666,
+    "76": 0.6666666666666666,
+    "77": 0.6666666666666666,
+    "78": 0.6666666666666666,
+    "79": 0.6666666666666666,
+    "80": 0.6666666666666666,
+    "81": 0.6666666666666666,
+    "82": 0.6666666666666666,
+    "83": 0.6666666666666666,
+    "84": 0.6666666666666666,
+    "85": 0.6666666666666666,
+    "86": 0.6666666666666666,
+    "87": 0.6666666666666666,
+    "88": 0.6666666666666666,
+    "89": 0.6666666666666666,
+    "90": 0.6666666666666666,
+    "91": 0.6666666666666666,
+    "92": 0.6666666666666666,
+    "93": 0.6666666666666666,
+    "94": 0.6666666666666666,
+    "95": 0.6666666666666666,
+    "96": 0.6666666666666666,
+    "97": 0.6666666666666666,
+    "98": 0.6666666666666666,
+    "99": 0.6666666666666666,
+    "100": 0.6666666666666666,
+    "101": 0.6666666666666666,
     "102": 1.0,
-    "103": 1.0,
-    "104": 1.0,
-    "105": 1.0,
-    "106": 1.0,
-    "107": 1.0,
-    "108": 1.0,
-    "109": 1.0,
-    "110": 1.0,
+    "103": 0.6666666666666666,
+    "104": 0.6666666666666666,
+    "105": 0.6666666666666666,
+    "106": 0.6666666666666666,
+    "107": 0.6666666666666666,
+    "108": 0.6666666666666666,
+    "109": 0.6666666666666666,
+    "110": 0.6666666666666666,
     "111": 1.0,
-    "112": 1.0,
-    "113": 1.0,
-    "114": 1.0,
-    "115": 1.0,
-    "116": 1.0,
-    "117": 1.0,
-    "118": 1.0,
+    "112": 0.6666666666666666,
+    "113": 0.6666666666666666,
+    "114": 0.6666666666666666,
+    "115": 0.6666666666666666,
+    "116": 0.6666666666666666,
+    "117": 0.6666666666666666,
+    "118": 0.6666666666666666,
     "119": 1.0,
-    "120": 1.0,
+    "120": 0.6666666666666666,
     "121": 1.0,
-    "122": 1.0,
-    "123": 1.0,
-    "124": 1.0,
-    "125": 1.0,
-    "126": 1.0,
-    "127": 1.0,
-    "128": 1.0,
-    "129": 1.0,
-    "130": 1.0,
-    "131": 1.0,
-    "132": 1.0,
-    "133": 1.0,
+    "122": 0.6666666666666666,
+    "123": 0.6666666666666666,
+    "124": 0.6666666666666666,
+    "125": 0.6666666666666666,
+    "126": 0.6666666666666666,
+    "127": 0.6666666666666666,
+    "128": 0.6666666666666666,
+    "129": 0.6666666666666666,
+    "130": 0.6666666666666666,
+    "131": 0.6666666666666666,
+    "132": 0.6666666666666666,
+    "133": 0.6666666666666666,
     "134": 1.0,
     "135": 1.0,
     "136": 1.0,
@@ -1840,7 +1871,7 @@
     {
       "id": "src_juanword_enemy_enemy_enemy",
       "label": "Enemy",
-      "degree": 34
+      "degree": 35
     },
     {
       "id": "src_juanword_model_battlesessionbuilder_battlesessionbuilder",
@@ -1853,39 +1884,50 @@
       "degree": 31
     },
     {
-      "id": "archive_for_skeleton_additional_classes_juanwordapp_juanwordapp",
-      "label": "JuanWordApp",
-      "degree": 27
-    },
-    {
       "id": "src_juanword_ui_mapselectpanel_mapselectpanel",
       "label": "MapSelectPanel",
       "degree": 27
     },
     {
-      "id": "src_juanword_tile_tilecomponent_tilecomponent",
-      "label": "TileComponent",
-      "degree": 24
+      "id": "archive_for_skeleton_additional_classes_juanwordapp_juanwordapp",
+      "label": "JuanWordApp",
+      "degree": 27
+    },
+    {
+      "id": "src_juanword_ui_startpanel_startpanel",
+      "label": "StartPanel",
+      "degree": 26
     }
   ],
   "surprises": [
-    {
-      "source": "BattleSessionBuilder",
-      "target": "TileComponent",
-      "source_files": [
-        "src/juanword/model/BattleSessionBuilder.java",
-        "src/juanword/tile/TileComponent.java"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities"
-    },
     {
       "source": "BattleContext",
       "target": "BattleSession",
       "source_files": [
         "src/juanword/model/BattleContext.java",
         "src/juanword/model/BattleSession.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "BattlePanel",
+      "target": "EnemyAnimator",
+      "source_files": [
+        "src/juanword/ui/BattlePanel.java",
+        "src/juanword/ui/EnemyAnimator.java"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "BattlePanel",
+      "target": "PlayerAnimator",
+      "source_files": [
+        "src/juanword/ui/BattlePanel.java",
+        "src/juanword/ui/PlayerAnimator.java"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
@@ -1911,17 +1953,6 @@
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "bridges separate communities"
-    },
-    {
-      "source": "DizonBossEnemy",
-      "target": "Enemy",
-      "source_files": [
-        "src/juanword/enemy/DizonBossEnemy.java",
-        "src/juanword/enemy/Enemy.java"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "inherits",
       "why": "bridges separate communities"
     }
   ],

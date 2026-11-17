@@ -75,9 +75,13 @@ public final class Landmark {
         }
     }
 
-    public void updateScale(boolean hovered) {
+    /** Eases toward the hover scale; returns true while the scale is still changing. */
+    public boolean updateScale(boolean hovered) {
         float target = hovered ? 1.06f : 1.0f;
+        if (scale == target) return false;
         scale += (target - scale) * 0.2f;
+        if (Math.abs(target - scale) < 0.001f) scale = target;
+        return true;
     }
 
     public void paint(Graphics2D g2) {

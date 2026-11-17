@@ -111,7 +111,7 @@ public final class DataManager {
         }
 
         if (!loaded) {
-            String fallback = "AAAAAAIIIIIUUUUBDGGHKKLLLMNNNPRSSTTWY";
+            String fallback = "AAAAAAIIIIIUUUUBDGGHKKLLLMNNNPRSSTTWY"; //failsafe
             for (char c : fallback.toCharArray()) {
                 weightedLetterPool.add(c);
                 letterSpecs.putIfAbsent(c, new LetterSpec(c, 1, 1));

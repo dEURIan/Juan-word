@@ -30,7 +30,7 @@ public final class EnemyFactory {
                 case 1 -> new MonkeyEnemy("Monkey", diff);
                 case 2 -> new KarabawEnemy("Karabaw", diff);
                 case 3 -> new PorterBossEnemy("Boss Porter", diff);
-                case 4 -> new GudoBossEnemy("Gudo", diff);
+                case 4 -> new GuardEnemy("Gudo", diff);
                 default -> throw new IllegalArgumentException("Invalid stage: " + stageIndex + " for map 4");
             };
             default -> throw new IllegalArgumentException("Invalid map: " + mapIndex);
@@ -43,19 +43,5 @@ public final class EnemyFactory {
 
     public static int stagesPerMap() {
         return 3;
-    }
-
-    public static final class GudoBossEnemy extends Enemy {
-        public GudoBossEnemy(String name, DifficultySetting diff) {
-            super(name != null ? name : "Gudo", diff);
-            this.boss = true;
-            this.attackType = AttackType.PUNCH;
-            this.spritePath = "assets/sprites/gudoidle.png";
-        }
-
-        @Override
-        public String getAttackSpritePath() {
-            return "assets/sprites/gudoattack.png";
-        }
     }
 }

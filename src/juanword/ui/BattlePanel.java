@@ -76,6 +76,7 @@ public final class BattlePanel extends JPanel {
     private int cachedBgH = -1;
     private BufferedImage cachedBgLandmark;
     private BufferedImage cachedIndigFrame;
+    private Rectangle cachedFrameInner;
     private int cachedFrameW = -1;
     private int cachedFrameH = -1;
 
@@ -265,8 +266,10 @@ public final class BattlePanel extends JPanel {
 
         // Count turn timer
         tickAccumulatorMs += dtMs;
+        boolean secondElapsed = false;
         while (tickAccumulatorMs >= 1000) {
             tickAccumulatorMs -= 1000;
+            secondElapsed = true;
             if (session != null && session.getDifficulty().isTimed() && !inputLocked) {
                 int sec = session.getTurnSeconds() - 1;
                 session.setTurnSeconds(sec);
@@ -285,7 +288,22 @@ public final class BattlePanel extends JPanel {
             return;
         }
 
-        repaint();
+        boolean busy = playerAnimator.isAttacking() || enemyAnimator.isAttacking() || enemyAnimator.isEntering()
+            || uiShakeFrames > 0 || !attackEffects.isEmpty() || !floatingTexts.isEmpty()
+            || pendingImpactAction != null || secondElapsed;
+        if (busy || getWidth() <= 0) {
+            repaint();
+            return;
+        }
+        // Idle: only the breathing sprites move, so repaint just the two sprite columns instead of the whole screen.
+        double sx = getWidth() / 960.0;
+        double sy = getHeight() / 540.0;
+        int cx = (int) (20 * sx);
+        int cy = (int) (54 * sy);
+        int colW = (int) (185 * sx) + (int) (30 * sx);
+        int colH = (int) (228 * sy) + 4;
+        repaint(cx - (int) (15 * sx), cy, colW, colH);
+        repaint(getWidth() - cx - colW + (int) (15 * sx), cy, colW, colH);
     }
 
     private void onMouseMoved(MouseEvent e) {
@@ -804,7 +822,7 @@ public final class BattlePanel extends JPanel {
 
         // Translucent deep indigo card background
         g2.setColor(new Color(16, 16, 86, 115));
-        g2.fillRoundRect(cardX, cardY, cardW, cardH, 14, 14);
+        fillPanelBox(g2, cardX, cardY, cardW, cardH, 14, 14);
 
         // Border: Dusk Navy (2px)
         g2.setColor(new Color(40, 50, 95));
@@ -955,7 +973,7 @@ public final class BattlePanel extends JPanel {
         int logY = cardY + (int) (8 * scaleY);
         int logH = (int) (30 * scaleY);
         g2.setColor(new Color(22, 28, 60, 210));
-        g2.fillRoundRect(centerX, logY, centerW, logH, 6, 6);
+        fillPanelBox(g2, centerX, logY, centerW, logH, 6, 6);
         g2.setColor(ARENA_BOX_BORDER);
         g2.drawRoundRect(centerX, logY, centerW, logH, 6, 6);
 
@@ -979,7 +997,7 @@ public final class BattlePanel extends JPanel {
         int rackY = logY + logH + (int) (5 * scaleY);
         int rackH = (int) (122 * scaleY);
         g2.setColor(new Color(16, 20, 50, 180));
-        g2.fillRoundRect(centerX, rackY, centerW, rackH, 6, 6);
+        fillPanelBox(g2, centerX, rackY, centerW, rackH, 6, 6);
         g2.setColor(ARENA_BOX_BORDER);
         g2.drawRoundRect(centerX, rackY, centerW, rackH, 6, 6);
 
@@ -1022,7 +1040,7 @@ public final class BattlePanel extends JPanel {
 
                 BufferedImage pTileImg = ImageLoader.loadLetterTile(t.getLetter());
                 if (pTileImg != null) {
-                    g2.drawImage(pTileImg, tx, tileY, pTileSize, pTileSize, null);
+                    g2.drawImage(ImageLoader.scaledCached(pTileImg, pTileSize, pTileSize), tx, tileY, null);
                     t.renderTileOverlay(g2, tx, tileY, pTileSize);
                     g2.setColor(new Color(240, 150, 30));
                     g2.setStroke(new BasicStroke(1.5f));
@@ -1063,7 +1081,7 @@ public final class BattlePanel extends JPanel {
 
         // Left Word preview / prompt box
         g2.setColor(new Color(22, 28, 60, 210));
-        g2.fillRoundRect(centerX, actY, prevW, actH, 6, 6);
+        fillPanelBox(g2, centerX, actY, prevW, actH, 6, 6);
         g2.setColor(ARENA_BOX_BORDER);
         g2.drawRoundRect(centerX, actY, prevW, actH, 6, 6);
 
@@ -1217,7 +1235,7 @@ public final class BattlePanel extends JPanel {
                     }
 
                     // High-resolution alphabet tile sprite
-                    g2.drawImage(tileImg, drawX, drawY, size, size, null);
+                    g2.drawImage(ImageLoader.scaledCached(tileImg, size, size), drawX, drawY, null);
 
                     // Tile decorator color overlay (Gold / Healing)
                     tile.renderTileOverlay(g2, drawX, drawY, size);
@@ -1429,6 +1447,27 @@ public final class BattlePanel extends JPanel {
         g2.drawRect(x, y, bw, bh);
     }
 
+    /**
+     * Large translucent rounded box. A shape fill over the whole area is the main per-frame cost, so the body is
+     * filled with plain rects and only the four corner quadrants are antialiased.
+     */
+    private static void fillPanelBox(Graphics2D g2, int x, int y, int w, int h, int arcW, int arcH) {
+        int r = Math.max(1, arcW / 2);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g2.fillRect(x + r, y, w - 2 * r, h);
+        g2.fillRect(x, y + r, r, h - 2 * r);
+        g2.fillRect(x + w - r, y + r, r, h - 2 * r);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        java.awt.Shape old = g2.getClip();
+        int[][] corners = {{x, y}, {x + w - r, y}, {x, y + h - r}, {x + w - r, y + h - r}};
+        for (int[] c : corners) {
+            g2.setClip(old);
+            g2.clipRect(c[0], c[1], r, r);
+            g2.fillRoundRect(x, y, w, h, arcW, arcH);
+        }
+        g2.setClip(old);
+    }
+
     private void renderCachedBackground(Graphics2D g2, int w, int h) {
         if (w <= 0 || h <= 0) return;
         if (cachedBgImage == null || cachedBgW != w || cachedBgH != h || cachedBgLandmark != landmarkIcon) {
@@ -1482,8 +1521,41 @@ public final class BattlePanel extends JPanel {
             fg.dispose();
             cachedFrameW = w;
             cachedFrameH = h;
+            cachedFrameInner = findTransparentInterior(cachedIndigFrame);
         }
-        g2.drawImage(cachedIndigFrame, 0, 0, null);
+        Rectangle in = cachedFrameInner;
+        if (in == null) {
+            g2.drawImage(cachedIndigFrame, 0, 0, null);
+            return;
+        }
+        // Interior is fully transparent: blit only the four border strips (saves a full-screen alpha blend per frame).
+        g2.drawImage(cachedIndigFrame, 0, 0, w, in.y, 0, 0, w, in.y, null);
+        g2.drawImage(cachedIndigFrame, 0, in.y + in.height, w, h, 0, in.y + in.height, w, h, null);
+        g2.drawImage(cachedIndigFrame, 0, in.y, in.x, in.y + in.height, 0, in.y, in.x, in.y + in.height, null);
+        g2.drawImage(cachedIndigFrame, in.x + in.width, in.y, w, in.y + in.height, in.x + in.width, in.y, w, in.y + in.height, null);
+    }
+
+    /** Returns the fully transparent inner rectangle of the frame, or null if it cannot be proven. */
+    private static Rectangle findTransparentInterior(BufferedImage img) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        int left = 0;
+        while (left < w && (img.getRGB(left, h / 2) >>> 24) != 0) left++;
+        int right = w - 1;
+        while (right > left && (img.getRGB(right, h / 2) >>> 24) != 0) right--;
+        int top = 0;
+        while (top < h && (img.getRGB(w / 2, top) >>> 24) != 0) top++;
+        int bottom = h - 1;
+        while (bottom > top && (img.getRGB(w / 2, bottom) >>> 24) != 0) bottom--;
+        if (right <= left || bottom <= top) return null;
+        int[] row = new int[right - left + 1];
+        for (int y = top; y <= bottom; y++) {
+            img.getRGB(left, y, row.length, 1, row, 0, row.length);
+            for (int p : row) {
+                if ((p >>> 24) != 0) return null;
+            }
+        }
+        return new Rectangle(left, top, right - left + 1, bottom - top + 1);
     }
 
     public static int calculatePreviewRemainingHp(int curHp, int dmgPreview) {

@@ -218,12 +218,13 @@ public final class EnemyAnimator {
         if (scaleX != 1.0 || scaleY != 1.0) g2.scale(scaleX, scaleY);
         g2.translate(-targetW / 2.0, -targetH * pivotRatio);
 
-        g2.drawImage(sprite, 0, 0, targetW, targetH, null);
+        BufferedImage fitted = ImageLoader.scaledCached(sprite, Math.max(1, targetW), Math.max(1, targetH));
+        g2.drawImage(fitted, 0, 0, null);
 
         if (flashRemainingMs > 0) {
             BufferedImage flashMask = new BufferedImage(Math.max(1, targetW), Math.max(1, targetH), BufferedImage.TYPE_INT_ARGB);
             Graphics2D fg = flashMask.createGraphics();
-            fg.drawImage(sprite, 0, 0, targetW, targetH, null);
+            fg.drawImage(fitted, 0, 0, null);
             fg.setComposite(AlphaComposite.SrcIn);
             fg.setColor(new Color(255, 255, 255, 200));
             fg.fillRect(0, 0, targetW, targetH);

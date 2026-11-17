@@ -113,6 +113,26 @@ public final class ImageLoader {
         return silhouette;
     }
 
+    private static final Map<BufferedImage, Map<Integer, BufferedImage>> SCALED = new ConcurrentHashMap<>();
+
+    /** Returns a cached, smoothly downscaled copy so per-frame painting is a cheap 1:1 blit. */
+    public static BufferedImage scaledCached(BufferedImage src, int w, int h) {
+        if (src == null || w <= 0 || h <= 0 || (src.getWidth() == w && src.getHeight() == h)) return src;
+        Map<Integer, BufferedImage> bySize = SCALED.computeIfAbsent(src, k -> new ConcurrentHashMap<>());
+        if (bySize.size() > 12) bySize.clear();
+        return bySize.computeIfAbsent(w * 65536 + h, k -> {
+            BufferedImage cur = src;
+            int cw = src.getWidth();
+            int ch = src.getHeight();
+            while (cw / 2 >= w && ch / 2 >= h) {
+                cw /= 2;
+                ch /= 2;
+                cur = scale(cur, cw, ch);
+            }
+            return scale(cur, w, h);
+        });
+    }
+
     public static BufferedImage scale(BufferedImage src, int w, int h) {
         if (src == null || w <= 0 || h <= 0) return src;
         BufferedImage scaled = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);

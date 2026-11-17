@@ -30,7 +30,41 @@ public final class JuanWord extends JFrame {
     private final BattlePanel battlePanel;
     private Player activePlayer;
 
+    /** Applies the shared navy/gold palette to every JOptionPane popup. */
+    private static void applyPopupTheme() {
+        java.awt.Color navy = new java.awt.Color(15, 25, 45);
+        java.awt.Color btnBg = new java.awt.Color(25, 45, 80);
+        java.awt.Color gold = new java.awt.Color(255, 200, 50);
+        java.awt.Color line = new java.awt.Color(225, 155, 15);
+        java.awt.Font body = new java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.PLAIN, 13);
+        java.awt.Font bold = new java.awt.Font(java.awt.Font.SANS_SERIF, java.awt.Font.BOLD, 13);
+        javax.swing.border.Border btnBorder = javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createLineBorder(line, 1, true),
+            javax.swing.BorderFactory.createEmptyBorder(5, 16, 5, 16));
+        for (String k : new String[] {"OptionPane.background", "Panel.background"}) {
+            javax.swing.UIManager.put(k, navy);
+        }
+        javax.swing.UIManager.put("OptionPane.messageForeground", java.awt.Color.WHITE);
+        javax.swing.UIManager.put("OptionPane.foreground", java.awt.Color.WHITE);
+        javax.swing.UIManager.put("OptionPane.messageFont", body);
+        javax.swing.UIManager.put("OptionPane.buttonFont", bold);
+        javax.swing.UIManager.put("OptionPane.border", javax.swing.BorderFactory.createEmptyBorder(12, 12, 8, 12));
+        javax.swing.UIManager.put("Label.foreground", java.awt.Color.WHITE);
+        javax.swing.UIManager.put("TextField.background", btnBg);
+        javax.swing.UIManager.put("TextField.foreground", java.awt.Color.WHITE);
+        javax.swing.UIManager.put("TextField.caretForeground", gold);
+        javax.swing.UIManager.put("TextField.border", btnBorder);
+        javax.swing.UIManager.put("Button.background", btnBg);
+        javax.swing.UIManager.put("Button.foreground", gold);
+        javax.swing.UIManager.put("Button.border", btnBorder);
+        javax.swing.UIManager.put("Button.focus", gold);
+        javax.swing.UIManager.put("Button.select", navy);
+        javax.swing.UIManager.put("Button.contentAreaFilled", Boolean.TRUE);
+        javax.swing.UIManager.put("Button.opaque", Boolean.TRUE);
+    }
+
     public static void main(String[] args) {
+        applyPopupTheme();
         DataManager.getInstance();
         SwingUtilities.invokeLater(() -> {
             JuanWord frame = new JuanWord();

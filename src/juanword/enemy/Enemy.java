@@ -42,7 +42,12 @@ public abstract class Enemy {
     public String getName() { return name; }
     public String getEnemyId() { return enemyId; }
     public String getSpritePath() { return spritePath; }
-    public String getAttackSpritePath() { return null; }
+    public String getAttackSpritePath() {
+        if ("GUDO".equalsIgnoreCase(enemyId)) {
+            return "assets/sprites/gudoattack.png";
+        }
+        return null;
+    }
     public int getMaxHp() { return maxHp; }
     public int getCurrentHp() { return currentHp; }
     public int getAttack() { return attack; }

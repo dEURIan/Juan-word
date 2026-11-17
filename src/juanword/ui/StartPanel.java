@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -53,11 +54,15 @@ public final class StartPanel extends JPanel {
     private final BufferedImage titleLogo;
     private final BufferedImage avatarImg;
 
-    // Buttons
-    private final ImageAssetButton continueBtn;
-    private final ImageAssetButton newGameBtn;
-    private final ImageAssetButton settingBtn;
-    private final ImageAssetButton exitBtn;
+    // Buttons & Sprites
+    private final JButton continueBtn;
+    private final JButton newGameBtn;
+    private final JButton settingBtn;
+    private final JButton exitBtn;
+    private final BufferedImage contImg;
+    private final BufferedImage newGameImg;
+    private final BufferedImage setImg;
+    private final BufferedImage exitImg;
 
     // Player Card Bounds & State
     private final Rectangle playerCardBounds = new Rectangle(36, 24, 230, 48);
@@ -93,18 +98,19 @@ public final class StartPanel extends JPanel {
         this.avatarImg = av;
 
         // Button Sprites
-        BufferedImage contImg = ImageLoader.load("continuebtn.png");
-        BufferedImage newGameImg = ImageLoader.load("newgamebtn.png");
-        if (newGameImg == null || ImageLoader.isPlaceholder(newGameImg)) {
-            newGameImg = ImageLoader.load("startbtn.png");
+        this.contImg = ImageLoader.load("continuebtn.png");
+        BufferedImage ng = ImageLoader.load("newgamebtn.png");
+        if (ng == null || ImageLoader.isPlaceholder(ng)) {
+            ng = ImageLoader.load("startbtn.png");
         }
-        BufferedImage setImg = ImageLoader.load("settingbtn.png");
-        BufferedImage exitImg = ImageLoader.load("exitbtn.png");
+        this.newGameImg = ng;
+        this.setImg = ImageLoader.load("settingbtn.png");
+        this.exitImg = ImageLoader.load("exitbtn.png");
 
-        continueBtn = new ImageAssetButton(contImg);
-        newGameBtn = new ImageAssetButton(newGameImg);
-        settingBtn = new ImageAssetButton(setImg);
-        exitBtn = new ImageAssetButton(exitImg);
+        continueBtn = createMenuButton();
+        newGameBtn = createMenuButton();
+        settingBtn = createMenuButton();
+        exitBtn = createMenuButton();
 
         continueBtn.addActionListener(e -> onContinue());
         newGameBtn.addActionListener(e -> onNewProfile());
@@ -531,93 +537,58 @@ public final class StartPanel extends JPanel {
         }
     }
 
-    /**
-     * Inner custom button component rendering artist-crafted PNG button sprites with:
-     * - Bilinear interpolation
-     * - Tactile 2px press-down animation on click
-     * - Subtle white highlight on hover
-     * - 38% opacity disabled state
-     */
-    private final class ImageAssetButton extends JButton {
-        private final BufferedImage sprite;
-        private boolean isHovered = false;
-        private boolean isPressed = false;
+    private JButton createMenuButton() {
+        JButton btn = new JButton();
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setRolloverEnabled(true);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
 
-        public ImageAssetButton(BufferedImage sprite) {
-            this.sprite = sprite;
-            setOpaque(false);
-            setContentAreaFilled(false);
-            setBorderPainted(false);
-            setFocusPainted(false);
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    @Override
+    protected void paintChildren(Graphics g) {
+        super.paintChildren(g);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        drawMenuButton(g2, continueBtn, contImg);
+        drawMenuButton(g2, newGameBtn, newGameImg);
+        drawMenuButton(g2, settingBtn, setImg);
+        drawMenuButton(g2, exitBtn, exitImg);
+        g2.dispose();
+    }
 
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    if (isEnabled()) {
-                        isHovered = true;
-                        repaint();
-                    }
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    isHovered = false;
-                    isPressed = false;
-                    repaint();
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (isEnabled() && SwingUtilities.isLeftMouseButton(e)) {
-                        isPressed = true;
-                        repaint();
-                    }
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    if (isPressed) {
-                        isPressed = false;
-                        repaint();
-                    }
-                }
-            });
+    private void drawMenuButton(Graphics2D g2, JButton btn, BufferedImage sprite) {
+        if (sprite == null || btn == null || !btn.isVisible()) {
+            return;
         }
+        Rectangle b = btn.getBounds();
+        ButtonModel model = btn.getModel();
+        boolean pressed = model.isPressed() && model.isArmed() && btn.isEnabled();
+        boolean hovered = model.isRollover() && btn.isEnabled();
+        boolean enabled = btn.isEnabled();
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        int drawX = b.x;
+        int drawY = b.y + (pressed ? 2 : 0);
+        int w = b.width;
+        int h = b.height;
 
-            int w = getWidth();
-            int h = getHeight();
-            int drawY = 0;
-            if (isPressed && isEnabled()) {
-                drawY += 2;
-            }
-
-            if (!isEnabled()) {
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.38f));
-                if (sprite != null) {
-                    g2.drawImage(sprite, 0, drawY, w, h, this);
-                }
-            } else if (isHovered) {
-                if (sprite != null) {
-                    g2.drawImage(sprite, 0, drawY, w, h, this);
-                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.14f));
-                    g2.setColor(Color.WHITE);
-                    int corner = Math.max(12, (int) Math.round(24 * (h / 48.0)));
-                    g2.fillRoundRect(0, drawY, w, h, corner, corner);
-                }
-            } else {
-                if (sprite != null) {
-                    g2.drawImage(sprite, 0, drawY, w, h, this);
-                }
-            }
-
-            g2.dispose();
+        Graphics2D bg = (Graphics2D) g2.create();
+        if (!enabled) {
+            bg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.38f));
+            bg.drawImage(sprite, drawX, drawY, w, h, null);
+        } else if (hovered) {
+            bg.drawImage(sprite, drawX, drawY, w, h, null);
+            bg.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.14f));
+            bg.setColor(Color.WHITE);
+            int corner = Math.max(12, (int) Math.round(24 * (h / 48.0)));
+            bg.fillRoundRect(drawX, drawY, w, h, corner, corner);
+        } else {
+            bg.drawImage(sprite, drawX, drawY, w, h, null);
         }
+        bg.dispose();
     }
 }

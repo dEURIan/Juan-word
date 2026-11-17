@@ -40,6 +40,7 @@ public final class MapSelectPanel extends JPanel {
     private final BufferedImage settingsIcon;
     private final Timer renderTimer;
     private Point mousePoint = new Point(-1, -1);
+    private int lastOverMask;
     private Landmark hovered = null;
     private Rectangle backButtonBounds = new Rectangle(36, 20, 110, 32);
     private Rectangle settingsButtonBounds = new Rectangle(890, 20, 34, 34);
@@ -199,7 +200,9 @@ public final class MapSelectPanel extends JPanel {
 
         setCursor((hovered != null || overBack || overSettings || overFightGudo) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
 
-        if (hovered != previouslyHovered) {
+        int overMask = (overBack ? 1 : 0) | (overSettings ? 2 : 0) | (overFightGudo ? 4 : 0);
+        if (hovered != previouslyHovered || overMask != lastOverMask) {
+            lastOverMask = overMask;
             repaint();
         }
     }
@@ -282,9 +285,11 @@ public final class MapSelectPanel extends JPanel {
                 isTransitioning = false;
             }
         } else {
+            boolean animating = false;
             for (Landmark lm : landmarks) {
-                lm.updateScale(lm == hovered);
+                animating |= lm.updateScale(lm == hovered);
             }
+            if (!animating) return; // idle: nothing changed, skip the full-screen repaint
         }
         repaint();
     }
@@ -303,7 +308,7 @@ public final class MapSelectPanel extends JPanel {
 
         // 1. Sky & Clouds Background (bg.png)
         if (skyBg != null) {
-            g2.drawImage(skyBg, 0, 0, w, h, null);
+            g2.drawImage(ImageLoader.scaledCached(skyBg, w, h), 0, 0, null);
         } else {
             g2.setColor(new Color(25, 35, 55));
             g2.fillRect(0, 0, w, h);
@@ -339,7 +344,7 @@ public final class MapSelectPanel extends JPanel {
 
         // 6. Indigenous Border Frame (indigframe.png) strictly on top
         if (indigFrame != null) {
-            g2.drawImage(indigFrame, 0, 0, w, h, null);
+            g2.drawImage(ImageLoader.scaledCached(indigFrame, w, h), 0, 0, null);
         }
     }
 
