@@ -19,13 +19,13 @@ public final class TileGridGenerator {
         return grid;
     }
 
-    public static TileComponent generateTile() {
+    public static TileComponent generateTile() { //odds for tiles
         char letter = DataManager.getInstance().drawRandomLetter();
         TileComponent base = new StandardTileComponent(letter);
         int roll = RNG.nextInt(100);
         if (roll < 78) {
             return base;
-        } else if (roll < 90) {
+        } else if (roll < 90) { 
             return new GoldTileDecorator(base);
         } else {
             return new HealingTileDecorator(base);

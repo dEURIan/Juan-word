@@ -93,7 +93,7 @@ public final class BattlePanel extends JPanel {
     private final Rectangle clearBtnBounds = new Rectangle(230, 468, 110, 38);
     private final Rectangle attackBtnBounds = new Rectangle(565, 335, 175, 42);
     private final Rectangle scrambleBtnBounds = new Rectangle(620, 420, 110, 38);
-    private final Rectangle[][] tileBounds = new Rectangle[4][4];
+    private final Rectangle[][] tileBounds = new Rectangle[4][4]; //2d aray 4x4 tiles
 
     public BattlePanel(JuanWord host) {
         this.host = host;
